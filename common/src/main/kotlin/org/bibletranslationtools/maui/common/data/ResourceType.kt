@@ -8,7 +8,7 @@ enum class ResourceType(val slug: String) {
     companion object {
         fun of(slug: String) =
             values().singleOrNull {
-                it.name == slug.toUpperCase() || it.slug == slug
+                it.name == slug.uppercase() || it.slug == slug
             } ?: throw IllegalArgumentException("Resource type $slug is not supported")
     }
 

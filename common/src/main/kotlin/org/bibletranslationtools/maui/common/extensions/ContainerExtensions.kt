@@ -6,7 +6,7 @@ enum class ContainerExtensions(val ext: String) {
     companion object: SupportedExtensions {
         override fun isSupported(ext: String) =
             values().any {
-                it.name == ext.toUpperCase() || it.ext == ext
+                it.name == ext.uppercase() || it.ext == ext
             }
     }
 }
