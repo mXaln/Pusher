@@ -11,7 +11,7 @@ enum class Grouping(val grouping: String) {
     companion object {
         fun of(grouping: String) =
             values().singleOrNull {
-                it.name == grouping.toUpperCase() || it.grouping == grouping
+                it.name == grouping.uppercase() || it.grouping == grouping
             } ?: throw IllegalArgumentException("Grouping $grouping is not supported")
     }
 

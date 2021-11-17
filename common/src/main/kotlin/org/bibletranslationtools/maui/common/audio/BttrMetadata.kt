@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonAlias
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import org.wycliffeassociates.otter.common.audio.wav.WavCue
+import org.wycliffeassociates.otter.common.audio.AudioCue
 
 data class BttrMetadata(
     var anthology: String = "",
@@ -21,5 +21,5 @@ data class BttrMetadata(
     var contributor: String = "",
     @JsonDeserialize(using = MarkerListDeserializer::class)
     @JsonSerialize(using = MarkerListSerializer::class)
-    var markers: MutableList<WavCue> = mutableListOf()
+    var markers: MutableList<AudioCue> = mutableListOf()
 )

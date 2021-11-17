@@ -119,7 +119,7 @@ class MakePath(private val fileData: FileData) {
     private fun normalizeFileName(): String {
         val filename = if (hasVerse()) {
             val filenameWithoutExtension = fileData.file.nameWithoutExtension
-                .toLowerCase()
+                .lowercase()
 
             filenameWithoutExtension
         } else {

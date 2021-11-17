@@ -15,7 +15,6 @@ buildscript {
 
 plugins {
     id 'nebula.lint' version "$nebulaLintPluginVer"
-    id 'com.gradle.build-scan' version "$buildscanPluginVer"
     id 'io.gitlab.arturbosch.detekt' version "$detektPluginVer"
 }
 
@@ -26,11 +25,6 @@ apply plugin: 'io.gitlab.arturbosch.detekt'
 
 repositories {
     mavenCentral()
-}
-
-buildScan {
-    termsOfServiceUrl = 'https://gradle.com/terms-of-service'
-    termsOfServiceAgree = 'yes'
 }
 
 detekt {
@@ -59,6 +53,7 @@ subprojects {
 
     dependencies {
         implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVer"
+        implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlinVer"
     }
 
     group 'org.bibletranslationtools'
@@ -66,12 +61,12 @@ subprojects {
 
     compileKotlin {
         kotlinOptions.jvmTarget = "11"
-        kotlinOptions.allWarningsAsErrors = true
+        kotlinOptions.allWarningsAsErrors = false
     }
 
     compileTestKotlin {
         kotlinOptions.jvmTarget = "11"
-        kotlinOptions.allWarningsAsErrors = true
+        kotlinOptions.allWarningsAsErrors = false
     }
 
     gradleLint.rules = ['deprecated-dependency-configuration']
