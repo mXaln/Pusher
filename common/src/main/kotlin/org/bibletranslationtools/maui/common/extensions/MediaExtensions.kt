@@ -12,13 +12,13 @@ enum class MediaExtensions(vararg val ext: String) {
     companion object: SupportedExtensions {
         override fun isSupported(ext: String) =
             values().any {
-                it.name == ext.toUpperCase() || it.ext.contains(ext)
+                it.name == ext.uppercase() || it.ext.contains(ext)
             }
 
         @Throws(java.lang.IllegalArgumentException::class)
         fun of(ext: String) =
             values().singleOrNull {
-                it.name == ext.toUpperCase() || it.ext.contains(ext.toLowerCase())
+                it.name == ext.uppercase() || it.ext.contains(ext.lowercase())
             } ?: throw IllegalArgumentException("Media type $ext is not supported")
     }
 

@@ -2,7 +2,7 @@ buildscript {
     apply from: './dependencies.gradle'
 
     repositories {
-        jcenter()
+        mavenCentral()
         maven { url "https://plugins.gradle.org/m2/" }
         maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
     }
@@ -15,7 +15,6 @@ buildscript {
 
 plugins {
     id 'nebula.lint' version "$nebulaLintPluginVer"
-    id 'com.gradle.build-scan' version "$buildscanPluginVer"
     id 'io.gitlab.arturbosch.detekt' version "$detektPluginVer"
 }
 
@@ -25,12 +24,7 @@ version '0.0.3'
 apply plugin: 'io.gitlab.arturbosch.detekt'
 
 repositories {
-    jcenter()
-}
-
-buildScan {
-    termsOfServiceUrl = 'https://gradle.com/terms-of-service'
-    termsOfServiceAgree = 'yes'
+    mavenCentral()
 }
 
 detekt {
@@ -48,7 +42,7 @@ tasks.withType(io.gitlab.arturbosch.detekt.Detekt) {
 
 subprojects {
     repositories {
-        jcenter()
+        mavenCentral()
         maven { url 'https://jitpack.io' }
         maven { url "https://nexus-registry.walink.org/repository/maven-public/" }
     }
@@ -59,6 +53,7 @@ subprojects {
 
     dependencies {
         implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVer"
+        implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlinVer"
     }
 
     group 'org.bibletranslationtools'
@@ -66,12 +61,12 @@ subprojects {
 
     compileKotlin {
         kotlinOptions.jvmTarget = "11"
-        kotlinOptions.allWarningsAsErrors = true
+        kotlinOptions.allWarningsAsErrors = false
     }
 
     compileTestKotlin {
         kotlinOptions.jvmTarget = "11"
-        kotlinOptions.allWarningsAsErrors = true
+        kotlinOptions.allWarningsAsErrors = false
     }
 
     gradleLint.rules = ['deprecated-dependency-configuration']

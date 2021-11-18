@@ -8,7 +8,7 @@ enum class MediaExtension(vararg val ext: String) {
     companion object {
         fun of(ext: String) =
             values().singleOrNull {
-                it.name == ext.toUpperCase() || it.ext.contains(ext)
+                it.name == ext.uppercase() || it.ext.contains(ext)
             } ?: throw IllegalArgumentException("Media extension $ext is not supported")
     }
 

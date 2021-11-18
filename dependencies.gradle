@@ -2,13 +2,13 @@ ext {
     // Plugins
     javafxPluginVer = '0.0.8'
     nebulaLintPluginVer = '14.2.1'
-    buildscanPluginVer = '2.4.2'
+    buildscanPluginVer = '3.7.1'
     detektPluginVer = '1.10.0-RC1'
     ktlintPluginVer = '8.2.0'
     shadowPluginVer = '5.2.0'
 
     // Libraries
-    kotlinVer = '1.3.72'
+    kotlinVer = '1.5.10'
     javafxVer = '11'
     tornadofxVer = '2.0.0-SNAPSHOT'
     rxkotlinVer = '2.4.0'
@@ -23,9 +23,9 @@ ext {
     log4j2Ver = '2.12.1'
     ikonliVer = '11.3.4'
     aohVer = '1.3'
-    otterAudioVer = '0.0.3'
+    otterAudioVer = '0.3.2'
     tikaVer = '1.11'
     commonsnetVer = '3.7'
     launch4j = '2.4.6'
-    kotlinRC = '0.8.0'
+    kotlinRC = '0.9.1'
 }

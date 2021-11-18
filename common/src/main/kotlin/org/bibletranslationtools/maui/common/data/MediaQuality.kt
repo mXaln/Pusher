@@ -9,7 +9,7 @@ enum class MediaQuality(val quality: String) {
     companion object {
         fun of(quality: String) =
             values().singleOrNull {
-                it.name == quality.toUpperCase() || it.quality == quality
+                it.name == quality.uppercase() || it.quality == quality
             } ?: throw IllegalArgumentException("Quality $quality is not supported")
     }
 
