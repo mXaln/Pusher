@@ -21,6 +21,7 @@ import org.bibletranslationtools.maui.jvm.controls.filedatafilter.filedatafilter
 import org.bibletranslationtools.maui.jvm.ui.FileDataItem
 import org.bibletranslationtools.maui.jvm.ui.filedatacell.FileDataCell
 import tornadofx.*
+import java.util.*
 import kotlin.reflect.KMutableProperty1
 import kotlin.reflect.KProperty1
 
@@ -31,7 +32,9 @@ class MainView : View() {
     private lateinit var listView: ListView<FileDataItem>
 
     init {
-        title = messages["appName"]
+        title = messages["appName"] + getVersion().let {
+            if (it == null) "" else " - v$it"
+        }
         importStylesheet(AppResources.load("/css/main.css"))
     }
 
@@ -148,6 +151,18 @@ class MainView : View() {
                 )
             }
         }
+    }
+
+    private fun getVersion(): String? {
+        val prop = Properties()
+        val inputStream = javaClass.classLoader.getResourceAsStream("version.properties")
+
+        if (inputStream != null) {
+            prop.load(inputStream)
+            return prop.getProperty("version")
+        }
+
+        return null
     }
 
     private fun onDragOverHandler(): EventHandler<DragEvent> {

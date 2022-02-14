@@ -12,7 +12,7 @@ javafx {
     modules = ['javafx.controls', 'javafx.fxml']
 }
 
-version = 1.0
+version = '1.0.1'
 
 repositories {
     maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
@@ -90,5 +90,16 @@ launch4j {
     fileDescription = rootProject.name
 }
 
+task createVersionProperties {
+    doLast {
+        new File("$buildDir/resources/main/version.properties").withWriter { w ->
+            Properties p = new Properties()
+            p['version'] = version
+            p.store w, null
+        }
+    }
+}
+
+compileJava.dependsOn createVersionProperties
 project.tasks.createExe.dependsOn copyJre
 project.tasks.createExe.dependsOn shadowJar
