@@ -5,10 +5,12 @@ import org.bibletranslationtools.maui.common.audio.BttrMetadata
 import org.wycliffeassociates.otter.common.audio.wav.InvalidWavFileException
 import org.wycliffeassociates.otter.common.audio.wav.WavFile
 import org.wycliffeassociates.otter.common.audio.wav.WavMetadata
+import org.wycliffeassociates.otter.common.audio.wav.WavType
 import java.io.File
 import java.util.regex.Pattern
 
 class WavValidator(private val file: File) : IValidator {
+    private lateinit var wav: WavFile
 
     companion object {
         private const val LANGUAGE = "([a-zA-Z]{2,3}[-a-zA-Z]*?)"
@@ -35,26 +37,30 @@ class WavValidator(private val file: File) : IValidator {
             isChunkOrVerse() -> {
                 val bttrChunk = BttrChunk()
                 val wavMetadata = WavMetadata(listOf(bttrChunk))
-                WavFile(file, wavMetadata)
+                wav = WavFile(file, wavMetadata)
 
                 if (!validateBttrMetadata(bttrChunk.metadata)) {
-                    throw InvalidWavFileException("Chunk has corrupt metadata")
+                    throw InvalidWavFileException("Chunk has corrupt metadata: $file")
                 }
 
                 if (!validateChunkVerseFileName()) {
-                    throw InvalidWavFileException("Chunk/verse filename is incorrect")
+                    throw InvalidWavFileException("Chunk/verse filename is incorrect: $file")
                 }
             }
             isChapter() -> {
                 val bttrChunk = BttrChunk()
                 val wavMetadata = WavMetadata(listOf(bttrChunk))
-                WavFile(file, wavMetadata)
+                wav = WavFile(file, wavMetadata)
 
                 if (!validateChapterFileName()) {
-                    throw InvalidWavFileException("Chapter filename is incorrect")
+                    throw InvalidWavFileException("Chapter filename is incorrect: $file")
                 }
             }
-            else -> WavFile(file)
+            else -> wav = WavFile(file)
+        }
+
+        if (wav.wavType == WavType.WAV_WITH_EXTENSION) {
+            throw InvalidWavFileException("wav file with custom extension is not supported: $file")
         }
     }
 
