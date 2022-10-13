@@ -64,4 +64,14 @@ class WavValidatorTest {
         val validator = WavValidator(file)
         validator.validate()
     }
+
+    @Test
+    fun testWavWithCustomExtension() {
+        val file = File(javaClass.getResource("/wav_with_custom_extension.wav").file)
+
+        expectedException.expect(InvalidWavFileException::class.java)
+        expectedException.expectMessage("wav file with custom extension is not supported: $file")
+
+        WavValidator(file).validate()
+    }
 }
