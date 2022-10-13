@@ -23,7 +23,7 @@ ext {
     log4j2Ver = '2.12.1'
     ikonliVer = '11.3.4'
     aohVer = '1.3'
-    otterAudioVer = '0.3.2'
+    otterAudioVer = '0.4.0'
     tikaVer = '1.11'
     commonsnetVer = '3.7'
     launch4j = '2.4.6'
