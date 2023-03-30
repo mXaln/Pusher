@@ -12,7 +12,7 @@ javafx {
     modules = ['javafx.controls', 'javafx.fxml']
 }
 
-version = '1.1.0'
+version = '1.2.0'
 
 repositories {
     maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
@@ -71,7 +71,7 @@ shadowJar {
     }
 }
 
-task copyJre(type: Copy) {
+tasks.register('copyJre', Copy) {
     if (project.hasProperty("jrePath")) {
         from jrePath
         into "${buildDir}/launch4j/jre"
@@ -90,7 +90,7 @@ launch4j {
     fileDescription = rootProject.name
 }
 
-task createVersionProperties {
+tasks.register('createVersionProperties') {
     doLast {
         new File("$buildDir/resources/main/version.properties").withWriter { w ->
             Properties p = new Properties()
