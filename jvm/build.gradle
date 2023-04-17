@@ -92,7 +92,9 @@ launch4j {
 
 tasks.register('createVersionProperties') {
     doLast {
-        new File("$buildDir/resources/main/version.properties").withWriter { w ->
+        File file = new File("$buildDir/resources/main/version.properties")
+        file.parentFile.mkdirs()
+        file.withWriter { w ->
             Properties p = new Properties()
             p['version'] = version
             p.store w, null
