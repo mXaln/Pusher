@@ -3,6 +3,7 @@ package org.bibletranslationtools.maui.common.data
 import java.lang.IllegalArgumentException
 
 enum class ResourceType(val slug: String) {
+    REG("reg"),
     ULB("ulb"),
     AYT("ayt"),
     NAV("nav"),
