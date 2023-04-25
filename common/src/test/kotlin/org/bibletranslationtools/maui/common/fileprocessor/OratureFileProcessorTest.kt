@@ -26,7 +26,6 @@ class OratureFileProcessorTest {
         files.forEach { file ->
             val result = ParseFileName(file).parse()
 
-
             // imported file names should be valid for parser
             assertNotNull(result.language)
             assertNotNull(result.resourceType)
