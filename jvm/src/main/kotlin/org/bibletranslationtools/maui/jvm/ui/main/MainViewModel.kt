@@ -18,8 +18,10 @@ import org.bibletranslationtools.maui.common.usecases.TransferFile
 import org.bibletranslationtools.maui.jvm.client.FtpTransferClient
 import org.bibletranslationtools.maui.jvm.io.BooksReader
 import org.bibletranslationtools.maui.jvm.io.LanguagesReader
+import org.bibletranslationtools.maui.jvm.io.VersificationReader
 import org.bibletranslationtools.maui.jvm.ui.FileDataItem
 import org.bibletranslationtools.maui.jvm.mappers.FileDataMapper
+import org.bibletranslationtools.maui.jvm.mappers.FileVerifier
 import org.wycliffeassociates.otter.common.audio.wav.WavFile
 import org.wycliffeassociates.otter.common.audio.wav.WavMetadata
 import tornadofx.*
@@ -29,7 +31,6 @@ import java.util.regex.Pattern
 import io.reactivex.rxkotlin.toObservable as toRxObservable
 
 class MainViewModel : ViewModel() {
-
     val fileDataList = observableListOf<FileDataItem>()
     val fileDataListProperty = SimpleListProperty<FileDataItem>(fileDataList)
     val successfulUploadProperty = SimpleBooleanProperty(false)
@@ -40,22 +41,40 @@ class MainViewModel : ViewModel() {
     val mediaExtensions = MediaExtension.values().toList().toObservable()
     val mediaQualities = MediaQuality.values().toList().toObservable()
     val groupings = Grouping.values().toList().toObservable()
+    private val versification = observableMapOf<String, List<Int>>()
 
     val isProcessing = SimpleBooleanProperty(false)
     val snackBarObservable: PublishSubject<String> = PublishSubject.create()
     val updatedObservable: PublishSubject<Boolean> = PublishSubject.create()
 
     private val fileProcessRouter = FileProcessingRouter.build()
+    private lateinit var fileVerifier: FileVerifier
 
     init {
         loadLanguages()
         loadBooks()
+        loadVersification()
     }
 
     fun onDropFiles(files: List<File>) {
         isProcessing.set(true)
         val filesToImport = prepareFilesToImport(files)
         importFiles(filesToImport)
+    }
+
+    fun verify() {
+        isProcessing.set(true)
+        fileDataList.toRxObservable()
+            .map { fileDataItem ->
+                fileVerifier.handleItem(fileDataItem)
+            }
+            .observeOnFx()
+            .doFinally { isProcessing.set(false) }
+            .subscribe { result ->
+                if (result.status == FileStatus.REJECTED) {
+                    println("${result.file.name} was rejected because '${result.message}'")
+                }
+            }
     }
 
     fun upload() {
@@ -125,23 +144,23 @@ class MainViewModel : ViewModel() {
         Observable.fromCallable {
             fileProcessRouter.handleFiles(files)
         }
-        .subscribeOn(Schedulers.io())
-        .observeOnFx()
-        .doFinally { isProcessing.set(false) }
-        .subscribe { resultList ->
-            resultList.forEach {
+            .subscribeOn(Schedulers.io())
+            .observeOnFx()
+            .doFinally { isProcessing.set(false) }
+            .subscribe { resultList ->
+                resultList.forEach {
                     if (it.status == FileStatus.REJECTED) {
                         emitErrorMessage(
-                                message = messages["fileNotRecognized"],
-                                fileName = it.requestedFile?.name ?: ""
+                            message = messages["fileNotRecognized"],
+                            fileName = it.requestedFile?.name ?: ""
                         )
                     } else {
                         val item = FileDataMapper().fromEntity(it.data!!)
                         if (!fileDataList.contains(item)) fileDataList.add(item)
                     }
+                }
+                fileDataList.sort()
             }
-            fileDataList.sort()
-        }
     }
 
     private fun loadLanguages() {
@@ -159,6 +178,16 @@ class MainViewModel : ViewModel() {
             .observeOnFx()
             .subscribe { _books ->
                 books.addAll(_books)
+            }
+    }
+
+    private fun loadVersification() {
+        VersificationReader().read()
+            .subscribeOn(Schedulers.io())
+            .observeOnFx()
+            .subscribe { _versification ->
+                versification.putAll(_versification)
+                fileVerifier = FileVerifier(versification)
             }
     }
 
