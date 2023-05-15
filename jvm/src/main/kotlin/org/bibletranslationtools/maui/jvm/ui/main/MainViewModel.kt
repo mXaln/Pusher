@@ -22,6 +22,8 @@ import org.bibletranslationtools.maui.jvm.io.VersificationReader
 import org.bibletranslationtools.maui.jvm.ui.FileDataItem
 import org.bibletranslationtools.maui.jvm.mappers.FileDataMapper
 import org.bibletranslationtools.maui.jvm.mappers.FileVerifier
+import org.bibletranslationtools.maui.jvm.mappers.VerifiedResultMapper
+import org.thymeleaf.spring4.SpringTemplateEngine
 import org.wycliffeassociates.otter.common.audio.wav.WavFile
 import org.wycliffeassociates.otter.common.audio.wav.WavMetadata
 import tornadofx.*
@@ -54,6 +56,7 @@ class MainViewModel : ViewModel() {
         loadLanguages()
         loadBooks()
         loadVersification()
+        val engine = SpringTemplateEngine()
     }
 
     fun onDropFiles(files: List<File>) {
@@ -68,12 +71,23 @@ class MainViewModel : ViewModel() {
             .map { fileDataItem ->
                 fileVerifier.handleItem(fileDataItem)
             }
+            .toList()
+            .map { result ->
+                val mapper = VerifiedResultMapper()
+                mapper.fromEntity(result)
+            }
+            .map { context ->
+                /** convert context to html string */
+//                val mapper = SpringTemplateEngine()
+//                mapper.process("VerifiedResultsTemplate", context)
+                return@map "hello"
+            }
             .observeOnFx()
             .doFinally { isProcessing.set(false) }
-            .subscribe { result ->
-                if (result.status == FileStatus.REJECTED) {
-                    println("${result.file.name} was rejected because '${result.message}'")
-                }
+            .subscribe { html ->
+                /** Output the results into a html document */
+                //DocWriter.write(htmlFileName, htmlContent)
+                print(html)
             }
     }
 
