@@ -47,10 +47,12 @@ class FileDataView : VBox() {
                     JFXComboBox<String>(mainViewModel.languages).apply {
                         addClass("file-data-cell__dropdown")
 
+                        isEditable = true
+
                         fileDataItemProperty.onChange {
                             it?.let {
                                 selectionModel.select(it.language)
-                                isDisable = !it.initLanguage.isNullOrEmpty()
+                                //isDisable = !it.initLanguage.isNullOrEmpty()
                             }
                         }
                         selectionModel.selectedItemProperty().onChange {
