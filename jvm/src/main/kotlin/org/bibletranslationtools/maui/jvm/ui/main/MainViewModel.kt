@@ -20,6 +20,7 @@ import org.bibletranslationtools.maui.jvm.io.LanguagesReader
 import org.bibletranslationtools.maui.jvm.io.ResourceTypesReader
 import org.bibletranslationtools.maui.jvm.ui.FileDataItem
 import org.bibletranslationtools.maui.jvm.mappers.FileDataMapper
+import org.bibletranslationtools.maui.jvm.ui.filedatacell.ErrorOccurredEvent
 import org.wycliffeassociates.otter.common.audio.wav.WavFile
 import org.wycliffeassociates.otter.common.audio.wav.WavMetadata
 import tornadofx.*
@@ -51,6 +52,9 @@ class MainViewModel : ViewModel() {
         loadLanguages()
         loadResourceTypes()
         loadBooks()
+        subscribe<ErrorOccurredEvent> {
+            snackBarObservable.onNext(it.message)
+        }
     }
 
     fun onDropFiles(files: List<File>) {

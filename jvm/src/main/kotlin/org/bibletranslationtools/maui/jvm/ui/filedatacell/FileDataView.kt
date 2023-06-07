@@ -14,7 +14,6 @@ import org.bibletranslationtools.maui.jvm.ui.main.MainViewModel
 import tornadofx.*
 
 class FileDataView : VBox() {
-
     val fileDataItemProperty = SimpleObjectProperty<FileDataItem>(null)
     val fileDataItem: FileDataItem? by fileDataItemProperty
 
@@ -84,9 +83,9 @@ class FileDataView : VBox() {
                 label(FX.messages["book"])
                 add(
                     JFXComboBox(mainViewModel.books).apply {
-                        isEditable = true
-
                         addClass("file-data-cell__dropdown")
+
+                        isEditable = true
 
                         fileDataItemProperty.onChange {
                             it?.let {
@@ -94,15 +93,17 @@ class FileDataView : VBox() {
                                 //isDisable = !it.initBook.isNullOrEmpty()
                             }
                         }
-                        selectionModel.selectedItemProperty().onChange {
-                            fileDataItem?.book = it
-                        }
-//                        setOnAction {
-//                            if(this.text == "gen") {
-//
-//                            }
+//                        selectionModel.selectedItemProperty().onChange {
+//                            fileDataItem?.book = it
 //                        }
-
+                        setOnAction {
+                            if(selectedItem in items) {
+                                fileDataItem?.book = selectedItem
+                            } else {
+                                FX.eventbus.fire(ErrorOccurredEvent("Book $selectedItem not found"))
+                                selectionModel.select(fileDataItem?.book)
+                            }
+                        }
                     }
                 )
             }
@@ -113,10 +114,12 @@ class FileDataView : VBox() {
                     JFXTextField().apply {
                         addClass("file-data-cell__chapter")
 
+                        isEditable = true
+
                         fileDataItemProperty.onChange {
                             it?.let {
                                 text = it.chapter.toString()
-                                isDisable = !it.initChapter.isNullOrEmpty()
+                                //isDisable = !it.initChapter.isNullOrEmpty()
                             }
                         }
 
@@ -206,3 +209,5 @@ class FileDataView : VBox() {
         }
     }
 }
+
+class ErrorOccurredEvent(val message:String): FXEvent()
