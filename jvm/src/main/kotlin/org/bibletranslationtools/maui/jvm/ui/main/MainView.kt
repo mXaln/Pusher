@@ -257,7 +257,7 @@ class MainView : View() {
             filter.selectedBookProperty,
             FileDataItem::initBook,
             FileDataItem::book,
-            false
+            true
         )
 
         setPropertyListener(

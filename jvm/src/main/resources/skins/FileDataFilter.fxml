@@ -17,7 +17,7 @@
     </VBox>
     <VBox HBox.hgrow="ALWAYS">
         <Label fx:id="bookLabel">Book</Label>
-        <JFXComboBox fx:id="booksList" styleClass="file-data-filter__dropdown" />
+        <JFXComboBox fx:id="booksList" editable="true" styleClass="file-data-filter__dropdown" />
     </VBox>
     <VBox HBox.hgrow="ALWAYS">
         <Label fx:id="chapterLabel">Chapter</Label>

@@ -84,17 +84,25 @@ class FileDataView : VBox() {
                 label(FX.messages["book"])
                 add(
                     JFXComboBox(mainViewModel.books).apply {
+                        isEditable = true
+
                         addClass("file-data-cell__dropdown")
 
                         fileDataItemProperty.onChange {
                             it?.let {
                                 selectionModel.select(it.book)
-                                isDisable = !it.initBook.isNullOrEmpty()
+                                //isDisable = !it.initBook.isNullOrEmpty()
                             }
                         }
                         selectionModel.selectedItemProperty().onChange {
                             fileDataItem?.book = it
                         }
+//                        setOnAction {
+//                            if(this.text == "gen") {
+//
+//                            }
+//                        }
+
                     }
                 )
             }
