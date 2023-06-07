@@ -2,6 +2,6 @@ package org.bibletranslationtools.maui.common.io
 
 import io.reactivex.Single
 
-interface ILanguagesReader {
+interface IReader {
     fun read(): Single<List<String>>
 }

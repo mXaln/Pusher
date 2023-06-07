@@ -1,10 +1,8 @@
 package org.bibletranslationtools.maui.common.usecases
 
-import io.reactivex.Single
 import org.bibletranslationtools.maui.common.data.FileData
 import org.bibletranslationtools.maui.common.data.Grouping
 import org.bibletranslationtools.maui.common.data.MediaQuality
-import org.bibletranslationtools.maui.common.data.ResourceType
 import java.io.File
 import java.util.regex.Matcher
 import java.util.regex.Pattern
@@ -82,12 +80,9 @@ class ParseFileName(private val file: File) {
         }
     }
 
-    private fun findResourceType(): ResourceType? {
+    private fun findResourceType(): String? {
         return matcher?.let { _matcher ->
-            val resourceType = _matcher.group(GROUPS.RESOURCE_TYPE.value)
-            resourceType?.let {
-                ResourceType.of(it)
-            }
+            _matcher.group(GROUPS.RESOURCE_TYPE.value)?.lowercase()
         }
     }
 
@@ -99,9 +94,7 @@ class ParseFileName(private val file: File) {
 
     private fun findChapter(): Int? {
         return matcher?.let { _matcher ->
-            _matcher.group(GROUPS.CHAPTER.value)?.let {
-                it.toInt()
-            }
+            _matcher.group(GROUPS.CHAPTER.value)?.toInt()
         }
     }
 

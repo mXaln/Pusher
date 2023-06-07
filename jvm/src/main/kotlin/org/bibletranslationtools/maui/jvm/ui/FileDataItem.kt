@@ -9,10 +9,8 @@ import org.bibletranslationtools.maui.common.data.FileData
 import org.bibletranslationtools.maui.common.data.Grouping
 import org.bibletranslationtools.maui.common.data.MediaExtension
 import org.bibletranslationtools.maui.common.data.MediaQuality
-import org.bibletranslationtools.maui.common.data.ResourceType
 import org.bibletranslationtools.maui.common.extensions.CompressedExtensions
 import tornadofx.*
-import java.util.concurrent.Callable
 
 data class FileDataItem(private val data: FileData): Comparable<FileDataItem> {
 
@@ -23,8 +21,8 @@ data class FileDataItem(private val data: FileData): Comparable<FileDataItem> {
     var language: String? by languageProperty
 
     val initResourceType = data.resourceType
-    val resourceTypeProperty = SimpleObjectProperty<ResourceType>(initResourceType)
-    var resourceType: ResourceType? by resourceTypeProperty
+    val resourceTypeProperty = SimpleStringProperty(initResourceType)
+    var resourceType: String? by resourceTypeProperty
 
     val initBook = data.book
     val bookProperty = SimpleStringProperty(initBook)
@@ -53,21 +51,21 @@ data class FileDataItem(private val data: FileData): Comparable<FileDataItem> {
     val isCompressed by isCompressedProperty
 
     val isContainerAndCompressed: BooleanBinding = Bindings.createBooleanBinding(
-            Callable {
-                mediaExtension?.let {
-                    isContainer && CompressedExtensions.isSupported(mediaExtension.toString())
-                } ?: false
-            },
-            mediaExtensionProperty
-        )
+        {
+            mediaExtension?.let {
+                isContainer && CompressedExtensions.isSupported(mediaExtension.toString())
+            } ?: false
+        },
+        mediaExtensionProperty
+    )
 
     val mediaExtensionAvailable = SimpleBooleanProperty(isContainer)
     val mediaQualityAvailable: BooleanBinding = Bindings.createBooleanBinding(
-            Callable {
-                isContainerAndCompressed.value || isCompressed
-            },
-            mediaExtensionProperty
-        )
+        {
+            isContainerAndCompressed.value || isCompressed
+        },
+        mediaExtensionProperty
+    )
 
     override fun compareTo(other: FileDataItem): Int {
         return FileDataItemComparator().compare(this, other)

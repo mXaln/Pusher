@@ -13,7 +13,7 @@
     </VBox>
     <VBox HBox.hgrow="ALWAYS">
         <Label fx:id="resourceTypeLabel">Resource Type</Label>
-        <JFXComboBox fx:id="resourceTypesList" styleClass="file-data-filter__dropdown" />
+        <JFXComboBox fx:id="resourceTypesList" editable="true" styleClass="file-data-filter__dropdown" />
     </VBox>
     <VBox HBox.hgrow="ALWAYS">
         <Label fx:id="bookLabel">Book</Label>

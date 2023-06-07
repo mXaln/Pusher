@@ -12,7 +12,6 @@ import javafx.scene.control.TextField
 import org.bibletranslationtools.maui.common.data.Grouping
 import org.bibletranslationtools.maui.common.data.MediaExtension
 import org.bibletranslationtools.maui.common.data.MediaQuality
-import org.bibletranslationtools.maui.common.data.ResourceType
 import org.bibletranslationtools.maui.jvm.controls.filedatafilter.FileDataFilter
 import org.bibletranslationtools.maui.jvm.controls.filedatafilter.MAX_CHAPTER_LENGTH
 import tornadofx.*
@@ -29,7 +28,7 @@ class FileDataFilterSkin(private val filter: FileDataFilter) : SkinBase<FileData
     private lateinit var resourceTypeLabel: Label
 
     @FXML
-    private lateinit var resourceTypesList: ComboBox<ResourceType>
+    private lateinit var resourceTypesList: ComboBox<String>
 
     @FXML
     private lateinit var bookLabel: Label
