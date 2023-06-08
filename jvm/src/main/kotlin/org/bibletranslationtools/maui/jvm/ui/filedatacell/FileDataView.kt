@@ -48,7 +48,6 @@ class FileDataView : VBox() {
                         fileDataItemProperty.onChange {
                             it?.let {
                                 selectionModel.select(it.language)
-                                //isDisable = !it.initLanguage.isNullOrEmpty()
                             }
                         }
                         selectionModel.selectedItemProperty().onChange {
@@ -69,7 +68,6 @@ class FileDataView : VBox() {
                         fileDataItemProperty.onChange {
                             it?.let {
                                 selectionModel.select(it.resourceType)
-                                //isDisable = it.initResourceType != null
                             }
                         }
                         selectionModel.selectedItemProperty().onChange {
@@ -90,12 +88,8 @@ class FileDataView : VBox() {
                         fileDataItemProperty.onChange {
                             it?.let {
                                 selectionModel.select(it.book)
-                                //isDisable = !it.initBook.isNullOrEmpty()
                             }
                         }
-//                        selectionModel.selectedItemProperty().onChange {
-//                            fileDataItem?.book = it
-//                        }
                         setOnAction {
                             if(selectedItem in items) {
                                 fileDataItem?.book = selectedItem
@@ -119,7 +113,6 @@ class FileDataView : VBox() {
                         fileDataItemProperty.onChange {
                             it?.let {
                                 text = it.chapter.toString()
-                                //isDisable = !it.initChapter.isNullOrEmpty()
                             }
                         }
 

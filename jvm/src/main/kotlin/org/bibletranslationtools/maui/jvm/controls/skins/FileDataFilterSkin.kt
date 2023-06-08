@@ -111,23 +111,14 @@ class FileDataFilterSkin(private val filter: FileDataFilter) : SkinBase<FileData
             }
         }
 
-//        booksList.selectionModel.selectedItemProperty().addListener { _, old, new ->
-//            if (new != null) {
-//                itemSelectionAction(filter.selectedBookProperty, booksList, old, new)
-//            }
-//        }
         booksList.setOnAction {
             if (booksList.value in booksList.items) {
                 filter.onConfirmActionProperty.value.handle(ActionEvent())
                 filter.callbackObserver?.subscribe { answer ->
                     if (answer) {
                         filter.selectedBookProperty.value = booksList.value
-//                } else {
-//                    booksList.selectionModel.select(filter.selectedBookProperty.value)
                     }
                 }
-//            } else {
-//                booksList.selectionModel.select(filter.selectedBookProperty.value)
             }
         }
 
