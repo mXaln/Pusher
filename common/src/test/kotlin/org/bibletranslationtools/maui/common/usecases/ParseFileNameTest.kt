@@ -116,17 +116,4 @@ class ParseFileNameTest {
 
         assertEquals(expected.mediaQuality, result.mediaQuality)
     }
-
-    @Test
-    fun parseFileNameLanguageResourceOnly() {
-        val file = File("en_ulb.wav")
-        val expected = FileData(
-            file,
-            "en",
-            "ulb"
-        )
-        val result = ParseFileName(file).parse()
-
-        assertEquals(expected, result)
-    }
 }

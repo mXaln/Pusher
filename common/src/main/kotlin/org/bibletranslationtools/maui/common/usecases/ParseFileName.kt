@@ -9,7 +9,7 @@ import java.util.regex.Pattern
 
 class ParseFileName(private val file: File) {
 
-    private enum class GROUPS(val value: Int) {
+    private enum class Groups(val value: Int) {
         LANGUAGE(1),
         RESOURCE_TYPE(2),
         BOOK_NUMBER(3),
@@ -22,13 +22,20 @@ class ParseFileName(private val file: File) {
         GROUPING(10)
     }
 
+    private enum class ExtraGroups(val value: Int) {
+        BOOK(1),
+        CHAPTER(1)
+    }
+
     companion object {
         private const val LANGUAGE = "([a-zA-Z]{2,3}[-a-zA-Z]*?)"
         private const val ANTHOLOGY = "(?:_(?:nt|ot))?"
         private const val RESOURCE_TYPE = "(?:_([a-zA-Z]{3}))"
         private const val BOOK_NUMBER = "(?:_b([\\d]{2}))?"
         private const val BOOK = "(?:_([1-3]{0,1}[a-zA-Z]{2,3}))??"
+        private const val EXTRA_BOOK = "([1-3]?[a-zA-Z]{2,3})_"
         private const val CHAPTER = "(?:_c([\\d]{1,3}))?"
+        private const val EXTRA_CHAPTER = "_(\\d{1,3})"
         private const val VERSE = "(?:_v([\\d]{1,3})(?:-([\\d]{1,3}))?)?"
         private const val TAKE = "(?:_t([\\d]{1,2}))?"
         private const val QUALITY = "(?:_(hi|low))?"
@@ -76,34 +83,48 @@ class ParseFileName(private val file: File) {
 
     private fun findLanguage(): String? {
         return matcher?.let { _matcher ->
-            _matcher.group(GROUPS.LANGUAGE.value)?.lowercase()
+            _matcher.group(Groups.LANGUAGE.value)?.lowercase()
         }
     }
 
     private fun findResourceType(): String? {
         return matcher?.let { _matcher ->
-            _matcher.group(GROUPS.RESOURCE_TYPE.value)?.lowercase()
+            _matcher.group(Groups.RESOURCE_TYPE.value)?.lowercase()
         }
     }
 
     private fun findBook(): String? {
         return matcher?.let { _matcher ->
-            _matcher.group(GROUPS.BOOK_SLUG.value)?.lowercase()
+            _matcher.group(Groups.BOOK_SLUG.value)?.lowercase()
+        } ?: run {
+            // One more try to get the book from the file name
+            val pattern = Pattern.compile(EXTRA_BOOK, Pattern.CASE_INSENSITIVE)
+            val matcher = pattern.matcher(file.nameWithoutExtension)
+
+            val found = matcher.find()
+            if (found) matcher.group(ExtraGroups.BOOK.value).lowercase() else null
         }
     }
 
     private fun findChapter(): Int? {
         return matcher?.let { _matcher ->
-            _matcher.group(GROUPS.CHAPTER.value)?.toInt()
+            _matcher.group(Groups.CHAPTER.value)?.toInt()
+        } ?: run {
+            // One more try to get the chapter from the file name
+            val pattern = Pattern.compile(EXTRA_CHAPTER)
+            val matcher = pattern.matcher(file.nameWithoutExtension)
+
+            val found = matcher.find()
+            if (found) matcher.group(ExtraGroups.CHAPTER.value)?.toInt() else null
         }
     }
 
     private fun findGrouping(): Grouping? {
         return matcher?.let { _matcher ->
             when {
-                _matcher.group(GROUPS.GROUPING.value) != null ->
-                    Grouping.of(_matcher.group(GROUPS.GROUPING.value))
-                _matcher.group(GROUPS.LAST_VERSE.value) != null ->
+                _matcher.group(Groups.GROUPING.value) != null ->
+                    Grouping.of(_matcher.group(Groups.GROUPING.value))
+                _matcher.group(Groups.LAST_VERSE.value) != null ->
                     Grouping.of("chunk")
                 else -> null
             }
@@ -112,7 +133,7 @@ class ParseFileName(private val file: File) {
 
     private fun findQuality(): MediaQuality? {
         return matcher?.let { _matcher ->
-            val quality = _matcher.group(GROUPS.QUALITY.value)
+            val quality = _matcher.group(Groups.QUALITY.value)
             quality?.let {
                 MediaQuality.of(it)
             }
