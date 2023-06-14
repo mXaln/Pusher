@@ -52,6 +52,10 @@ dependencies {
     // Apache network
     implementation "commons-net:commons-net:$commonsnetVer"
 
+    // Thymeleaf
+    implementation "org.thymeleaf:thymeleaf:$thymeleafVer"
+    implementation "nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:$thymeleafDialectVer"
+
     implementation project(':common')
 
     // Testing
