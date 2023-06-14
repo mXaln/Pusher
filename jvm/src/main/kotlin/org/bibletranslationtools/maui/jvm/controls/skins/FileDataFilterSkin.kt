@@ -111,14 +111,9 @@ class FileDataFilterSkin(private val filter: FileDataFilter) : SkinBase<FileData
             }
         }
 
-        booksList.setOnAction {
-            if (booksList.value in booksList.items) {
-                filter.onConfirmActionProperty.value.handle(ActionEvent())
-                filter.callbackObserver?.subscribe { answer ->
-                    if (answer) {
-                        filter.selectedBookProperty.value = booksList.value
-                    }
-                }
+        booksList.selectionModel.selectedItemProperty().addListener { _, old, new ->
+            if (new != null) {
+                itemSelectionAction(filter.selectedBookProperty, booksList, old, new)
             }
         }
 
@@ -186,17 +181,25 @@ class FileDataFilterSkin(private val filter: FileDataFilter) : SkinBase<FileData
     private fun <T> itemSelectionAction(selected: Property<T?>, dropdownList: ComboBox<T>, old: T?, new: T?) {
         if (!isSelectionChanging) {
             isSelectionChanging = true
-            filter.onConfirmActionProperty.value.handle(ActionEvent())
-            filter.callbackObserver?.subscribe { answer ->
-                if (answer) {
-                    selected.value = new
-                    isSelectionChanging = false
-                } else {
-                    runLater {
-                        dropdownList.selectionModel.select(old)
-                        selected.value = old
+            if (dropdownList.value in dropdownList.items) {
+                filter.onConfirmActionProperty.value.handle(ActionEvent())
+                filter.callbackObserver?.subscribe { answer ->
+                    if (answer) {
+                        selected.value = new
                         isSelectionChanging = false
+                    } else {
+                        runLater {
+                            dropdownList.selectionModel.select(old)
+                            selected.value = old
+                            isSelectionChanging = false
+                        }
                     }
+                }
+            } else {
+                runLater {
+                    dropdownList.selectionModel.select(old)
+                    selected.value = old
+                    isSelectionChanging = false
                 }
             }
         }

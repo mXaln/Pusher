@@ -50,8 +50,15 @@ class FileDataView : VBox() {
                                 selectionModel.select(it.language)
                             }
                         }
-                        selectionModel.selectedItemProperty().onChange {
-                            fileDataItem?.language = it
+                        setOnAction {
+                            if(selectedItem in items) {
+                                fileDataItem?.language = selectedItem
+                            } else {
+                                if (selectedItem != null) {
+                                    FX.eventbus.fire(ErrorOccurredEvent("Language $selectedItem not found"))
+                                    selectionModel.select(fileDataItem?.language)
+                                }
+                            }
                         }
                     }
                 )
@@ -70,8 +77,15 @@ class FileDataView : VBox() {
                                 selectionModel.select(it.resourceType)
                             }
                         }
-                        selectionModel.selectedItemProperty().onChange {
-                            fileDataItem?.resourceType = it
+                        setOnAction {
+                            if(selectedItem in items) {
+                                fileDataItem?.resourceType = selectedItem
+                            } else {
+                                if (selectedItem != null) {
+                                    FX.eventbus.fire(ErrorOccurredEvent("Resource Type $selectedItem not found"))
+                                    selectionModel.select(fileDataItem?.resourceType)
+                                }
+                            }
                         }
                     }
                 )
@@ -94,8 +108,10 @@ class FileDataView : VBox() {
                             if(selectedItem in items) {
                                 fileDataItem?.book = selectedItem
                             } else {
-                                FX.eventbus.fire(ErrorOccurredEvent("Book $selectedItem not found"))
-                                selectionModel.select(fileDataItem?.book)
+                                if (selectedItem != null) {
+                                    FX.eventbus.fire(ErrorOccurredEvent("Book $selectedItem not found"))
+                                    selectionModel.select(fileDataItem?.book)
+                                }
                             }
                         }
                     }
