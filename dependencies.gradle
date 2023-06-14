@@ -7,8 +7,8 @@ ext {
     ktlintPluginVer = '8.2.0'
     shadowPluginVer = '5.2.0'
 
-    thymeleafVer = '3.0.2.RELEASE'
-    springBootVer = '1.5.8.RELEASE'
+    thymeleafVer = '3.1.1.RELEASE'
+    thymeleafDialectVer = '2.1.1'
 
     // Libraries
     kotlinVer = '1.5.10'

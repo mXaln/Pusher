@@ -6,6 +6,7 @@ import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleListProperty
+import javafx.stage.DirectoryChooser
 import org.bibletranslationtools.maui.common.audio.BttrChunk
 import org.bibletranslationtools.maui.common.data.FileStatus
 import org.bibletranslationtools.maui.common.data.MediaExtension
@@ -17,13 +18,15 @@ import org.bibletranslationtools.maui.common.usecases.MakePath
 import org.bibletranslationtools.maui.common.usecases.TransferFile
 import org.bibletranslationtools.maui.jvm.client.FtpTransferClient
 import org.bibletranslationtools.maui.jvm.io.BooksReader
+import org.bibletranslationtools.maui.jvm.io.DocWriter
 import org.bibletranslationtools.maui.jvm.io.LanguagesReader
 import org.bibletranslationtools.maui.jvm.io.VersificationReader
 import org.bibletranslationtools.maui.jvm.ui.FileDataItem
 import org.bibletranslationtools.maui.jvm.mappers.FileDataMapper
 import org.bibletranslationtools.maui.jvm.mappers.FileVerifier
 import org.bibletranslationtools.maui.jvm.mappers.VerifiedResultMapper
-import org.thymeleaf.spring4.SpringTemplateEngine
+import org.thymeleaf.TemplateEngine
+import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver
 import org.wycliffeassociates.otter.common.audio.wav.WavFile
 import org.wycliffeassociates.otter.common.audio.wav.WavMetadata
 import tornadofx.*
@@ -51,12 +54,15 @@ class MainViewModel : ViewModel() {
 
     private val fileProcessRouter = FileProcessingRouter.build()
     private lateinit var fileVerifier: FileVerifier
+    private val verifiedResultMapper = VerifiedResultMapper()
+    private val thymeleafEngine = TemplateEngine()
+    private val docWriter = DocWriter()
 
     init {
+        initThymeleafEngine()
         loadLanguages()
         loadBooks()
         loadVersification()
-        val engine = SpringTemplateEngine()
     }
 
     fun onDropFiles(files: List<File>) {
@@ -66,28 +72,27 @@ class MainViewModel : ViewModel() {
     }
 
     fun verify() {
+        val directoryChooser = DirectoryChooser()
+        val file = directoryChooser.showDialog(primaryStage)
+        val filename = "${file.absolutePath}/report.html"
+
         isProcessing.set(true)
         fileDataList.toRxObservable()
             .map { fileDataItem ->
                 fileVerifier.handleItem(fileDataItem)
             }
             .toList()
-            .map { result ->
-                val mapper = VerifiedResultMapper()
-                mapper.fromEntity(result)
+            .map { results ->
+                verifiedResultMapper.fromEntity(results)
             }
             .map { context ->
-                /** convert context to html string */
-//                val mapper = SpringTemplateEngine()
-//                mapper.process("VerifiedResultsTemplate", context)
-                return@map "hello"
+                thymeleafEngine.process("VerifiedResultsTemplate", context)
             }
             .observeOnFx()
             .doFinally { isProcessing.set(false) }
             .subscribe { html ->
-                /** Output the results into a html document */
-                //DocWriter.write(htmlFileName, htmlContent)
-                print(html)
+                docWriter.write(filename, html)
+                snackBarObservable.onNext("Finished verifying files. Reported into file $filename")
             }
     }
 
@@ -175,6 +180,14 @@ class MainViewModel : ViewModel() {
                 }
                 fileDataList.sort()
             }
+    }
+
+    private fun initThymeleafEngine() {
+        thymeleafEngine.setTemplateResolver(ClassLoaderTemplateResolver().apply {
+            prefix = "templates/"
+            suffix = ".html"
+            characterEncoding = "utf-8"
+        })
     }
 
     private fun loadLanguages() {

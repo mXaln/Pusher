@@ -17,8 +17,6 @@ version = '1.2.0'
 repositories {
     maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
     maven { url 'https://jitpack.io' }
-//    maven { url "http://repo.spring.io/snapshot" }
-//    maven { url "http://repo.spring.io/milestone" }
 }
 
 application {
@@ -56,10 +54,7 @@ dependencies {
 
     // Thymeleaf
     implementation "org.thymeleaf:thymeleaf:$thymeleafVer"
-//    implementation "org.thymeleaf:thymeleaf-spring4:$thymeleafVer"
-    implementation "org.springframework.boot:spring-boot-starter-web:$springBootVer"
-    implementation "org.springframework.boot:spring-boot-starter-thymeleaf:$springBootVer"
-    implementation "nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:2.1.1"
+    implementation "nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:$thymeleafDialectVer"
 
     implementation project(':common')
 
