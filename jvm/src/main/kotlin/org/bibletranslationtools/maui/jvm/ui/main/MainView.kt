@@ -241,61 +241,52 @@ class MainView : View() {
     private fun setFilterChangeListeners() {
         setPropertyListener(
             filter.selectedLanguageProperty,
-            FileDataItem::initLanguage,
-            FileDataItem::language
+            FileDataItem::language,
         )
 
         setPropertyListener(
             filter.selectedResourceTypeProperty,
-            FileDataItem::initResourceType,
-            FileDataItem::resourceType
+            FileDataItem::resourceType,
         )
 
         setPropertyListener(
             filter.selectedBookProperty,
-            FileDataItem::initBook,
-            FileDataItem::book
+            FileDataItem::book,
         )
 
         setPropertyListener(
             filter.chapterProperty,
-            FileDataItem::initChapter,
-            FileDataItem::chapter
+            FileDataItem::chapter,
         )
 
         setPropertyListener(
             filter.selectedMediaExtensionProperty,
-            FileDataItem::initMediaExtension,
             FileDataItem::mediaExtension,
             FileDataItem::mediaExtensionAvailable
         )
 
         setPropertyListener(
             filter.selectedMediaQualityProperty,
-            FileDataItem::initMediaQuality,
             FileDataItem::mediaQuality,
             FileDataItem::mediaQualityAvailable
         )
 
         setPropertyListener(
             filter.selectedGroupingProperty,
-            FileDataItem::initGrouping,
-            FileDataItem::grouping
+            FileDataItem::grouping,
         )
     }
 
     private fun <T> setPropertyListener(
         property: Property<T>,
-        initProp: KProperty1<FileDataItem, T?>,
         targetProp: KMutableProperty1<FileDataItem, T?>,
         availableProp: KProperty1<FileDataItem, BooleanExpression>? = null
     ) {
         property.onChange {
             it?.let { prop ->
                 viewModel.fileDataList.forEach { fileDataItem ->
-                    val initValue = initProp.get(fileDataItem)
                     val available = availableProp?.get(fileDataItem)?.value ?: true
-                    if (available && initValue == null) {
+                    if (available) {
                         val isGrouping = prop is Grouping
                         val groupingAvailable = isGrouping &&
                                 !viewModel.restrictedGroupings(fileDataItem)

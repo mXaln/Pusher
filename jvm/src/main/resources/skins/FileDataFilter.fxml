@@ -9,15 +9,15 @@
 <HBox styleClass="file-data-filter" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
     <VBox HBox.hgrow="ALWAYS">
         <Label fx:id="languageLabel">Language</Label>
-        <JFXComboBox fx:id="languagesList" styleClass="file-data-filter__dropdown" />
+        <JFXComboBox fx:id="languagesList" editable="true" styleClass="file-data-filter__dropdown" />
     </VBox>
     <VBox HBox.hgrow="ALWAYS">
         <Label fx:id="resourceTypeLabel">Resource Type</Label>
-        <JFXComboBox fx:id="resourceTypesList" styleClass="file-data-filter__dropdown" />
+        <JFXComboBox fx:id="resourceTypesList" editable="true" styleClass="file-data-filter__dropdown" />
     </VBox>
     <VBox HBox.hgrow="ALWAYS">
         <Label fx:id="bookLabel">Book</Label>
-        <JFXComboBox fx:id="booksList" styleClass="file-data-filter__dropdown" />
+        <JFXComboBox fx:id="booksList" editable="true" styleClass="file-data-filter__dropdown" />
     </VBox>
     <VBox HBox.hgrow="ALWAYS">
         <Label fx:id="chapterLabel">Chapter</Label>
