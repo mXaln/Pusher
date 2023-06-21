@@ -4,7 +4,6 @@ import org.bibletranslationtools.maui.common.data.FileResult
 import org.bibletranslationtools.maui.common.data.FileStatus
 import org.bibletranslationtools.maui.common.extensions.MediaExtensions
 import org.bibletranslationtools.maui.common.validators.WavValidator
-import org.wycliffeassociates.otter.common.audio.wav.InvalidWavFileException
 import java.io.File
 import java.lang.IllegalArgumentException
 import java.util.Queue

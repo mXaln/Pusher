@@ -6,20 +6,29 @@ import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleListProperty
+import javafx.beans.property.SimpleObjectProperty
+import javafx.stage.DirectoryChooser
 import org.bibletranslationtools.maui.common.audio.BttrChunk
 import org.bibletranslationtools.maui.common.data.FileStatus
 import org.bibletranslationtools.maui.common.data.MediaExtension
 import org.bibletranslationtools.maui.common.data.MediaQuality
 import org.bibletranslationtools.maui.common.data.Grouping
 import org.bibletranslationtools.maui.common.data.ResourceType
+import org.bibletranslationtools.maui.common.io.Versification
 import org.bibletranslationtools.maui.common.usecases.FileProcessingRouter
 import org.bibletranslationtools.maui.common.usecases.MakePath
 import org.bibletranslationtools.maui.common.usecases.TransferFile
 import org.bibletranslationtools.maui.jvm.client.FtpTransferClient
 import org.bibletranslationtools.maui.jvm.io.BooksReader
+import org.bibletranslationtools.maui.jvm.io.HtmlWriter
 import org.bibletranslationtools.maui.jvm.io.LanguagesReader
+import org.bibletranslationtools.maui.jvm.io.VersificationReader
 import org.bibletranslationtools.maui.jvm.ui.FileDataItem
 import org.bibletranslationtools.maui.jvm.mappers.FileDataMapper
+import org.bibletranslationtools.maui.jvm.mappers.FileVerifier
+import org.bibletranslationtools.maui.jvm.mappers.VerifiedResultMapper
+import org.thymeleaf.TemplateEngine
+import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver
 import org.wycliffeassociates.otter.common.audio.wav.WavFile
 import org.wycliffeassociates.otter.common.audio.wav.WavMetadata
 import tornadofx.*
@@ -29,7 +38,6 @@ import java.util.regex.Pattern
 import io.reactivex.rxkotlin.toObservable as toRxObservable
 
 class MainViewModel : ViewModel() {
-
     val fileDataList = observableListOf<FileDataItem>()
     val fileDataListProperty = SimpleListProperty<FileDataItem>(fileDataList)
     val successfulUploadProperty = SimpleBooleanProperty(false)
@@ -40,22 +48,54 @@ class MainViewModel : ViewModel() {
     val mediaExtensions = MediaExtension.values().toList().toObservable()
     val mediaQualities = MediaQuality.values().toList().toObservable()
     val groupings = Grouping.values().toList().toObservable()
+    private val versification = SimpleObjectProperty<Versification>()
 
     val isProcessing = SimpleBooleanProperty(false)
     val snackBarObservable: PublishSubject<String> = PublishSubject.create()
     val updatedObservable: PublishSubject<Boolean> = PublishSubject.create()
 
     private val fileProcessRouter = FileProcessingRouter.build()
+    private lateinit var fileVerifier: FileVerifier
+    private val verifiedResultMapper = VerifiedResultMapper()
+    private val thymeleafEngine = TemplateEngine()
+    private val htmlWriter = HtmlWriter()
 
     init {
+        initThymeleafEngine()
         loadLanguages()
         loadBooks()
+        loadVersification()
     }
 
     fun onDropFiles(files: List<File>) {
         isProcessing.set(true)
         val filesToImport = prepareFilesToImport(files)
         importFiles(filesToImport)
+    }
+
+    fun verify() {
+        val directoryChooser = DirectoryChooser()
+        val file = directoryChooser.showDialog(primaryStage)
+        val filename = "${file.absolutePath}/report.html"
+
+        isProcessing.set(true)
+        fileDataList.toRxObservable()
+            .map { fileDataItem ->
+                fileVerifier.handleItem(fileDataItem)
+            }
+            .toList()
+            .map { results ->
+                verifiedResultMapper.fromEntity(results)
+            }
+            .map { context ->
+                thymeleafEngine.process("VerifiedResultsTemplate", context)
+            }
+            .observeOnFx()
+            .doFinally { isProcessing.set(false) }
+            .subscribe { html ->
+                htmlWriter.write(filename, html)
+                snackBarObservable.onNext("Finished verifying files. Reported into file $filename")
+            }
     }
 
     fun upload() {
@@ -125,23 +165,31 @@ class MainViewModel : ViewModel() {
         Observable.fromCallable {
             fileProcessRouter.handleFiles(files)
         }
-        .subscribeOn(Schedulers.io())
-        .observeOnFx()
-        .doFinally { isProcessing.set(false) }
-        .subscribe { resultList ->
-            resultList.forEach {
+            .subscribeOn(Schedulers.io())
+            .observeOnFx()
+            .doFinally { isProcessing.set(false) }
+            .subscribe { resultList ->
+                resultList.forEach {
                     if (it.status == FileStatus.REJECTED) {
                         emitErrorMessage(
-                                message = messages["fileNotRecognized"],
-                                fileName = it.requestedFile?.name ?: ""
+                            message = messages["fileNotRecognized"],
+                            fileName = it.requestedFile?.name ?: ""
                         )
                     } else {
                         val item = FileDataMapper().fromEntity(it.data!!)
                         if (!fileDataList.contains(item)) fileDataList.add(item)
                     }
+                }
+                fileDataList.sort()
             }
-            fileDataList.sort()
-        }
+    }
+
+    private fun initThymeleafEngine() {
+        thymeleafEngine.setTemplateResolver(ClassLoaderTemplateResolver().apply {
+            prefix = "templates/"
+            suffix = ".html"
+            characterEncoding = "utf-8"
+        })
     }
 
     private fun loadLanguages() {
@@ -159,6 +207,16 @@ class MainViewModel : ViewModel() {
             .observeOnFx()
             .subscribe { _books ->
                 books.addAll(_books)
+            }
+    }
+
+    private fun loadVersification() {
+        VersificationReader().read()
+            .subscribeOn(Schedulers.io())
+            .observeOnFx()
+            .subscribe { _versification ->
+                versification.set(_versification)
+                fileVerifier = FileVerifier(versification)
             }
     }
 
