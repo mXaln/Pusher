@@ -6,6 +6,7 @@ import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleListProperty
+import javafx.beans.property.SimpleObjectProperty
 import javafx.stage.DirectoryChooser
 import org.bibletranslationtools.maui.common.audio.BttrChunk
 import org.bibletranslationtools.maui.common.data.FileStatus
@@ -13,12 +14,13 @@ import org.bibletranslationtools.maui.common.data.MediaExtension
 import org.bibletranslationtools.maui.common.data.MediaQuality
 import org.bibletranslationtools.maui.common.data.Grouping
 import org.bibletranslationtools.maui.common.data.ResourceType
+import org.bibletranslationtools.maui.common.io.Versification
 import org.bibletranslationtools.maui.common.usecases.FileProcessingRouter
 import org.bibletranslationtools.maui.common.usecases.MakePath
 import org.bibletranslationtools.maui.common.usecases.TransferFile
 import org.bibletranslationtools.maui.jvm.client.FtpTransferClient
 import org.bibletranslationtools.maui.jvm.io.BooksReader
-import org.bibletranslationtools.maui.jvm.io.DocWriter
+import org.bibletranslationtools.maui.jvm.io.HtmlWriter
 import org.bibletranslationtools.maui.jvm.io.LanguagesReader
 import org.bibletranslationtools.maui.jvm.io.VersificationReader
 import org.bibletranslationtools.maui.jvm.ui.FileDataItem
@@ -46,7 +48,7 @@ class MainViewModel : ViewModel() {
     val mediaExtensions = MediaExtension.values().toList().toObservable()
     val mediaQualities = MediaQuality.values().toList().toObservable()
     val groupings = Grouping.values().toList().toObservable()
-    private val versification = observableMapOf<String, List<Int>>()
+    private val versification = SimpleObjectProperty<Versification>()
 
     val isProcessing = SimpleBooleanProperty(false)
     val snackBarObservable: PublishSubject<String> = PublishSubject.create()
@@ -56,7 +58,7 @@ class MainViewModel : ViewModel() {
     private lateinit var fileVerifier: FileVerifier
     private val verifiedResultMapper = VerifiedResultMapper()
     private val thymeleafEngine = TemplateEngine()
-    private val docWriter = DocWriter()
+    private val docWriter = HtmlWriter()
 
     init {
         initThymeleafEngine()
@@ -213,7 +215,7 @@ class MainViewModel : ViewModel() {
             .subscribeOn(Schedulers.io())
             .observeOnFx()
             .subscribe { _versification ->
-                versification.putAll(_versification)
+                versification.set(_versification)
                 fileVerifier = FileVerifier(versification)
             }
     }
