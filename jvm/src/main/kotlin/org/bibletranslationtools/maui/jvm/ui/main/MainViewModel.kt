@@ -58,7 +58,7 @@ class MainViewModel : ViewModel() {
     private lateinit var fileVerifier: FileVerifier
     private val verifiedResultMapper = VerifiedResultMapper()
     private val thymeleafEngine = TemplateEngine()
-    private val docWriter = HtmlWriter()
+    private val htmlWriter = HtmlWriter()
 
     init {
         initThymeleafEngine()
@@ -93,7 +93,7 @@ class MainViewModel : ViewModel() {
             .observeOnFx()
             .doFinally { isProcessing.set(false) }
             .subscribe { html ->
-                docWriter.write(filename, html)
+                htmlWriter.write(filename, html)
                 snackBarObservable.onNext("Finished verifying files. Reported into file $filename")
             }
     }
