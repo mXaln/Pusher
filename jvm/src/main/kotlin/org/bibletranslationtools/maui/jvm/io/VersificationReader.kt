@@ -5,6 +5,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.reactivex.Single
 import org.bibletranslationtools.maui.common.io.IVersificationReader
+import org.bibletranslationtools.maui.common.io.Versification
 
 class VersificationReader : IVersificationReader {
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -12,18 +13,18 @@ class VersificationReader : IVersificationReader {
         val maxVerses: Map<String, List<Int>>
     )
 
-    override fun read(): Single<Map<String, List<Int>>> {
+    override fun read(): Single<Versification> {
         return Single.fromCallable {
             parseVersification()
         }
     }
 
-    private fun parseVersification(): Map<String, List<Int>> {
+    private fun parseVersification(): Versification {
         val versificationFile = javaClass.getResource("/eng.json").openStream()
 
         versificationFile.use { inputStream ->
             val versification: VersificationSchema = jacksonObjectMapper().readValue(inputStream)
-            return versification.maxVerses
+            return versification.maxVerses as Versification
         }
     }
 }
