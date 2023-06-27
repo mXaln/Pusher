@@ -216,7 +216,7 @@ class MainViewModel : ViewModel() {
             .observeOnFx()
             .subscribe { _versification ->
                 versification.set(_versification)
-                fileVerifier = FileVerifier(versification)
+                fileVerifier = FileVerifier(versification.value)
             }
     }
 
