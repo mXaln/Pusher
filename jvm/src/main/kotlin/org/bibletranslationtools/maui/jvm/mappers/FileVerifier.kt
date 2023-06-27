@@ -13,7 +13,7 @@ import tornadofx.isInt
 class FileVerifier(private val versification: Versification) {
     fun handleItem(fileData: FileDataItem): VerifiedResult {
         if (fileData.grouping == Grouping.CHAPTER) {
-            bookExists(fileData).let {
+            isBookValid(fileData).let {
                 if (it.status == FileStatus.REJECTED) {
                     return it
                 }
@@ -31,7 +31,7 @@ class FileVerifier(private val versification: Versification) {
         }
     }
 
-    private fun bookExists(fileData: FileDataItem): VerifiedResult {
+    private fun isBookValid(fileData: FileDataItem): VerifiedResult {
         val book = fileData.book?.uppercase()
         return if (book == null || !versification.contains(book)) {
             VerifiedResult(FileStatus.REJECTED, fileData.file, "$book is not a valid book")
@@ -47,7 +47,7 @@ class FileVerifier(private val versification: Versification) {
         if (chapter == null || !chapter.isInt()) {
             return VerifiedResult(FileStatus.REJECTED, fileData.file, "$chapter is not a valid chapter")
         } else {
-            versification[book]!!.let { chapterVerses ->
+            versification[book]?.let { chapterVerses ->
                 /** Check that chapter exists within book */
                 val chapterNumber = chapter.toInt()
 
@@ -61,6 +61,7 @@ class FileVerifier(private val versification: Versification) {
                     return VerifiedResult(FileStatus.PROCESSED, fileData.file)
                 }
             }
+            return VerifiedResult(FileStatus.REJECTED, fileData.file, "Book: $book does not exist")
         }
     }
 
@@ -71,9 +72,9 @@ class FileVerifier(private val versification: Versification) {
         val wavMetadata = WavMetadata(listOf(cueChunk))
         WavFile(fileData.file, wavMetadata)
 
-        versification[book]!!.let { chapterVerses ->
+        versification[book].let { chapterVerses ->
             val chapterNumber = chapter!!.toInt()
-            val expectedVerses = chapterVerses[chapterNumber - 1]
+            val expectedVerses = chapterVerses?.get(chapterNumber - 1)
             val actualVerses = cueChunk.cues.size
             if (actualVerses != expectedVerses) {
                 return VerifiedResult(
