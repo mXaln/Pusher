@@ -4,9 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.reactivex.Single
-import org.bibletranslationtools.maui.common.io.IReader
+import org.bibletranslationtools.maui.common.io.IResourceReader
 
-class BooksReader : IReader {
+class BooksReader : IResourceReader {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     private data class BookSchema(

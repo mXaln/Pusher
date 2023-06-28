@@ -6,10 +6,10 @@ import com.fasterxml.jackson.databind.MappingIterator
 import com.fasterxml.jackson.dataformat.csv.CsvMapper
 import com.fasterxml.jackson.dataformat.csv.CsvSchema
 import io.reactivex.Single
-import org.bibletranslationtools.maui.common.io.IReader
+import org.bibletranslationtools.maui.common.io.IResourceReader
 
 
-class LanguagesReader : IReader {
+class LanguagesReader : IResourceReader {
 
     companion object {
         const val PORT_LANGUAGE_CODE_ID = "IETF Tag"
