@@ -12,7 +12,6 @@ import javafx.scene.control.TextField
 import org.bibletranslationtools.maui.common.data.Grouping
 import org.bibletranslationtools.maui.common.data.MediaExtension
 import org.bibletranslationtools.maui.common.data.MediaQuality
-import org.bibletranslationtools.maui.common.data.ResourceType
 import org.bibletranslationtools.maui.jvm.controls.filedatafilter.FileDataFilter
 import org.bibletranslationtools.maui.jvm.controls.filedatafilter.MAX_CHAPTER_LENGTH
 import tornadofx.*
@@ -29,7 +28,7 @@ class FileDataFilterSkin(private val filter: FileDataFilter) : SkinBase<FileData
     private lateinit var resourceTypeLabel: Label
 
     @FXML
-    private lateinit var resourceTypesList: ComboBox<ResourceType>
+    private lateinit var resourceTypesList: ComboBox<String>
 
     @FXML
     private lateinit var bookLabel: Label
@@ -182,17 +181,25 @@ class FileDataFilterSkin(private val filter: FileDataFilter) : SkinBase<FileData
     private fun <T> itemSelectionAction(selected: Property<T?>, dropdownList: ComboBox<T>, old: T?, new: T?) {
         if (!isSelectionChanging) {
             isSelectionChanging = true
-            filter.onConfirmActionProperty.value.handle(ActionEvent())
-            filter.callbackObserver?.subscribe { answer ->
-                if (answer) {
-                    selected.value = new
-                    isSelectionChanging = false
-                } else {
-                    runLater {
-                        dropdownList.selectionModel.select(old)
-                        selected.value = old
+            if (dropdownList.value in dropdownList.items) {
+                filter.onConfirmActionProperty.value.handle(ActionEvent())
+                filter.callbackObserver?.subscribe { answer ->
+                    if (answer) {
+                        selected.value = new
                         isSelectionChanging = false
+                    } else {
+                        runLater {
+                            dropdownList.selectionModel.select(old)
+                            selected.value = old
+                            isSelectionChanging = false
+                        }
                     }
+                }
+            } else {
+                runLater {
+                    dropdownList.selectionModel.select(old)
+                    selected.value = old
+                    isSelectionChanging = false
                 }
             }
         }

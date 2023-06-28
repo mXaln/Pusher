@@ -13,7 +13,6 @@ import org.bibletranslationtools.maui.common.data.FileStatus
 import org.bibletranslationtools.maui.common.data.MediaExtension
 import org.bibletranslationtools.maui.common.data.MediaQuality
 import org.bibletranslationtools.maui.common.data.Grouping
-import org.bibletranslationtools.maui.common.data.ResourceType
 import org.bibletranslationtools.maui.common.io.Versification
 import org.bibletranslationtools.maui.common.usecases.FileProcessingRouter
 import org.bibletranslationtools.maui.common.usecases.MakePath
@@ -29,6 +28,8 @@ import org.bibletranslationtools.maui.jvm.mappers.FileVerifier
 import org.bibletranslationtools.maui.jvm.mappers.VerifiedResultMapper
 import org.thymeleaf.TemplateEngine
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver
+import org.bibletranslationtools.maui.jvm.io.ResourceTypesReader
+import org.bibletranslationtools.maui.jvm.ui.filedatacell.ErrorOccurredEvent
 import org.wycliffeassociates.otter.common.audio.wav.WavFile
 import org.wycliffeassociates.otter.common.audio.wav.WavMetadata
 import tornadofx.*
@@ -39,11 +40,11 @@ import io.reactivex.rxkotlin.toObservable as toRxObservable
 
 class MainViewModel : ViewModel() {
     val fileDataList = observableListOf<FileDataItem>()
-    val fileDataListProperty = SimpleListProperty<FileDataItem>(fileDataList)
+    val fileDataListProperty = SimpleListProperty(fileDataList)
     val successfulUploadProperty = SimpleBooleanProperty(false)
 
     val languages = observableListOf<String>()
-    val resourceTypes = ResourceType.values().toList().toObservable()
+    val resourceTypes = observableListOf<String>()
     val books = observableListOf<String>()
     val mediaExtensions = MediaExtension.values().toList().toObservable()
     val mediaQualities = MediaQuality.values().toList().toObservable()
@@ -63,8 +64,13 @@ class MainViewModel : ViewModel() {
     init {
         initThymeleafEngine()
         loadLanguages()
+        loadResourceTypes()
         loadBooks()
         loadVersification()
+
+        subscribe<ErrorOccurredEvent> {
+            snackBarObservable.onNext(it.message)
+        }
     }
 
     fun onDropFiles(files: List<File>) {
@@ -198,6 +204,15 @@ class MainViewModel : ViewModel() {
             .observeOnFx()
             .subscribe { _languages ->
                 languages.addAll(_languages)
+            }
+    }
+
+    private fun loadResourceTypes() {
+        ResourceTypesReader().read()
+            .subscribeOn(Schedulers.io())
+            .observeOnFx()
+            .subscribe { _types ->
+                resourceTypes.addAll(_types)
             }
     }
 
