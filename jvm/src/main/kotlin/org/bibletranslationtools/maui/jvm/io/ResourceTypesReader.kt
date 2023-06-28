@@ -6,26 +6,26 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import io.reactivex.Single
 import org.bibletranslationtools.maui.common.io.IResourceReader
 
-class BooksReader : IResourceReader {
+class ResourceTypesReader : IResourceReader {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    private data class BookSchema(
+    private data class ResourceTypeSchema(
         val slug: String
     )
 
     override fun read(): Single<List<String>> {
         return Single.fromCallable {
-            parseBooks()
+            parseResourceTypes()
         }
     }
 
-    private fun parseBooks(): List<String> {
-        val booksFile = javaClass.getResource("/book_catalog.json")?.openStream()
+    private fun parseResourceTypes(): List<String> {
+        val resourceTypesFile = javaClass.getResource("/resource_types.json")?.openStream()
 
-        booksFile?.use { inputStream ->
-            val booksList: List<BookSchema> = jacksonObjectMapper().readValue(inputStream)
+        resourceTypesFile?.use { inputStream ->
+            val resourceTypes: List<ResourceTypeSchema> = jacksonObjectMapper().readValue(inputStream)
 
-            return booksList.map {
+            return resourceTypes.map {
                 it.slug
             }
         } ?: return listOf()

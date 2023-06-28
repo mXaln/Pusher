@@ -8,7 +8,7 @@ import java.io.File
 data class FileData(
     val file: File,
     val language: String? = null,
-    val resourceType: ResourceType? = null,
+    val resourceType: String? = null,
     val book: String? = null,
     val chapter: Int? = null,
     val mediaExtension: MediaExtension? = null,

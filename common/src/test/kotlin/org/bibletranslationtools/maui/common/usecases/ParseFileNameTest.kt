@@ -4,7 +4,6 @@ import org.junit.Assert.assertEquals
 import org.bibletranslationtools.maui.common.data.FileData
 import org.bibletranslationtools.maui.common.data.Grouping
 import org.bibletranslationtools.maui.common.data.MediaQuality
-import org.bibletranslationtools.maui.common.data.ResourceType
 import org.junit.Test
 import java.io.File
 
@@ -16,7 +15,7 @@ class ParseFileNameTest {
         val expected = FileData(
             file,
             "en",
-            ResourceType.ULB,
+            "ulb",
             "gen",
             1,
             null,
@@ -43,7 +42,7 @@ class ParseFileNameTest {
         val expected = FileData(
             file,
             "en",
-            ResourceType.ULB,
+            "ulb",
             "gen",
             1,
             null,
@@ -61,7 +60,7 @@ class ParseFileNameTest {
         val expected = FileData(
             file,
             "en",
-            ResourceType.ULB,
+            "ulb",
             "gen",
             1,
             null,
@@ -88,7 +87,7 @@ class ParseFileNameTest {
         val expected = FileData(
             file,
             "en",
-            ResourceType.ULB,
+            "ulb",
             "gen",
             2,
             null,
@@ -106,7 +105,7 @@ class ParseFileNameTest {
         val expected = FileData(
             file,
             "en",
-            ResourceType.ULB,
+            "ulb",
             "gen",
             null,
             null,
@@ -116,24 +115,5 @@ class ParseFileNameTest {
         val result = ParseFileName(file).parse()
 
         assertEquals(expected.mediaQuality, result.mediaQuality)
-    }
-
-    @Test(expected=IllegalArgumentException::class)
-    fun unsupportedResourceTypeThrowsException() {
-        val file = File("en_udb_gen.tr")
-        ParseFileName(file).parse() // this should throw an exception
-    }
-
-    @Test
-    fun parseFileNameLanguageResourceOnly() {
-        val file = File("en_ulb.wav")
-        val expected = FileData(
-            file,
-            "en",
-            ResourceType.ULB
-        )
-        val result = ParseFileName(file).parse()
-
-        assertEquals(expected, result)
     }
 }

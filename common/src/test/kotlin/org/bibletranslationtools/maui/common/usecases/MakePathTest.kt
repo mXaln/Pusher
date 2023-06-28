@@ -4,7 +4,6 @@ import org.bibletranslationtools.maui.common.data.FileData
 import org.bibletranslationtools.maui.common.data.Grouping
 import org.bibletranslationtools.maui.common.data.MediaExtension
 import org.bibletranslationtools.maui.common.data.MediaQuality
-import org.bibletranslationtools.maui.common.data.ResourceType
 import org.junit.Test
 import java.io.File
 
@@ -16,7 +15,7 @@ class MakePathTest {
         val fileData = FileData(
             File("en_ulb_gen_c01_v03_t01.mp3"),
             "en",
-            ResourceType.ULB,
+            "ulb",
             "gen",
             1,
             null,
@@ -38,7 +37,7 @@ class MakePathTest {
         val fileData = FileData(
             File("en_ulb_gen_c01_v03-05_t01.wav"),
             "en",
-            ResourceType.ULB,
+            "ulb",
             "gen",
             1,
             null,
@@ -60,7 +59,7 @@ class MakePathTest {
         val fileData = FileData(
             File("en_ulb_gen_c01.mp3"),
             "en",
-            ResourceType.ULB,
+            "ulb",
             "gen",
             1,
             null,
@@ -82,7 +81,7 @@ class MakePathTest {
         val fileData = FileData(
             File("en_ulb_gen_verse.tr"),
             "en",
-            ResourceType.ULB,
+            "ulb",
             "gen",
             null,
             MediaExtension.MP3,
@@ -103,7 +102,7 @@ class MakePathTest {
         val fileData = FileData(
             File("en_ulb_gen.jpeg"),
             "en",
-            ResourceType.ULB,
+            "ulb",
             "gen",
             null,
             null,
@@ -135,7 +134,7 @@ class MakePathTest {
         val fileData = FileData(
             File("en_ulb_gen.mp3"),
             "en",
-            ResourceType.ULB,
+            "ulb",
             "gen",
             null,
             MediaExtension.MP3,
@@ -155,7 +154,7 @@ class MakePathTest {
         val fileData = FileData(
             File("en_ulb_gen.mp3"),
             "en",
-            ResourceType.ULB,
+            "ulb",
             "gen",
             null,
             null,

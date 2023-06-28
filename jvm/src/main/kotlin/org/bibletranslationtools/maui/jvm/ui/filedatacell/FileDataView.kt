@@ -8,16 +8,12 @@ import javafx.scene.layout.Priority
 import javafx.scene.layout.VBox
 import org.bibletranslationtools.maui.jvm.assets.AppResources
 import org.bibletranslationtools.maui.common.data.Grouping
-import org.bibletranslationtools.maui.common.data.MediaExtension
-import org.bibletranslationtools.maui.common.data.MediaQuality
-import org.bibletranslationtools.maui.common.data.ResourceType
 import org.bibletranslationtools.maui.jvm.controls.filedatafilter.MAX_CHAPTER_LENGTH
 import org.bibletranslationtools.maui.jvm.ui.FileDataItem
 import org.bibletranslationtools.maui.jvm.ui.main.MainViewModel
 import tornadofx.*
 
 class FileDataView : VBox() {
-
     val fileDataItemProperty = SimpleObjectProperty<FileDataItem>(null)
     val fileDataItem: FileDataItem? by fileDataItemProperty
 
@@ -44,17 +40,25 @@ class FileDataView : VBox() {
                 hgrow = Priority.ALWAYS
                 label(FX.messages["language"])
                 add(
-                    JFXComboBox<String>(mainViewModel.languages).apply {
+                    JFXComboBox(mainViewModel.languages).apply {
                         addClass("file-data-cell__dropdown")
+
+                        isEditable = true
 
                         fileDataItemProperty.onChange {
                             it?.let {
                                 selectionModel.select(it.language)
-                                isDisable = !it.initLanguage.isNullOrEmpty()
                             }
                         }
-                        selectionModel.selectedItemProperty().onChange {
-                            fileDataItem?.language = it
+                        setOnAction {
+                            if(selectedItem in items) {
+                                fileDataItem?.language = selectedItem
+                            } else {
+                                if (selectedItem != null) {
+                                    FX.eventbus.fire(ErrorOccurredEvent("Language $selectedItem not found"))
+                                    selectionModel.select(fileDataItem?.language)
+                                }
+                            }
                         }
                     }
                 )
@@ -63,17 +67,25 @@ class FileDataView : VBox() {
                 hgrow = Priority.ALWAYS
                 label(FX.messages["resourceType"])
                 add(
-                    JFXComboBox<ResourceType>(mainViewModel.resourceTypes).apply {
+                    JFXComboBox(mainViewModel.resourceTypes).apply {
                         addClass("file-data-cell__dropdown")
+
+                        isEditable = true
 
                         fileDataItemProperty.onChange {
                             it?.let {
                                 selectionModel.select(it.resourceType)
-                                isDisable = it.initResourceType != null
                             }
                         }
-                        selectionModel.selectedItemProperty().onChange {
-                            fileDataItem?.resourceType = it
+                        setOnAction {
+                            if(selectedItem in items) {
+                                fileDataItem?.resourceType = selectedItem
+                            } else {
+                                if (selectedItem != null) {
+                                    FX.eventbus.fire(ErrorOccurredEvent("Resource Type $selectedItem not found"))
+                                    selectionModel.select(fileDataItem?.resourceType)
+                                }
+                            }
                         }
                     }
                 )
@@ -82,17 +94,25 @@ class FileDataView : VBox() {
                 hgrow = Priority.ALWAYS
                 label(FX.messages["book"])
                 add(
-                    JFXComboBox<String>(mainViewModel.books).apply {
+                    JFXComboBox(mainViewModel.books).apply {
                         addClass("file-data-cell__dropdown")
+
+                        isEditable = true
 
                         fileDataItemProperty.onChange {
                             it?.let {
                                 selectionModel.select(it.book)
-                                isDisable = !it.initBook.isNullOrEmpty()
                             }
                         }
-                        selectionModel.selectedItemProperty().onChange {
-                            fileDataItem?.book = it
+                        setOnAction {
+                            if(selectedItem in items) {
+                                fileDataItem?.book = selectedItem
+                            } else {
+                                if (selectedItem != null) {
+                                    FX.eventbus.fire(ErrorOccurredEvent("Book $selectedItem not found"))
+                                    selectionModel.select(fileDataItem?.book)
+                                }
+                            }
                         }
                     }
                 )
@@ -104,10 +124,11 @@ class FileDataView : VBox() {
                     JFXTextField().apply {
                         addClass("file-data-cell__chapter")
 
+                        isEditable = true
+
                         fileDataItemProperty.onChange {
                             it?.let {
                                 text = it.chapter.toString()
-                                isDisable = !it.initChapter.isNullOrEmpty()
                             }
                         }
 
@@ -125,7 +146,7 @@ class FileDataView : VBox() {
                 hgrow = Priority.ALWAYS
                 label(FX.messages["mediaExtension"])
                 add(
-                    JFXComboBox<MediaExtension>(mainViewModel.mediaExtensions).apply {
+                    JFXComboBox(mainViewModel.mediaExtensions).apply {
                         addClass("file-data-cell__dropdown")
 
                         fileDataItemProperty.onChange {
@@ -144,7 +165,7 @@ class FileDataView : VBox() {
                 hgrow = Priority.ALWAYS
                 label(FX.messages["mediaQuality"])
                 add(
-                    JFXComboBox<MediaQuality>(mainViewModel.mediaQualities).apply {
+                    JFXComboBox(mainViewModel.mediaQualities).apply {
                         addClass("file-data-cell__dropdown")
 
                         fileDataItemProperty.onChange {
@@ -163,7 +184,7 @@ class FileDataView : VBox() {
                 hgrow = Priority.ALWAYS
                 label(FX.messages["grouping"])
                 add(
-                    JFXComboBox<Grouping>(mainViewModel.groupings).apply {
+                    JFXComboBox(mainViewModel.groupings).apply {
                         addClass("file-data-cell__dropdown")
 
                         fileDataItemProperty.onChange {
@@ -197,3 +218,5 @@ class FileDataView : VBox() {
         }
     }
 }
+
+class ErrorOccurredEvent(val message:String): FXEvent()

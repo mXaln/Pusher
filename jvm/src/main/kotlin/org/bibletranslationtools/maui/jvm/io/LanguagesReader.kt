@@ -6,10 +6,10 @@ import com.fasterxml.jackson.databind.MappingIterator
 import com.fasterxml.jackson.dataformat.csv.CsvMapper
 import com.fasterxml.jackson.dataformat.csv.CsvSchema
 import io.reactivex.Single
-import org.bibletranslationtools.maui.common.io.ILanguagesReader
+import org.bibletranslationtools.maui.common.io.IResourceReader
 
 
-class LanguagesReader : ILanguagesReader {
+class LanguagesReader : IResourceReader {
 
     companion object {
         const val PORT_LANGUAGE_CODE_ID = "IETF Tag"
@@ -28,12 +28,12 @@ class LanguagesReader : ILanguagesReader {
     }
 
     private fun parseLanguages(): List<String> {
-        val languagesFile = javaClass.getResource("/port_gateway_languages.csv").openStream()
+        val languagesFile = javaClass.getResource("/port_gateway_languages.csv")?.openStream()
 
         val mapper = CsvMapper()
         val schema = CsvSchema.emptySchema().withHeader()
 
-        languagesFile.use { inputStream ->
+        languagesFile?.use { inputStream ->
             val languagesIterator: MappingIterator<PortGatewayLanguage> = mapper.readerFor(
                 PortGatewayLanguage::class.java
             )
@@ -48,6 +48,6 @@ class LanguagesReader : ILanguagesReader {
             languages.sort()
 
             return languages
-        }
+        } ?: return listOf()
     }
 }

@@ -12,7 +12,6 @@ import javafx.scene.control.Skin
 import org.bibletranslationtools.maui.common.data.Grouping
 import org.bibletranslationtools.maui.common.data.MediaExtension
 import org.bibletranslationtools.maui.common.data.MediaQuality
-import org.bibletranslationtools.maui.common.data.ResourceType
 import org.bibletranslationtools.maui.jvm.controls.skins.FileDataFilterSkin
 import tornadofx.*
 
@@ -25,8 +24,8 @@ class FileDataFilter : Control() {
     val selectedLanguageProperty = SimpleObjectProperty<String?>()
 
     val resourceTypeLabelProperty = SimpleStringProperty()
-    val resourceTypesProperty = SimpleListProperty<ResourceType>()
-    val selectedResourceTypeProperty = SimpleObjectProperty<ResourceType?>()
+    val resourceTypesProperty = SimpleListProperty<String>()
+    val selectedResourceTypeProperty = SimpleObjectProperty<String?>()
 
     val bookLabelProperty = SimpleStringProperty()
     val booksProperty = SimpleListProperty<String>()
@@ -50,7 +49,7 @@ class FileDataFilter : Control() {
     val onConfirmActionProperty = SimpleObjectProperty<EventHandler<ActionEvent>>()
     var callbackObserver: Observable<Boolean>? = null
 
-    private val userAgentStyleSheet = javaClass.getResource("/css/file-data-filter.css").toExternalForm()
+    private val userAgentStyleSheet = javaClass.getResource("/css/file-data-filter.css")?.toExternalForm() ?: ""
 
     init {
         initialize()
