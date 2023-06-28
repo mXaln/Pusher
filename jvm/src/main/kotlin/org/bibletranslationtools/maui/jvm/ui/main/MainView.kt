@@ -132,6 +132,15 @@ class MainView : View() {
                 spacing = 20.0
 
                 add(
+                    JFXButton("Verify").apply {
+                        addClass("btn", "btn--primary", "main__upload_btn")
+
+                        setOnAction {
+                            viewModel.verify()
+                        }
+                    }
+                )
+                add(
                     JFXButton(messages["upload"]).apply {
                         addClass("btn", "btn--primary", "main__upload_btn")
 

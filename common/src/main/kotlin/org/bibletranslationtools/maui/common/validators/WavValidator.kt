@@ -2,10 +2,7 @@ package org.bibletranslationtools.maui.common.validators
 
 import org.bibletranslationtools.maui.common.audio.BttrChunk
 import org.bibletranslationtools.maui.common.audio.BttrMetadata
-import org.wycliffeassociates.otter.common.audio.wav.InvalidWavFileException
-import org.wycliffeassociates.otter.common.audio.wav.WavFile
-import org.wycliffeassociates.otter.common.audio.wav.WavMetadata
-import org.wycliffeassociates.otter.common.audio.wav.WavType
+import org.wycliffeassociates.otter.common.audio.wav.*
 import java.io.File
 import java.util.regex.Pattern
 
@@ -48,8 +45,8 @@ class WavValidator(private val file: File) : IValidator {
                 }
             }
             isChapter() -> {
-                val bttrChunk = BttrChunk()
-                val wavMetadata = WavMetadata(listOf(bttrChunk))
+                val cueChunk = CueChunk()
+                val wavMetadata = WavMetadata(listOf(cueChunk))
                 wav = WavFile(file, wavMetadata)
 
                 if (!validateChapterFileName()) {

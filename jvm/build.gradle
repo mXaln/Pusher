@@ -52,6 +52,10 @@ dependencies {
     // Apache network
     implementation "commons-net:commons-net:$commonsnetVer"
 
+    // Thymeleaf
+    implementation "org.thymeleaf:thymeleaf:$thymeleafVer"
+    implementation "nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:$thymeleafDialectVer"
+
     implementation project(':common')
 
     // Testing
@@ -92,7 +96,9 @@ launch4j {
 
 tasks.register('createVersionProperties') {
     doLast {
-        new File("$buildDir/resources/main/version.properties").withWriter { w ->
+        File file = new File("$buildDir/resources/main/version.properties")
+        file.parentFile.mkdirs()
+        file.withWriter { w ->
             Properties p = new Properties()
             p['version'] = version
             p.store w, null
