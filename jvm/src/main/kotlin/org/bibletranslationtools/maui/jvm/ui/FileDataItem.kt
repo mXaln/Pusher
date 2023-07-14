@@ -12,7 +12,7 @@ import org.bibletranslationtools.maui.common.data.MediaQuality
 import org.bibletranslationtools.maui.common.extensions.CompressedExtensions
 import tornadofx.*
 
-data class FileDataItem(private val data: FileData): Comparable<FileDataItem> {
+data class FileDataItem(private val data: FileData) : Comparable<FileDataItem> {
 
     val file = data.file
 
@@ -44,7 +44,9 @@ data class FileDataItem(private val data: FileData): Comparable<FileDataItem> {
     val isCompressed by isCompressedProperty
     val isContainerAndCompressed: BooleanBinding = Bindings.createBooleanBinding(
         {
-            isContainer && CompressedExtensions.isSupported(mediaExtension.toString())
+            mediaExtension?.let {
+                isContainer && CompressedExtensions.isSupported(mediaExtension.toString())
+            } ?: false
         },
         mediaExtensionProperty
     )
