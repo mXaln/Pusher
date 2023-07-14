@@ -42,7 +42,12 @@ data class FileDataItem(private val data: FileData): Comparable<FileDataItem> {
 
     val isCompressedProperty = SimpleBooleanProperty(data.isCompressed)
     val isCompressed by isCompressedProperty
-    val isContainerAndCompressed = isContainerProperty.and(isCompressedProperty)
+    val isContainerAndCompressed: BooleanBinding = Bindings.createBooleanBinding(
+        {
+            isContainer && CompressedExtensions.isSupported(mediaExtension.toString())
+        },
+        mediaExtensionProperty
+    )
 
     val mediaExtensionAvailable = SimpleBooleanProperty(isContainer)
     val mediaQualityAvailable: BooleanBinding = Bindings.createBooleanBinding(
