@@ -12,36 +12,29 @@ import org.bibletranslationtools.maui.common.data.MediaQuality
 import org.bibletranslationtools.maui.common.extensions.CompressedExtensions
 import tornadofx.*
 
-data class FileDataItem(private val data: FileData): Comparable<FileDataItem> {
+data class FileDataItem(private val data: FileData) : Comparable<FileDataItem> {
 
     val file = data.file
 
-    val initLanguage = data.language
-    val languageProperty = SimpleStringProperty(initLanguage)
+    val languageProperty = SimpleStringProperty(data.language)
     var language: String? by languageProperty
 
-    val initResourceType = data.resourceType
-    val resourceTypeProperty = SimpleStringProperty(initResourceType)
+    val resourceTypeProperty = SimpleStringProperty(data.resourceType)
     var resourceType: String? by resourceTypeProperty
 
-    val initBook = data.book
-    val bookProperty = SimpleStringProperty(initBook)
+    val bookProperty = SimpleStringProperty(data.book)
     var book: String? by bookProperty
 
-    val initChapter = data.chapter?.toString()
-    val chapterProperty = SimpleStringProperty(initChapter)
+    val chapterProperty = SimpleStringProperty(data.chapter?.toString())
     var chapter: String? by chapterProperty
 
-    val initMediaExtension = data.mediaExtension
-    val mediaExtensionProperty = SimpleObjectProperty<MediaExtension>(initMediaExtension)
+    val mediaExtensionProperty = SimpleObjectProperty<MediaExtension>(data.mediaExtension)
     var mediaExtension: MediaExtension? by mediaExtensionProperty
 
-    val initMediaQuality = data.mediaQuality
-    val mediaQualityProperty = SimpleObjectProperty<MediaQuality>(initMediaQuality)
+    val mediaQualityProperty = SimpleObjectProperty<MediaQuality>(data.mediaQuality)
     var mediaQuality: MediaQuality? by mediaQualityProperty
 
-    val initGrouping = data.grouping
-    val groupingProperty = SimpleObjectProperty<Grouping>(initGrouping)
+    val groupingProperty = SimpleObjectProperty<Grouping>(data.grouping)
     var grouping: Grouping? by groupingProperty
 
     val isContainerProperty = SimpleBooleanProperty(data.isContainer)
@@ -49,7 +42,6 @@ data class FileDataItem(private val data: FileData): Comparable<FileDataItem> {
 
     val isCompressedProperty = SimpleBooleanProperty(data.isCompressed)
     val isCompressed by isCompressedProperty
-
     val isContainerAndCompressed: BooleanBinding = Bindings.createBooleanBinding(
         {
             mediaExtension?.let {

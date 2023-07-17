@@ -190,7 +190,7 @@ class FileDataView : VBox() {
                         fileDataItemProperty.onChange {
                             it?.let {
                                 selectionModel.select(it.grouping)
-                                isDisable = it.initGrouping != null
+                                isDisable = it.grouping != null
                             }
                         }
                         selectionModel.selectedItemProperty().onChange {

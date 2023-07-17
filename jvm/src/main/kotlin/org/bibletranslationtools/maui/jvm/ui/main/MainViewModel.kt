@@ -15,6 +15,7 @@ import org.bibletranslationtools.maui.common.data.MediaQuality
 import org.bibletranslationtools.maui.common.data.Grouping
 import org.bibletranslationtools.maui.common.io.Versification
 import org.bibletranslationtools.maui.common.usecases.FileProcessingRouter
+import org.bibletranslationtools.maui.common.usecases.FileVerifier
 import org.bibletranslationtools.maui.common.usecases.MakePath
 import org.bibletranslationtools.maui.common.usecases.TransferFile
 import org.bibletranslationtools.maui.jvm.client.FtpTransferClient
@@ -24,7 +25,6 @@ import org.bibletranslationtools.maui.jvm.io.LanguagesReader
 import org.bibletranslationtools.maui.jvm.io.VersificationReader
 import org.bibletranslationtools.maui.jvm.ui.FileDataItem
 import org.bibletranslationtools.maui.jvm.mappers.FileDataMapper
-import org.bibletranslationtools.maui.jvm.mappers.FileVerifier
 import org.bibletranslationtools.maui.jvm.mappers.VerifiedResultMapper
 import org.thymeleaf.TemplateEngine
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver
@@ -58,6 +58,7 @@ class MainViewModel : ViewModel() {
     private val fileProcessRouter = FileProcessingRouter.build()
     private lateinit var fileVerifier: FileVerifier
     private val verifiedResultMapper = VerifiedResultMapper()
+    private val fileDataMapper = FileDataMapper()
     private val thymeleafEngine = TemplateEngine()
     private val htmlWriter = HtmlWriter()
 
@@ -87,7 +88,7 @@ class MainViewModel : ViewModel() {
         isProcessing.set(true)
         fileDataList.toRxObservable()
             .map { fileDataItem ->
-                fileVerifier.handleItem(fileDataItem)
+                fileVerifier.handleItem(fileDataMapper.toEntity(fileDataItem))
             }
             .toList()
             .map { results ->
@@ -108,7 +109,7 @@ class MainViewModel : ViewModel() {
         isProcessing.set(true)
         fileDataList.toRxObservable()
             .concatMap { fileDataItem ->
-                val fileData = FileDataMapper().toEntity(fileDataItem)
+                val fileData = fileDataMapper.toEntity(fileDataItem)
                 MakePath(fileData).build()
                     .flatMapCompletable { targetPath ->
                         val transferClient = FtpTransferClient(fileDataItem.file, targetPath)
@@ -182,7 +183,7 @@ class MainViewModel : ViewModel() {
                             fileName = it.requestedFile?.name ?: ""
                         )
                     } else {
-                        val item = FileDataMapper().fromEntity(it.data!!)
+                        val item = fileDataMapper.fromEntity(it.data!!)
                         if (!fileDataList.contains(item)) fileDataList.add(item)
                     }
                 }

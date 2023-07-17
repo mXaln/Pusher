@@ -1,17 +1,16 @@
-package org.bibletranslationtools.maui.jvm.mappers
+package org.bibletranslationtools.maui.common.usecases
 
+import org.bibletranslationtools.maui.common.data.FileData
 import org.bibletranslationtools.maui.common.data.FileStatus
 import org.bibletranslationtools.maui.common.data.Grouping
 import org.bibletranslationtools.maui.common.data.VerifiedResult
 import org.bibletranslationtools.maui.common.io.Versification
-import org.bibletranslationtools.maui.jvm.ui.FileDataItem
 import org.wycliffeassociates.otter.common.audio.wav.CueChunk
 import org.wycliffeassociates.otter.common.audio.wav.WavFile
 import org.wycliffeassociates.otter.common.audio.wav.WavMetadata
-import tornadofx.isInt
 
 class FileVerifier(private val versification: Versification) {
-    fun handleItem(fileData: FileDataItem): VerifiedResult {
+    fun handleItem(fileData: FileData): VerifiedResult {
         if (fileData.grouping == Grouping.CHAPTER) {
             isBookValid(fileData).let {
                 if (it.status == FileStatus.REJECTED) {
@@ -31,7 +30,7 @@ class FileVerifier(private val versification: Versification) {
         }
     }
 
-    private fun isBookValid(fileData: FileDataItem): VerifiedResult {
+    private fun isBookValid(fileData: FileData): VerifiedResult {
         val book = fileData.book?.uppercase()
         return if (book == null || !versification.contains(book)) {
             VerifiedResult(FileStatus.REJECTED, fileData.file, "$book is not a valid book")
@@ -40,11 +39,11 @@ class FileVerifier(private val versification: Versification) {
         }
     }
 
-    private fun isChapterValid(fileData: FileDataItem): VerifiedResult {
+    private fun isChapterValid(fileData: FileData): VerifiedResult {
         val book = fileData.book?.uppercase()
         val chapter = fileData.chapter
 
-        if (chapter == null || !chapter.isInt()) {
+        if (chapter == null) {
             return VerifiedResult(FileStatus.REJECTED, fileData.file, "$chapter is not a valid chapter")
         } else {
             versification[book]?.let { chapterVerses ->
@@ -65,7 +64,7 @@ class FileVerifier(private val versification: Versification) {
         }
     }
 
-    private fun isVerseValid(fileData: FileDataItem): VerifiedResult {
+    private fun isVerseValid(fileData: FileData): VerifiedResult {
         val book = fileData.book?.uppercase()
         val chapter = fileData.chapter
         val cueChunk = CueChunk()
