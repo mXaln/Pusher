@@ -1,6 +1,3 @@
-@import "root.css"
-@import "buttons.css"
-
 .main {
     -fx-pref-width: 800px;
     -fx-pref-height: 600px;

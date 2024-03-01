@@ -1,0 +1,36 @@
+.startup__page {
+    -fx-background-color: -wa-primary;
+    -fx-alignment: center;
+    -fx-spacing: 100px;
+}
+
+.upload-target {
+    -fx-alignment: center;
+    -fx-spacing: 20px;
+}
+
+.app-name__text {
+    -fx-text-fill: -wa-white;
+    -fx-font-size: 48px;
+}
+
+.upload-target__text {
+    -fx-text-fill: -wa-white;
+    -fx-font-size: 36px;
+}
+
+.upload-target__btn {
+    -fx-pref-width: 266px;
+    -fx-pref-height: 70px;
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+    -fx-font-weight: bold;
+}
+
+.upload-target__btn--dev {
+    -fx-text-fill: -wa-accent;
+}
+
+.upload-target__btn--prod {
+    -fx-text-fill: -wa-primary;
+}

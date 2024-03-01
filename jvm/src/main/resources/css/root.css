@@ -7,6 +7,10 @@
     -wa-primary-light: #CEE6FF;
     -wa-primary-dark: #00377C;
 
+    -wa-accent: #00A56C;
+    -wa-accent-light: #A5E4FF;
+    -wa-accent-dark: #00B0FF;
+
     -wa-gray-darker: rgba(26,26,26,1);
     -wa-gray-dark: rgba(26,26,26,0.8);
     -wa-gray: rgba(26,26,26,0.6);
