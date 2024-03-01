@@ -1,0 +1,33 @@
+.main-header {
+    -fx-alignment: center-left;
+    -fx-pref-height: 65px;
+    -fx-background-color: -wa-primary;
+    -fx-padding: 10px 40px;
+}
+
+.main-header:accent {
+    -fx-background-color: -wa-accent;
+}
+
+.main-header-app-name__text {
+    -fx-font-size: 1.5em;
+    -fx-text-fill: -wa-white;
+    -fx-font-weight: bold;
+}
+
+.main-header-app-name__text:accent {
+    -fx-text-fill: -wa-gray-darker;
+}
+
+.main-header-home__icon {
+    -fx-cursor: hand;
+}
+
+.main-header-home__icon .ikonli-font-icon {
+    -fx-icon-color: -wa-white;
+    -fx-icon-size: 40px;
+}
+
+.main-header-home__icon:accent .ikonli-font-icon {
+    -fx-icon-color: -wa-gray-darker;
+}

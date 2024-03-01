@@ -1,54 +1,63 @@
 package org.bibletranslationtools.maui.jvm.ui.startup
 
-import javafx.geometry.Pos
 import org.bibletranslationtools.maui.jvm.assets.AppResources
+import org.bibletranslationtools.maui.jvm.ui.BatchDataStore
 import org.bibletranslationtools.maui.jvm.ui.UploadTarget
+import org.bibletranslationtools.maui.jvm.ui.components.mainHeader
 import tornadofx.*
 
 class StartupPage : View() {
     private val viewModel: StartupViewModel by inject()
+    private val batchDataStore: BatchDataStore by inject()
 
     init {
-        importStylesheet(AppResources.load("/css/root.css"))
-        importStylesheet(AppResources.load("/css/buttons.css"))
         importStylesheet(AppResources.load("/css/startup.css"))
     }
 
-    override val root = vbox {
+    override val root = borderpane {
         addClass("startup__page")
 
-        label(messages["appName"]) {
-            addClass("app-name__text")
+        top = mainHeader {
+            uploadTargetProperty.bind(batchDataStore.uploadTargetProperty)
+            appTitleProperty.bind(batchDataStore.appTitleProperty)
         }
 
-        vbox {
-            addClass("upload-target")
+        center = vbox {
+            addClass("startup__page-main")
 
-            label(messages["chooseUploadTarget"]) {
-                addClass("upload-target__text")
+            label(messages["appName"]) {
+                addClass("app-name__text")
             }
 
-            button(messages["targetDev"]) {
-                addClass(
-                    "btn",
-                    "btn--primary-inverted",
-                    "upload-target__btn",
-                    "upload-target__btn--dev"
-                )
-                action {
-                    viewModel.selectUploadTarget(UploadTarget.DEV)
+            vbox {
+                addClass("upload-target")
+
+                label(messages["chooseUploadTarget"]) {
+                    addClass("upload-target__text")
                 }
-            }
 
-            button(messages["targetProd"]) {
-                addClass(
-                    "btn",
-                    "btn--primary-inverted",
-                    "upload-target__btn",
-                    "upload-target__btn--prod"
-                )
-                action {
-                    viewModel.selectUploadTarget(UploadTarget.PROD)
+                button(messages["targetDev"]) {
+                    addClass(
+                        "btn",
+                        "btn--primary-inverted",
+                        "upload-target__btn",
+                        "upload-target__btn--dev"
+                    )
+                    action {
+                        viewModel.selectUploadTarget(UploadTarget.DEV)
+                    }
+                }
+
+                button(messages["targetProd"]) {
+                    addClass(
+                        "btn",
+                        "btn--primary-inverted",
+                        "upload-target__btn",
+                        "upload-target__btn--prod"
+                    )
+                    action {
+                        viewModel.selectUploadTarget(UploadTarget.PROD)
+                    }
                 }
             }
         }

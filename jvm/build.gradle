@@ -60,6 +60,10 @@ dependencies {
     implementation "com.google.dagger:dagger:$daggerVer"
     kapt "com.google.dagger:dagger-compiler:$daggerVer"
 
+    // Ikonli
+    implementation "org.kordamp.ikonli:ikonli-javafx:$ikonliVer"
+    implementation "org.kordamp.ikonli:ikonli-materialdesign-pack:$ikonliVer"
+
     implementation project(':common')
 
     // Testing

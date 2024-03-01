@@ -1,7 +1,10 @@
 .startup__page {
     -fx-background-color: -wa-primary;
-    -fx-alignment: center;
+}
+
+.startup__page-main {
     -fx-spacing: 100px;
+    -fx-alignment: center;
 }
 
 .upload-target {
@@ -25,6 +28,7 @@
     -fx-background-radius: 8px;
     -fx-border-radius: 8px;
     -fx-font-weight: bold;
+    -fx-font-size: 1.5em;
 }
 
 .upload-target__btn--dev {

@@ -33,4 +33,5 @@ ext {
     launch4j = '2.4.6'
     kotlinRC = '0.11.0'
     daggerVer = '2.47'
+    ikonliVer = '12.2.0'
 }

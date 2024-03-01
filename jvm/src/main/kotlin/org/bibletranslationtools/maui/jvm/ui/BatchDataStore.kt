@@ -4,10 +4,9 @@ import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import org.bibletranslationtools.maui.common.data.Batch
 import org.bibletranslationtools.maui.jvm.ui.batch.BatchPage
-import tornadofx.Component
-import tornadofx.ScopedInstance
-import tornadofx.observableListOf
-import tornadofx.onChange
+import org.bibletranslationtools.maui.jvm.ui.startup.StartupPage
+import tornadofx.*
+import java.util.*
 
 enum class UploadTarget {
     DEV,
@@ -16,6 +15,7 @@ enum class UploadTarget {
 
 class BatchDataStore : Component(), ScopedInstance {
 
+    val appTitleProperty = SimpleStringProperty()
     val uploadTargetProperty = SimpleObjectProperty<UploadTarget>()
 
     val serverProperty = SimpleStringProperty()
@@ -23,6 +23,7 @@ class BatchDataStore : Component(), ScopedInstance {
     val passwordProperty = SimpleStringProperty()
 
     val batches = observableListOf<Batch>()
+    val uploadTargets = observableListOf(UploadTarget.DEV, UploadTarget.PROD)
 
     init {
         uploadTargetProperty.onChange { target ->
@@ -30,6 +31,27 @@ class BatchDataStore : Component(), ScopedInstance {
                 onTargetChanged()
             }
         }
+
+        val version = getVersion()
+        val appTitle = messages["appName"] + (if (version == null) "" else " - $version")
+        appTitleProperty.set(appTitle)
+    }
+
+    fun goHome() {
+        uploadTargetProperty.set(null)
+        workspace.dock<StartupPage>()
+    }
+
+    private fun getVersion(): String? {
+        val prop = Properties()
+        val inputStream = javaClass.classLoader.getResourceAsStream("version.properties")
+
+        if (inputStream != null) {
+            prop.load(inputStream)
+            return prop.getProperty("version")
+        }
+
+        return null
     }
 
     private fun onTargetChanged() {
