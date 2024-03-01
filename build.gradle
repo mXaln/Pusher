@@ -1,3 +1,5 @@
+import io.gitlab.arturbosch.detekt.Detekt
+
 buildscript {
     apply from: './dependencies.gradle'
 
@@ -33,7 +35,7 @@ detekt {
     buildUponDefaultConfig = true
 }
 
-tasks.withType(io.gitlab.arturbosch.detekt.Detekt) {
+tasks.withType(Detekt).configureEach {
     include("**/*.kt")
     include("**/*.kts")
     exclude("**/resources/**")
@@ -50,22 +52,27 @@ subprojects {
     apply plugin: 'kotlin'
     apply plugin: 'kotlin-kapt'
     apply plugin: 'nebula.lint'
+    apply plugin: 'org.jlleitschuh.gradle.ktlint'
 
     dependencies {
         implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVer"
         implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlinVer"
     }
 
+    ktlint {
+        coloredOutput = false // Colors break source links in the IDEA console.
+        ignoreFailures = true
+    }
+
     group 'org.bibletranslationtools'
-    sourceCompatibility = 11
 
     compileKotlin {
-        kotlinOptions.jvmTarget = "11"
+        kotlinOptions.jvmTarget = "$javaVer"
         kotlinOptions.allWarningsAsErrors = false
     }
 
     compileTestKotlin {
-        kotlinOptions.jvmTarget = "11"
+        kotlinOptions.jvmTarget = "$javaVer"
         kotlinOptions.allWarningsAsErrors = false
     }
 
