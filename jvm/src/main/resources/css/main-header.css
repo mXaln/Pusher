@@ -1,8 +1,8 @@
 .main-header {
     -fx-alignment: center-left;
-    -fx-pref-height: 65px;
+    -fx-pref-height: 50px;
     -fx-background-color: -wa-primary;
-    -fx-padding: 10px 40px;
+    -fx-padding: 10px 20px;
 }
 
 .main-header:accent {
@@ -25,7 +25,7 @@
 
 .main-header-home__icon .ikonli-font-icon {
     -fx-icon-color: -wa-white;
-    -fx-icon-size: 40px;
+    -fx-icon-size: 30px;
 }
 
 .main-header-home__icon:accent .ikonli-font-icon {

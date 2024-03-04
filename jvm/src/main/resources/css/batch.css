@@ -1,3 +1,95 @@
-.root {
-    -fx-background-color: white;
+.batch-page {
+
+}
+
+.batch-page__contents {
+    -fx-padding: 0 20px 20px 20px;
+    -fx-spacing: 20px;
+}
+
+.batch__controls {
+    -fx-alignment: center-right;
+    -fx-padding: 20px 0;
+}
+
+.batch__controls .btn {
+    -fx-pref-width: 175px;
+}
+
+.btn--import {
+    -fx-border-color: -wa-primary;
+    -fx-text-fill: -wa-primary;
+}
+
+.btn--import .ikonli-font-icon {
+    -fx-icon-size: 16px;
+}
+
+.btn--import .ikonli-font-icon {
+    -fx-icon-color: -wa-primary;
+}
+
+.btn--import:accent {
+    -fx-border-color: -wa-accent;
+    -fx-text-fill: -wa-accent;
+}
+
+.btn--import:accent .ikonli-font-icon {
+    -fx-icon-color: -wa-accent;
+}
+
+.import-files {
+    -fx-border-color: -wa-gray-light;
+    -fx-border-width: 1px;
+    -fx-border-radius: 4px;
+    -fx-padding: 20px;
+    -fx-alignment: center;
+    -fx-spacing: 10px;
+}
+
+.import-files__icon .ikonli-font-icon {
+    -fx-icon-size: 40px;
+}
+
+.import-files__title {
+    -fx-font-size: 1.5em;
+    -fx-font-weight: bold;
+}
+
+.import-files__subtitle {
+    -fx-font-size: 1.25em;
+}
+
+.batch-search {
+    -fx-alignment: center-left;
+}
+
+.batch-search__title {
+    -fx-font-size: 1.5em;
+    -fx-font-weight: bold;
+    -fx-underline: true;
+}
+
+.batch-search__input {
+    -fx-pref-width: 314px;
+    -fx-pref-height: 36px;
+}
+
+.batch-search__input .right-pane .ikonli-font-icon {
+    -fx-icon-size: 24px;
+}
+
+.batch-list__placeholder {
+    -fx-alignment: center;
+    -fx-spacing: 12px;
+}
+
+.batch-list__placeholder-icon .ikonli-font-icon {
+    -fx-icon-size: 60px;
+    -fx-icon-color: -wa-gray-light;
+}
+
+.batch-list__placeholder-text {
+    -fx-font-size: 1.5em;
+    -fx-text-fill: -wa-gray-light;
 }

@@ -64,6 +64,9 @@ dependencies {
     implementation "org.kordamp.ikonli:ikonli-javafx:$ikonliVer"
     implementation "org.kordamp.ikonli:ikonli-materialdesign-pack:$ikonliVer"
 
+    // ControldsFX
+    implementation "org.controlsfx:controlsfx:$controlsfxVer"
+
     implementation project(':common')
 
     // Testing

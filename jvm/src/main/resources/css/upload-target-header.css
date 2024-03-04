@@ -1,8 +1,8 @@
 .upload-target-header {
     -fx-alignment: center-left;
-    -fx-pref-height: 88px;
+    -fx-pref-height: 60px;
     -fx-background-color: -wa-primary-light;
-    -fx-padding: 20px 40px;
+    -fx-padding: 10px 20px;
 }
 
 .upload-target-header:accent {
