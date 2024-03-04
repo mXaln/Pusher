@@ -47,6 +47,17 @@
     -fx-spacing: 10px;
 }
 
+.import-files:drag-over {
+    -fx-background-color: -wa-primary-light;
+    -fx-border-color: -wa-primary;
+    -fx-border-style: segments(15, 15);
+}
+
+.import-files:drag-over:accent {
+    -fx-background-color: -wa-accent-light;
+    -fx-border-color: -wa-accent;
+}
+
 .import-files__icon .ikonli-font-icon {
     -fx-icon-size: 40px;
 }

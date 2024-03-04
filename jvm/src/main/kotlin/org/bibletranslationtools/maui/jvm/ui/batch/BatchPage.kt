@@ -1,7 +1,10 @@
 package org.bibletranslationtools.maui.jvm.ui.batch
 
 import javafx.beans.binding.Bindings
+import javafx.event.EventHandler
 import javafx.scene.control.TableView
+import javafx.scene.input.DragEvent
+import javafx.scene.input.TransferMode
 import javafx.scene.layout.Priority
 import org.bibletranslationtools.maui.jvm.assets.AppResources
 import org.bibletranslationtools.maui.jvm.onChangeAndDoNow
@@ -61,6 +64,15 @@ class BatchPage : View() {
                         batchDataStore.uploadTargetProperty.onChangeAndDoNow {
                             togglePseudoClass("accent", it == UploadTarget.DEV)
                         }
+
+                        action {
+                            chooseFile(
+                                FX.messages["importResourceFromZip"],
+                                arrayOf(),
+                                mode = FileChooserMode.Multi,
+                                owner = currentWindow
+                            ).also { viewModel.importFiles(it) }
+                        }
                     }
                 }
 
@@ -79,6 +91,22 @@ class BatchPage : View() {
                     label(messages["dropFiles"]) {
                         addClass("import-files__subtitle")
                     }
+
+                    batchDataStore.uploadTargetProperty.onChangeAndDoNow {
+                        togglePseudoClass("accent", it == UploadTarget.DEV)
+                    }
+
+                    setOnDragExited {
+                        togglePseudoClass("drag-over", false)
+                    }
+
+                    setOnDragOver {
+                        if (it.dragboard.hasFiles()) {
+                            togglePseudoClass("drag-over", true)
+                        }
+                        onDragOverHandler().handle(it)
+                    }
+                    onDragDropped = onDragDroppedHandler()
                 }
 
                 hbox {
@@ -131,6 +159,27 @@ class BatchPage : View() {
                     column("", String::class)
                 }
             }
+        }
+    }
+
+    private fun onDragOverHandler(): EventHandler<DragEvent> {
+        return EventHandler {
+            if (it.gestureSource != this && it.dragboard.hasFiles()) {
+                it.acceptTransferModes(TransferMode.COPY)
+            }
+            it.consume()
+        }
+    }
+
+    private fun onDragDroppedHandler(): EventHandler<DragEvent> {
+        return EventHandler {
+            var success = false
+            if (it.dragboard.hasFiles()) {
+                viewModel.importFiles(it.dragboard.files)
+                success = true
+            }
+            it.isDropCompleted = success
+            it.consume()
         }
     }
 }
