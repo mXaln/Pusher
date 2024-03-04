@@ -1,0 +1,8 @@
+.actions-column {
+
+}
+
+.actions-column__buttons {
+    -fx-alignment: center-right;
+    -fx-padding: 5px 10px;
+}
