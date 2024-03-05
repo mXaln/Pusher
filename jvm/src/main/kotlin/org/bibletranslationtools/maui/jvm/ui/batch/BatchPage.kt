@@ -1,6 +1,7 @@
 package org.bibletranslationtools.maui.jvm.ui.batch
 
 import javafx.beans.binding.Bindings
+import javafx.beans.binding.BooleanBinding
 import javafx.event.EventHandler
 import javafx.scene.control.TableView
 import javafx.scene.input.DragEvent
@@ -130,14 +131,16 @@ class BatchPage : View() {
                         promptText = messages["search"]
                         viewModel.searchQueryProperty.bind(textProperty())
                     }
+
+                    visibleProperty().bind(hasBatchesBinding())
                 }
 
                 batchTableView(viewModel.sortedBatches) {
                     tableView = this
 
-                    noBatchesPromptProperty.set(messages["noBatchesPrompt"])
-                    batchNameLabelProperty.set(messages["batchName"])
-                    batchDateLabelProperty.set(messages["batchDate"])
+                    emptyPromptProperty.set(messages["noBatchesPrompt"])
+                    nameColumnProperty.set(messages["batchName"])
+                    dateColumnProperty.set(messages["batchDate"])
                     deleteTextProperty.set(messages["deleteBatch"])
 
                     uploadTargetProperty.bind(batchDataStore.uploadTargetProperty)
@@ -184,5 +187,14 @@ class BatchPage : View() {
             it.isDropCompleted = success
             it.consume()
         }
+    }
+
+    private fun hasBatchesBinding() : BooleanBinding {
+        return Bindings.createBooleanBinding(
+            {
+                viewModel.sortedBatches.isNotEmpty()
+            },
+            viewModel.sortedBatches
+        )
     }
 }

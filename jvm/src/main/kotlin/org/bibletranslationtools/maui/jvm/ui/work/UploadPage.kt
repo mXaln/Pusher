@@ -3,6 +3,7 @@ package org.bibletranslationtools.maui.jvm.ui.work
 import javafx.beans.binding.Bindings
 import javafx.scene.layout.Priority
 import org.bibletranslationtools.maui.jvm.assets.AppResources
+import org.bibletranslationtools.maui.jvm.controls.mediaTableView
 import org.bibletranslationtools.maui.jvm.ui.events.AppSaveRequestEvent
 import org.bibletranslationtools.maui.jvm.ui.BatchDataStore
 import org.bibletranslationtools.maui.jvm.ui.UploadTarget
@@ -91,6 +92,19 @@ class UploadPage : View() {
                             println("Export CSV")
                         }
                     }
+                }
+
+                mediaTableView(viewModel.filteredMediaItems) {
+                    uploadTargetProperty.bind(batchDataStore.uploadTargetProperty)
+                    emptyPromptProperty.set(messages["noMediaPrompt"])
+
+                    fileNameColumnProperty.set(messages["fileName"])
+                    languageColumnProperty.set(messages["language"])
+                    resourceTypeColumnProperty.set(messages["resourceType"])
+                    bookColumnProperty.set(messages["book"])
+                    chapterColumnProperty.set(messages["chapter"])
+                    groupingColumnProperty.set(messages["grouping"])
+                    statusColumnProperty.set(messages["status"])
                 }
             }
         }

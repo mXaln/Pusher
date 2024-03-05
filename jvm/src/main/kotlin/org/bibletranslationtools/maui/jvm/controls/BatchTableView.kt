@@ -5,6 +5,7 @@ import javafx.beans.property.SimpleStringProperty
 import javafx.collections.ObservableList
 import javafx.event.EventTarget
 import javafx.scene.Node
+import javafx.scene.control.TableColumn
 import javafx.scene.control.TableView
 import javafx.scene.layout.Priority
 import org.bibletranslationtools.maui.common.data.Batch
@@ -20,9 +21,9 @@ class BatchTableView(
     batches: ObservableList<Batch>
 ) : TableView<Batch>(batches) {
 
-    val noBatchesPromptProperty = SimpleStringProperty()
-    val batchNameLabelProperty = SimpleStringProperty()
-    val batchDateLabelProperty = SimpleStringProperty()
+    val emptyPromptProperty = SimpleStringProperty()
+    val nameColumnProperty = SimpleStringProperty()
+    val dateColumnProperty = SimpleStringProperty()
     val uploadTargetProperty = SimpleObjectProperty<UploadTarget>()
     val deleteTextProperty = SimpleStringProperty()
 
@@ -45,36 +46,33 @@ class BatchTableView(
                     addClass("batch-table-view__placeholder-icon")
                     graphic = FontIcon(MaterialDesign.MDI_FOLDER_OUTLINE)
                 }
-                label(noBatchesPromptProperty) {
+                label(emptyPromptProperty) {
                     addClass("batch-table-view__placeholder-text")
                 }
             }
         }
 
         column("", Node::class) {
-            textProperty().bind(batchNameLabelProperty)
+            textProperty().bind(nameColumnProperty)
             setCellValueFactory {
                 label(it.value.name) {
                     addClass("batch-table-view__name")
                     graphic = FontIcon(MaterialDesign.MDI_FILE)
                 }.toProperty()
             }
-            isResizable = false
+            bindVisibleWhenNotEmpty()
             isReorderable = false
-            prefWidthProperty().bind(this@BatchTableView.widthProperty().multiply(0.45))
         }
         column("", String::class) {
-            textProperty().bind(batchDateLabelProperty)
+            textProperty().bind(dateColumnProperty)
             setCellValueFactory {
                 val formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss a")
                 it.value.created.format(formatter).toProperty()
             }
-            isResizable = false
+            bindVisibleWhenNotEmpty()
             isReorderable = false
-            prefWidthProperty().bind(this@BatchTableView.widthProperty().multiply(0.45))
         }
         column("", Node::class) {
-
             setCellValueFactory {
                 hbox {
                     addClass("actions-column__buttons")
@@ -92,10 +90,14 @@ class BatchTableView(
                     }
                 }.toProperty()
             }
-            isResizable = false
             isReorderable = false
-            prefWidthProperty().bind(this@BatchTableView.widthProperty().multiply(0.1))
         }
+    }
+
+    private fun <S, T> TableColumn<S, T>.bindVisibleWhenNotEmpty() {
+        visibleProperty().bind(itemsProperty().booleanBinding {
+            it?.isNotEmpty() ?: false
+        })
     }
 }
 
