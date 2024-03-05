@@ -1,44 +1,37 @@
-.batch-page {
-
-}
-
 .batch-page__contents {
     -fx-padding: 0 20px 20px 20px;
     -fx-spacing: 20px;
 }
 
-.batch__controls {
+.batch-page__controls {
     -fx-alignment: center-right;
     -fx-padding: 20px 0;
 }
 
-.batch__controls .btn {
+.batch-page__controls .btn {
     -fx-pref-width: 175px;
 }
 
-.btn--import {
+.batch--btn {
     -fx-border-color: -wa-primary;
     -fx-text-fill: -wa-primary;
 }
 
-.btn--import .ikonli-font-icon {
+.batch--btn .ikonli-font-icon {
     -fx-icon-size: 16px;
-}
-
-.btn--import .ikonli-font-icon {
     -fx-icon-color: -wa-primary;
 }
 
-.btn--import:accent {
+.batch-page:accent .batch--btn {
     -fx-border-color: -wa-accent;
     -fx-text-fill: -wa-accent;
 }
 
-.btn--import:accent .ikonli-font-icon {
+.batch-page:accent .batch--btn .ikonli-font-icon {
     -fx-icon-color: -wa-accent;
 }
 
-.import-files {
+.batch__import {
     -fx-border-color: -wa-gray-light;
     -fx-border-width: 1px;
     -fx-border-radius: 4px;
@@ -47,60 +40,36 @@
     -fx-spacing: 10px;
 }
 
-.import-files:drag-over {
+.batch__import:drag-over {
     -fx-background-color: -wa-primary-light;
     -fx-border-color: -wa-primary;
     -fx-border-style: segments(15, 15);
 }
 
-.import-files:drag-over:accent {
+.batch-page:accent .batch__import:drag-over {
     -fx-background-color: -wa-accent-light;
     -fx-border-color: -wa-accent;
 }
 
-.import-files__icon .ikonli-font-icon {
+.batch__import__icon .ikonli-font-icon {
     -fx-icon-size: 40px;
 }
 
-.import-files__title {
+.batch__import__title {
     -fx-font-size: 1.5em;
     -fx-font-weight: bold;
 }
 
-.import-files__subtitle {
+.batch__import__subtitle {
     -fx-font-size: 1.25em;
 }
 
-.batch-search {
+.batch__search {
     -fx-alignment: center-left;
 }
 
-.batch-search__title {
+.batch__search__title {
     -fx-font-size: 1.5em;
     -fx-font-weight: bold;
     -fx-underline: true;
-}
-
-.batch-search__input {
-    -fx-pref-width: 314px;
-    -fx-pref-height: 36px;
-}
-
-.batch-search__input .right-pane .ikonli-font-icon {
-    -fx-icon-size: 24px;
-}
-
-.batch-list__placeholder {
-    -fx-alignment: center;
-    -fx-spacing: 12px;
-}
-
-.batch-list__placeholder-icon .ikonli-font-icon {
-    -fx-icon-size: 60px;
-    -fx-icon-color: -wa-gray-light;
-}
-
-.batch-list__placeholder-text {
-    -fx-font-size: 1.5em;
-    -fx-text-fill: -wa-gray-light;
 }

@@ -19,7 +19,7 @@
     -fx-icon-size: 20px;
 }
 
-.upload-target-header__title-dot:accent .ikonli-font-icon {
+.upload-target-header:accent .upload-target-header__title-dot .ikonli-font-icon {
     -fx-icon-color: -wa-accent;
 }
 
@@ -40,6 +40,6 @@
     -fx-pref-width: 264px;
 }
 
-.upload-target-header__select-combo:accent .combo-box-popup .list-cell:selected {
+.upload-target-header:accent .upload-target-header__select-combo .combo-box-popup .list-cell:selected {
     -fx-background-color: -wa-accent;
 }

@@ -1,0 +1,28 @@
+.upload-page__contents {
+    -fx-padding: 0 20px 20px 20px;
+    -fx-spacing: 20px;
+}
+
+.upload-page__controls {
+    -fx-alignment: center-left;
+    -fx-padding: 20px 0;
+    -fx-spacing: 15px;
+}
+
+.upload-page__controls-title {
+    -fx-font-size: 2.25em;
+}
+
+.upload-page--btn {
+    -fx-text-fill: -wa-gray-darker;
+    -fx-border-color: -wa-gray-lighter;
+}
+
+.upload-page--btn:hover {
+    -fx-background-color: -wa-gray-lighter;
+}
+
+.upload-page--btn .ikonli-font-icon {
+    -fx-icon-size: 20px;
+    -fx-icon-color: -wa-gray-darker;
+}

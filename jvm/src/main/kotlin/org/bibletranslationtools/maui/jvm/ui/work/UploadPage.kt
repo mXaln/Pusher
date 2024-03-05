@@ -1,0 +1,93 @@
+package org.bibletranslationtools.maui.jvm.ui.work
+
+import javafx.beans.binding.Bindings
+import javafx.scene.layout.Priority
+import org.bibletranslationtools.maui.jvm.assets.AppResources
+import org.bibletranslationtools.maui.jvm.ui.BatchDataStore
+import org.bibletranslationtools.maui.jvm.ui.UploadTarget
+import org.bibletranslationtools.maui.jvm.ui.components.mainHeader
+import org.bibletranslationtools.maui.jvm.ui.components.uploadTargetHeader
+import org.kordamp.ikonli.javafx.FontIcon
+import org.kordamp.ikonli.materialdesign.MaterialDesign
+import tornadofx.*
+
+class UploadPage : View() {
+
+    private val viewModel: UploadMediaViewModel by inject()
+    private val batchDataStore: BatchDataStore by inject()
+
+    init {
+        importStylesheet(AppResources.load("/css/upload-page.css"))
+    }
+
+    override val root = borderpane {
+        top = mainHeader {
+            uploadTargetProperty.bind(batchDataStore.uploadTargetProperty)
+            appTitleProperty.bind(batchDataStore.appTitleProperty)
+        }
+
+        center = vbox {
+            addClass("upload-page")
+
+            uploadTargetHeader {
+                uploadTargetProperty.bindBidirectional(batchDataStore.uploadTargetProperty)
+                Bindings.bindContent(uploadTargets, batchDataStore.uploadTargets)
+
+                uploadTargetTextProperty.bind(batchDataStore.uploadTargetProperty.stringBinding {
+                    when (it) {
+                        UploadTarget.DEV -> messages["targetDev"]
+                        UploadTarget.PROD -> messages["targetProd"]
+                        else -> ""
+                    }
+                })
+                changeUploadTargetTextProperty.set(messages["changeUploadTarget"])
+            }
+
+            vbox {
+                addClass("upload-page__contents")
+
+                vgrow = Priority.ALWAYS
+
+                hbox {
+                    addClass("upload-page__controls")
+
+                    label {
+                        addClass("upload-page__controls-title")
+                        textProperty().bind(batchDataStore.activeBatchProperty.stringBinding { it?.name })
+                    }
+
+                    region {
+                        hgrow = Priority.ALWAYS
+                    }
+
+                    button(messages["saveBatch"]) {
+                        addClass("btn", "btn--secondary", "upload-page--btn")
+                        graphic = FontIcon(MaterialDesign.MDI_CONTENT_SAVE)
+
+                        action {
+                            println("Save project")
+                        }
+                    }
+
+                    button(messages["viewUploadedFiles"]) {
+                        addClass("btn", "btn--secondary", "upload-page--btn")
+                        graphic = FontIcon(MaterialDesign.MDI_EXPORT)
+
+                        action {
+                            println("View uploaded files")
+                        }
+                    }
+
+                    button(messages["exportCsv"]) {
+                        addClass("btn", "btn--secondary", "upload-page--btn")
+                        graphic = FontIcon(MaterialDesign.MDI_FILE_EXPORT)
+
+                        action {
+                            println("Export CSV")
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

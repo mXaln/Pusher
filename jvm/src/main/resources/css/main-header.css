@@ -15,7 +15,7 @@
     -fx-font-weight: bold;
 }
 
-.main-header-app-name__text:accent {
+.main-header:accent .main-header-app-name__text {
     -fx-text-fill: -wa-gray-darker;
 }
 
@@ -28,6 +28,6 @@
     -fx-icon-size: 30px;
 }
 
-.main-header-home__icon:accent .ikonli-font-icon {
+.main-header:accent .main-header-home__icon .ikonli-font-icon {
     -fx-icon-color: -wa-gray-darker;
 }

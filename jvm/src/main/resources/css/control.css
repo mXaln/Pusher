@@ -52,3 +52,14 @@
 .wa-combobox .combo-box-popup .list-cell:selected .label {
     -fx-text-fill: -wa-white;
 }
+
+/* Search Bar */
+
+.search-bar {
+    -fx-pref-width: 314px;
+    -fx-pref-height: 36px;
+}
+
+.search-bar .right-pane .ikonli-font-icon {
+    -fx-icon-size: 24px;
+}

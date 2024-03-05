@@ -32,10 +32,6 @@ class UploadTargetHeader : HBox() {
             label {
                 addClass("upload-target-header__title-dot")
                 graphic = FontIcon(MaterialDesign.MDI_CHECKBOX_BLANK_CIRCLE)
-
-                uploadTargetProperty.onChange {
-                    togglePseudoClass("accent", it == UploadTarget.DEV)
-                }
             }
             label {
                 addClass("upload-target-header__title-text")
@@ -55,10 +51,6 @@ class UploadTargetHeader : HBox() {
             }
             combobox(uploadTargetProperty, uploadTargets) {
                 addClass("wa-combobox", "upload-target-header__select-combo")
-
-                uploadTargetProperty.onChange {
-                    togglePseudoClass("accent", it == UploadTarget.DEV)
-                }
             }
         }
     }

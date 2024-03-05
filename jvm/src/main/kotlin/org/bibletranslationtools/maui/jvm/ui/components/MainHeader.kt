@@ -28,11 +28,6 @@ class MainHeader : HBox() {
 
         label {
             addClass("main-header-app-name__text")
-
-            uploadTargetProperty.onChange {
-                togglePseudoClass("accent", it == UploadTarget.DEV)
-            }
-
             textProperty().bind(appTitleProperty)
         }
 
@@ -43,10 +38,6 @@ class MainHeader : HBox() {
         label {
             addClass("main-header-home__icon")
             graphic = FontIcon(MaterialDesign.MDI_HOME)
-
-            uploadTargetProperty.onChange {
-                togglePseudoClass("accent", it == UploadTarget.DEV)
-            }
 
             setOnMouseClicked {
                 FX.eventbus.fire(GoHomeEvent())

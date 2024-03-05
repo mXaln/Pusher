@@ -1,8 +1,101 @@
-.actions-column {
+.batch-table-view {
+    -fx-table-cell-border-color: transparent;
+    -fx-background-color: -wa-white;
+    -fx-background-radius: 10;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
 
+/* header */
+.batch-table-view .corner,
+.batch-table-view .column-header,
+.batch-table-view .column-header-background .filler {
+    -fx-background-color: transparent;
+}
+
+.batch-table-view .column-header {
+    -fx-cursor: hand;
+    -fx-padding: 0 0 0 15;
+}
+
+.batch-table-view .column-header .label {
+    -fx-alignment: center-left;
+    -fx-font-size: 1.1em;
+    -fx-font-weight: 600;
+    -fx-text-fill: -wa-gray-light;
+}
+
+.batch-table-view .column-header .arrow {
+    -fx-background-color: -wa-gray-light;
+}
+
+.batch-table-view .column-header-background {
+    -fx-background-color: -wa-white;
+    -fx-background-radius: 8 8 0 0;
+    -fx-padding: 8 0;
+}
+
+/* cells */
+.batch-table-view .table-cell {
+    -fx-border-color: transparent transparent -wa-gray-light transparent;
+    -fx-border-width: 1px;
+    -fx-padding: 0 15;
+    -fx-alignment: center-left;
+}
+
+.batch-table-view .table-cell:empty {
+    -fx-border-color: transparent;
+}
+
+.batch-table-view .table-row-cell {
+    -fx-pref-height: 50px;
+    -fx-background-color: -wa-white;
+    -fx-alignment: center-left;
+    -fx-cursor: hand;
+}
+
+.batch-table-view .table-row-cell:hover {
+    -fx-background-color: -wa-primary-light;
+}
+
+.batch-table-view:accent .table-row-cell:hover {
+    -fx-background-color: -wa-accent-light;
+}
+
+.batch-table-view:accent .table-row-cell:empty:hover {
+    -fx-background-color: -wa-white;
+    -fx-cursor: none;
+}
+
+.batch-table-view .table-row-cell:selected .table-column,
+.batch-table-view__name {
+    -fx-text-fill: -wa-gray-darker;
+}
+
+.batch-table-view__name .ikonli-font-icon {
+    -fx-icon-size: 20px;
+}
+
+.batch-table-view__placeholder {
+    -fx-alignment: center;
+    -fx-spacing: 12px;
+}
+
+.batch-table-view__placeholder-icon .ikonli-font-icon {
+    -fx-icon-size: 60px;
+    -fx-icon-color: -wa-gray-light;
+}
+
+.batch-table-view__placeholder-text {
+    -fx-font-size: 1.5em;
+    -fx-text-fill: -wa-gray-light;
 }
 
 .actions-column__buttons {
     -fx-alignment: center-right;
     -fx-padding: 5px 10px;
+}
+
+.actions-column__buttons .btn--delete .ikonli-font-icon {
+    -fx-icon-color: #C3362D;
 }
