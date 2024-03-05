@@ -5,6 +5,7 @@ import javafx.beans.property.SimpleStringProperty
 import javafx.event.EventTarget
 import javafx.scene.layout.HBox
 import javafx.scene.layout.Priority
+import org.bibletranslationtools.maui.jvm.assets.AppResources
 import org.bibletranslationtools.maui.jvm.ui.UploadTarget
 import org.kordamp.ikonli.javafx.FontIcon
 import org.kordamp.ikonli.materialdesign.MaterialDesign
@@ -18,6 +19,8 @@ class UploadTargetHeader : HBox() {
 
     init {
         addClass("upload-target-header")
+
+        importStylesheet(AppResources.load("/css/upload-target-header.css"))
 
         uploadTargetProperty.onChange {
             togglePseudoClass("accent", it == UploadTarget.DEV)
@@ -51,7 +54,11 @@ class UploadTargetHeader : HBox() {
                 textProperty().bind(changeUploadTargetTextProperty)
             }
             combobox(uploadTargetProperty, uploadTargets) {
-                addClass("upload-target-header__select-combo")
+                addClass("wa-combobox", "upload-target-header__select-combo")
+
+                uploadTargetProperty.onChange {
+                    togglePseudoClass("accent", it == UploadTarget.DEV)
+                }
             }
         }
     }

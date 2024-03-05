@@ -5,6 +5,7 @@ import javafx.beans.property.SimpleStringProperty
 import javafx.event.EventTarget
 import javafx.scene.layout.HBox
 import javafx.scene.layout.Priority
+import org.bibletranslationtools.maui.jvm.assets.AppResources
 import org.bibletranslationtools.maui.jvm.ui.UploadTarget
 import org.bibletranslationtools.maui.jvm.ui.events.GoHomeEvent
 import org.kordamp.ikonli.javafx.FontIcon
@@ -18,6 +19,8 @@ class MainHeader : HBox() {
 
     init {
         addClass("main-header")
+
+        importStylesheet(AppResources.load("/css/main-header.css"))
 
         uploadTargetProperty.onChange {
             togglePseudoClass("accent", it == UploadTarget.DEV)

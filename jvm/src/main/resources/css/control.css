@@ -1,0 +1,54 @@
+/* -------------- Combobox ---------------- */
+
+.wa-combobox {
+    -fx-background-color: -wa-gray-darker;
+    -fx-background-radius: 8px;
+    -fx-border-width: 2px;
+    -fx-border-color: -wa-gray-darker;
+    -fx-border-radius: 8px;
+    -fx-font-size: 1em;
+    -fx-pref-height: 48px;
+    -fx-cursor: hand;
+}
+
+.wa-combobox .list-cell {
+    -fx-text-fill: -wa-white;
+}
+
+.wa-combobox .arrow {
+    -fx-background-color: -wa-white;
+}
+
+.wa-combobox:showing > .list-cell .label {
+    -fx-text-fill: red;
+}
+
+.wa-combobox:pressed {
+    -fx-background-color: -wa-gray-light;
+}
+
+.wa-combobox .list-cell:hover,
+.wa-combobox .combo-box-popup .list-cell:hover {
+    -fx-background-color: -wa-gray-dark;
+}
+
+.wa-combobox .list-cell:pressed {
+    -fx-background-color: blue;
+}
+
+.wa-combobox .combo-box-popup {
+    -fx-pref-height: 200px;
+}
+
+.wa-combobox .combo-box-popup .list-cell {
+    -fx-padding: 5px;
+    -fx-background-color: -wa-gray-darker;
+}
+
+.wa-combobox .combo-box-popup .list-cell:selected {
+    -fx-background-color: -wa-primary;
+}
+
+.wa-combobox .combo-box-popup .list-cell:selected .label {
+    -fx-text-fill: -wa-white;
+}

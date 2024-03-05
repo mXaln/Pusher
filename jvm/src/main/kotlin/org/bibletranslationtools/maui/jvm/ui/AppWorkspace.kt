@@ -15,9 +15,8 @@ class AppWorkspace : Workspace() {
         header.removeFromParent()
 
         importStylesheet(AppResources.load("/css/root.css"))
+        importStylesheet(AppResources.load("/css/control.css"))
         importStylesheet(AppResources.load("/css/buttons.css"))
-        importStylesheet(AppResources.load("/css/main-header.css"))
-        importStylesheet(AppResources.load("/css/upload-target-header.css"))
 
         subscribe<GoHomeEvent> {
             batchDataStore.goHome()

@@ -39,3 +39,7 @@
 .upload-target-header__select-combo {
     -fx-pref-width: 264px;
 }
+
+.upload-target-header__select-combo:accent .combo-box-popup .list-cell:selected {
+    -fx-background-color: -wa-accent;
+}
