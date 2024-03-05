@@ -7,7 +7,8 @@ import javafx.scene.layout.HBox
 import javafx.scene.layout.Priority
 import org.bibletranslationtools.maui.jvm.assets.AppResources
 import org.bibletranslationtools.maui.jvm.ui.UploadTarget
-import org.bibletranslationtools.maui.jvm.ui.events.GoHomeEvent
+import org.bibletranslationtools.maui.jvm.ui.events.NavigationRequestEvent
+import org.bibletranslationtools.maui.jvm.ui.startup.StartupPage
 import org.kordamp.ikonli.javafx.FontIcon
 import org.kordamp.ikonli.materialdesign.MaterialDesign
 import tornadofx.*
@@ -40,7 +41,8 @@ class MainHeader : HBox() {
             graphic = FontIcon(MaterialDesign.MDI_HOME)
 
             setOnMouseClicked {
-                FX.eventbus.fire(GoHomeEvent())
+                val page = find<StartupPage>()
+                FX.eventbus.fire(NavigationRequestEvent(page))
             }
 
             visibleProperty().bind(uploadTargetProperty.isNotNull)

@@ -3,9 +3,6 @@ package org.bibletranslationtools.maui.jvm.ui
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import org.bibletranslationtools.maui.common.data.Batch
-import org.bibletranslationtools.maui.jvm.ui.batch.BatchPage
-import org.bibletranslationtools.maui.jvm.ui.startup.StartupPage
-import org.bibletranslationtools.maui.jvm.ui.work.UploadPage
 import tornadofx.*
 import java.util.*
 
@@ -30,23 +27,6 @@ class BatchDataStore : Component(), ScopedInstance {
         val version = getVersion()
         val appTitle = messages["appName"] + (if (version == null) "" else " - $version")
         appTitleProperty.set(appTitle)
-
-        uploadTargetProperty.onChange { target ->
-            if (target != null) {
-                onTargetChanged()
-            }
-        }
-
-        activeBatchProperty.onChange { batch ->
-            if (batch != null) {
-                onBatchChanged()
-            }
-        }
-    }
-
-    fun goHome() {
-        uploadTargetProperty.set(null)
-        workspace.dock<StartupPage>()
     }
 
     private fun getVersion(): String? {
@@ -59,13 +39,5 @@ class BatchDataStore : Component(), ScopedInstance {
         }
 
         return null
-    }
-
-    private fun onTargetChanged() {
-        workspace.dock<BatchPage>()
-    }
-
-    private fun onBatchChanged() {
-        workspace.dock<UploadPage>()
     }
 }

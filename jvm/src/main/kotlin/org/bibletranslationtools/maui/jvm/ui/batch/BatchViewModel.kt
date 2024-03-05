@@ -5,6 +5,8 @@ import javafx.collections.transformation.FilteredList
 import javafx.collections.transformation.SortedList
 import org.bibletranslationtools.maui.common.data.Batch
 import org.bibletranslationtools.maui.jvm.ui.BatchDataStore
+import org.bibletranslationtools.maui.jvm.ui.NavigationMediator
+import org.bibletranslationtools.maui.jvm.ui.work.UploadPage
 import tornadofx.ViewModel
 import tornadofx.observableListOf
 import tornadofx.onChange
@@ -14,6 +16,7 @@ import java.util.function.Predicate
 
 class BatchViewModel : ViewModel() {
 
+    private val navigator: NavigationMediator by inject()
     private val batchDataStore: BatchDataStore by inject()
     private val batches = observableListOf<Batch>()
 
@@ -26,8 +29,21 @@ class BatchViewModel : ViewModel() {
         setupBatchSearchListener()
     }
 
+    fun onDock() {
+
+    }
+
+    fun onUndock() {
+
+    }
+
     fun importFiles(media: List<File>) {
         media.forEach(::println)
+    }
+
+    fun openBatch(batch: Batch) {
+        batchDataStore.activeBatchProperty.set(batch)
+        navigator.dock<UploadPage>()
     }
 
     private fun loadBatches() {

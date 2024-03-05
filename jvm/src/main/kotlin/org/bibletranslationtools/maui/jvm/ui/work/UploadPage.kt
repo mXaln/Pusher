@@ -3,6 +3,7 @@ package org.bibletranslationtools.maui.jvm.ui.work
 import javafx.beans.binding.Bindings
 import javafx.scene.layout.Priority
 import org.bibletranslationtools.maui.jvm.assets.AppResources
+import org.bibletranslationtools.maui.jvm.ui.events.AppSaveRequestEvent
 import org.bibletranslationtools.maui.jvm.ui.BatchDataStore
 import org.bibletranslationtools.maui.jvm.ui.UploadTarget
 import org.bibletranslationtools.maui.jvm.ui.components.mainHeader
@@ -18,6 +19,10 @@ class UploadPage : View() {
 
     init {
         importStylesheet(AppResources.load("/css/upload-page.css"))
+
+        subscribe<AppSaveRequestEvent> {
+            viewModel.saveBatch()
+        }
     }
 
     override val root = borderpane {
@@ -89,5 +94,13 @@ class UploadPage : View() {
                 }
             }
         }
+    }
+
+    override fun onDock() {
+        viewModel.onDock()
+    }
+
+    override fun onUndock() {
+        viewModel.onUndock()
     }
 }

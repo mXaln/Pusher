@@ -2,13 +2,19 @@ package org.bibletranslationtools.maui.jvm.ui.batch
 
 import javafx.beans.binding.Bindings
 import javafx.event.EventHandler
+import javafx.scene.control.TableView
 import javafx.scene.input.DragEvent
 import javafx.scene.input.TransferMode
 import javafx.scene.layout.Priority
+import javafx.scene.layout.VBox
+import org.bibletranslationtools.maui.common.data.Batch
+import org.bibletranslationtools.maui.jvm.ListenerDisposer
 import org.bibletranslationtools.maui.jvm.assets.AppResources
+import org.bibletranslationtools.maui.jvm.controls.SearchBar
 import org.bibletranslationtools.maui.jvm.controls.batchTableView
 import org.bibletranslationtools.maui.jvm.controls.searchBar
-import org.bibletranslationtools.maui.jvm.onChangeAndDoNow
+import org.bibletranslationtools.maui.jvm.onChangeAndDoNowWithDisposer
+import org.bibletranslationtools.maui.jvm.onSelectionChangeWithDisposer
 import org.bibletranslationtools.maui.jvm.ui.BatchDataStore
 import org.bibletranslationtools.maui.jvm.ui.UploadTarget
 import org.bibletranslationtools.maui.jvm.ui.components.mainHeader
@@ -20,6 +26,12 @@ import tornadofx.*
 class BatchPage : View() {
     private val viewModel: BatchViewModel by inject()
     private val batchDataStore: BatchDataStore by inject()
+
+    private val listeners = mutableListOf<ListenerDisposer>()
+
+    private lateinit var batchContent: VBox
+    private lateinit var tableView: TableView<Batch>
+    private lateinit var searchBar: SearchBar
 
     init {
         importStylesheet(AppResources.load("/css/batch-page.css"))
@@ -34,9 +46,7 @@ class BatchPage : View() {
         center = vbox {
             addClass("batch-page")
 
-            batchDataStore.uploadTargetProperty.onChangeAndDoNow {
-                togglePseudoClass("accent", it == UploadTarget.DEV)
-            }
+            batchContent = this
 
             uploadTargetHeader {
                 uploadTargetProperty.bindBidirectional(batchDataStore.uploadTargetProperty)
@@ -116,12 +126,15 @@ class BatchPage : View() {
                     }
 
                     searchBar {
+                        searchBar = this
                         promptText = messages["search"]
                         viewModel.searchQueryProperty.bind(textProperty())
                     }
                 }
 
                 batchTableView(viewModel.sortedBatches) {
+                    tableView = this
+
                     noBatchesPromptProperty.set(messages["noBatchesPrompt"])
                     batchNameLabelProperty.set(messages["batchName"])
                     batchDateLabelProperty.set(messages["batchDate"])
@@ -129,11 +142,27 @@ class BatchPage : View() {
 
                     uploadTargetProperty.bind(batchDataStore.uploadTargetProperty)
                     viewModel.sortedBatches.comparatorProperty().bind(comparatorProperty())
-
-                    batchDataStore.activeBatchProperty.bind(selectionModel.selectedItemProperty())
                 }
             }
         }
+    }
+
+    override fun onDock() {
+        batchDataStore.uploadTargetProperty.onChangeAndDoNowWithDisposer {
+            batchContent.togglePseudoClass("accent", it == UploadTarget.DEV)
+        }.also(listeners::add)
+
+        tableView.onSelectionChangeWithDisposer {
+            it?.let(viewModel::openBatch)
+        }.also(listeners::add)
+        viewModel.onDock()
+    }
+
+    override fun onUndock() {
+        searchBar.text = ""
+        listeners.forEach(ListenerDisposer::dispose)
+        listeners.clear()
+        viewModel.onUndock()
     }
 
     private fun onDragOverHandler(): EventHandler<DragEvent> {

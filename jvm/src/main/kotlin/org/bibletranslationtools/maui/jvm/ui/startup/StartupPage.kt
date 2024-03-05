@@ -62,4 +62,12 @@ class StartupPage : View() {
             }
         }
     }
+
+    override fun onDock() {
+        viewModel.onDock()
+    }
+
+    override fun onUndock() {
+        viewModel.onUndock()
+    }
 }

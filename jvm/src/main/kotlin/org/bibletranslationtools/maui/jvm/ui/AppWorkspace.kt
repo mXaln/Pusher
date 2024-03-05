@@ -1,7 +1,6 @@
 package org.bibletranslationtools.maui.jvm.ui
 
 import org.bibletranslationtools.maui.jvm.assets.AppResources
-import org.bibletranslationtools.maui.jvm.ui.events.GoHomeEvent
 import org.bibletranslationtools.maui.jvm.ui.startup.StartupPage
 import tornadofx.Workspace
 import tornadofx.importStylesheet
@@ -9,7 +8,7 @@ import tornadofx.removeFromParent
 
 class AppWorkspace : Workspace() {
 
-    private val batchDataStore: BatchDataStore by inject()
+    private val navigator: NavigationMediator by inject()
 
     init {
         header.removeFromParent()
@@ -17,13 +16,9 @@ class AppWorkspace : Workspace() {
         importStylesheet(AppResources.load("/css/root.css"))
         importStylesheet(AppResources.load("/css/control.css"))
         importStylesheet(AppResources.load("/css/buttons.css"))
-
-        subscribe<GoHomeEvent> {
-            batchDataStore.goHome()
-        }
     }
 
     override fun onBeforeShow() {
-        workspace.dock<StartupPage>()
+        navigator.dock<StartupPage>()
     }
 }
