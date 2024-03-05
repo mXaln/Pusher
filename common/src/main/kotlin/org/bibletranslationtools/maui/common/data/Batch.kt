@@ -7,5 +7,5 @@ data class Batch(
     val file: File,
     val name: String,
     val created: LocalDateTime,
-    val media: Lazy<List<FileData>>
+    val media: Lazy<List<Media>>
 )

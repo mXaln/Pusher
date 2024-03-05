@@ -2,11 +2,11 @@ package org.bibletranslationtools.maui.jvm.ui
 
 import tornadofx.*
 
-class FileDataItemComparator: Comparator<FileDataItem> {
+class MediaItemComparator: Comparator<MediaItem> {
     private val numRegex = Regex("^\\d+")
     private val letterRegex = Regex("^\\D+")
 
-    override fun compare(o1: FileDataItem, o2: FileDataItem): Int {
+    override fun compare(o1: MediaItem, o2: MediaItem): Int {
         val o1String = o1.file.name
         val o2String = o2.file.name
 

@@ -1,6 +1,6 @@
 package org.bibletranslationtools.maui.common.usecases
 
-import org.bibletranslationtools.maui.common.data.FileData
+import org.bibletranslationtools.maui.common.data.Media
 import org.bibletranslationtools.maui.common.data.Grouping
 import org.bibletranslationtools.maui.common.data.MediaQuality
 import java.io.File
@@ -59,8 +59,8 @@ class ParseFileName(private val file: File) {
         matcher = findMatch(file.nameWithoutExtension)
     }
 
-    fun parse(): FileData {
-        return FileData(
+    fun parse(): Media {
+        return Media(
                 file,
                 findLanguage(),
                 findResourceType(),

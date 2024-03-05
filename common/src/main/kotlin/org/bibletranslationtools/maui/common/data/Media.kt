@@ -5,7 +5,7 @@ import org.bibletranslationtools.maui.common.extensions.ContainerExtensions
 import org.bibletranslationtools.maui.common.extensions.MediaExtensions
 import java.io.File
 
-data class FileData(
+data class Media(
     val file: File,
     val language: String? = null,
     val resourceType: String? = null,

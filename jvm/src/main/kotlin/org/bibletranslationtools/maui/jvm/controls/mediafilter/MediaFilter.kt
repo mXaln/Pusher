@@ -1,4 +1,4 @@
-package org.bibletranslationtools.maui.jvm.controls.filedatafilter
+package org.bibletranslationtools.maui.jvm.controls.mediafilter
 
 import io.reactivex.Observable
 import javafx.beans.property.SimpleListProperty
@@ -12,12 +12,12 @@ import javafx.scene.control.Skin
 import org.bibletranslationtools.maui.common.data.Grouping
 import org.bibletranslationtools.maui.common.data.MediaExtension
 import org.bibletranslationtools.maui.common.data.MediaQuality
-import org.bibletranslationtools.maui.jvm.controls.skins.FileDataFilterSkin
+import org.bibletranslationtools.maui.jvm.controls.skins.MediaFilterSkin
 import tornadofx.*
 
 const val MAX_CHAPTER_LENGTH = 3
 
-class FileDataFilter : Control() {
+class MediaFilter : Control() {
 
     val languageLabelProperty = SimpleStringProperty()
     val languagesProperty = SimpleListProperty<String>()
@@ -49,14 +49,14 @@ class FileDataFilter : Control() {
     val onConfirmActionProperty = SimpleObjectProperty<EventHandler<ActionEvent>>()
     var callbackObserver: Observable<Boolean>? = null
 
-    private val userAgentStyleSheet = javaClass.getResource("/css/file-data-filter.css")?.toExternalForm() ?: ""
+    private val userAgentStyleSheet = javaClass.getResource("/css/media-filter.css")?.toExternalForm() ?: ""
 
     init {
         initialize()
     }
 
     override fun createDefaultSkin(): Skin<*> {
-        return FileDataFilterSkin(this)
+        return MediaFilterSkin(this)
     }
 
     override fun getUserAgentStylesheet(): String {
@@ -86,7 +86,7 @@ class FileDataFilter : Control() {
     }
 }
 
-fun EventTarget.filedatafilter(op: FileDataFilter.() -> Unit = {}): FileDataFilter {
-    val fileDataFilter = FileDataFilter()
-    return opcr(this, fileDataFilter, op)
+fun EventTarget.mediafilter(op: MediaFilter.() -> Unit = {}): MediaFilter {
+    val mediaFilter = MediaFilter()
+    return opcr(this, mediaFilter, op)
 }

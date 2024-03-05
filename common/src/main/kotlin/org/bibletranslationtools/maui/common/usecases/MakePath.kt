@@ -1,10 +1,10 @@
 package org.bibletranslationtools.maui.common.usecases
 
 import io.reactivex.Single
-import org.bibletranslationtools.maui.common.data.FileData
+import org.bibletranslationtools.maui.common.data.Media
 import java.util.regex.Pattern
 
-class MakePath(private val fileData: FileData) {
+class MakePath(private val media: Media) {
 
     companion object {
         private const val CONTENTS = "CONTENTS"
@@ -14,40 +14,40 @@ class MakePath(private val fileData: FileData) {
 
     fun build(): Single<String> {
         return Single.fromCallable {
-            validateFileData()
+            validateMedia()
 
             val initialPath = buildInitialPath()
 
             when {
-                fileData.isContainerAndCompressed -> {
+                media.isContainerAndCompressed -> {
                     arrayOf(
                         initialPath,
-                        fileData.mediaExtension,
-                        fileData.mediaQuality,
-                        fileData.grouping,
+                        media.mediaExtension,
+                        media.mediaQuality,
+                        media.grouping,
                         filename
                     ).joinToString("/")
                 }
-                fileData.isContainer -> {
+                media.isContainer -> {
                     arrayOf(
                         initialPath,
-                        fileData.mediaExtension,
-                        fileData.grouping,
+                        media.mediaExtension,
+                        media.grouping,
                         filename
                     ).joinToString("/")
                 }
-                fileData.isCompressed -> {
+                media.isCompressed -> {
                     arrayOf(
                         initialPath,
-                        fileData.mediaQuality,
-                        fileData.grouping,
+                        media.mediaQuality,
+                        media.grouping,
                         filename
                     ).joinToString("/")
                 }
                 else -> {
                     arrayOf(
                         initialPath,
-                        fileData.grouping,
+                        media.grouping,
                         filename
                     ).joinToString("/")
                 }
@@ -55,30 +55,30 @@ class MakePath(private val fileData: FileData) {
         }
     }
 
-    private fun validateFileData() {
+    private fun validateMedia() {
         when {
-            fileData.language.isNullOrBlank() -> {
+            media.language.isNullOrBlank() -> {
                 throw IllegalArgumentException("Language should be specified")
             }
-            fileData.resourceType == null -> {
+            media.resourceType == null -> {
                 throw IllegalArgumentException("Resource type should be specified")
             }
-            fileData.chapter != null && fileData.book == null -> {
+            media.chapter != null && media.book == null -> {
                 throw IllegalArgumentException("Book needs to be specified")
             }
-            fileData.grouping == null -> {
+            media.grouping == null -> {
                 throw IllegalArgumentException("Grouping needs to be specified")
             }
-            (fileData.isContainer || fileData.isContainerAndCompressed) && fileData.mediaExtension == null -> {
+            (media.isContainer || media.isContainerAndCompressed) && media.mediaExtension == null -> {
                 throw IllegalArgumentException("Media extension needs to be specified for container")
             }
-            (fileData.isCompressed || fileData.isContainerAndCompressed) && fileData.mediaQuality == null -> {
+            (media.isCompressed || media.isContainerAndCompressed) && media.mediaQuality == null -> {
                 throw IllegalArgumentException("Media quality needs to be specified for compressed media")
             }
-            !fileData.isContainer && fileData.mediaExtension != null -> {
+            !media.isContainer && media.mediaExtension != null -> {
                 throw IllegalArgumentException("Media extension cannot be applied to non-container media")
             }
-            !fileData.isCompressed && !fileData.isContainerAndCompressed && fileData.mediaQuality != null -> {
+            !media.isCompressed && !media.isContainerAndCompressed && media.mediaQuality != null -> {
                 throw IllegalArgumentException("Non-compressed media should not have a quality")
             }
         }
@@ -86,31 +86,31 @@ class MakePath(private val fileData: FileData) {
 
     private fun buildInitialPath(): String {
         return when {
-            fileData.book.isNullOrBlank() -> {
+            media.book.isNullOrBlank() -> {
                 arrayOf(
-                    fileData.language,
-                    fileData.resourceType,
+                    media.language,
+                    media.resourceType,
                     CONTENTS,
-                    fileData.extension
+                    media.extension
                 ).joinToString("/")
             }
-            fileData.chapter != null -> {
+            media.chapter != null -> {
                 arrayOf(
-                    fileData.language,
-                    fileData.resourceType,
-                    fileData.book,
-                    fileData.chapter,
+                    media.language,
+                    media.resourceType,
+                    media.book,
+                    media.chapter,
                     CONTENTS,
-                    fileData.extension
+                    media.extension
                 ).joinToString("/")
             }
             else -> {
                 arrayOf(
-                    fileData.language,
-                    fileData.resourceType,
-                    fileData.book,
+                    media.language,
+                    media.resourceType,
+                    media.book,
                     CONTENTS,
-                    fileData.extension
+                    media.extension
                 ).joinToString("/")
             }
         }
@@ -118,20 +118,20 @@ class MakePath(private val fileData: FileData) {
 
     private fun normalizeFileName(): String {
         val filename = if (hasVerse()) {
-            val filenameWithoutExtension = fileData.file.nameWithoutExtension
+            val filenameWithoutExtension = media.file.nameWithoutExtension
                 .lowercase()
 
             filenameWithoutExtension
         } else {
             val str = StringBuilder()
-            str.append("${fileData.language}_${fileData.resourceType}")
+            str.append("${media.language}_${media.resourceType}")
 
-            if (!fileData.book.isNullOrBlank()) {
-                str.append("_${fileData.book}")
+            if (!media.book.isNullOrBlank()) {
+                str.append("_${media.book}")
             }
 
-            if (fileData.chapter != null) {
-                str.append("_c${fileData.chapter}")
+            if (media.chapter != null) {
+                str.append("_c${media.chapter}")
             }
 
             str.toString()
@@ -139,13 +139,13 @@ class MakePath(private val fileData: FileData) {
 
         return filename
             .replace(Regex("_t([\\d]{1,2})"), "")
-            .plus(".${fileData.extension}")
+            .plus(".${media.extension}")
     }
 
     private fun hasVerse(): Boolean {
         val verseRegex = "_(v[\\d]{1,3}(-[\\d]{1,3})?)"
         val pattern = Pattern.compile(verseRegex, Pattern.CASE_INSENSITIVE)
-        val matcher = pattern.matcher(fileData.file.nameWithoutExtension)
+        val matcher = pattern.matcher(media.file.nameWithoutExtension)
         return matcher.find()
     }
 }

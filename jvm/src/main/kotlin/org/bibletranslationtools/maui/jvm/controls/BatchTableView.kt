@@ -99,9 +99,6 @@ class BatchTableView(
     }
 }
 
-/**
- * Constructs a language table and attach it to the parent.
- */
 fun EventTarget.batchTableView(
     values: ObservableList<Batch>,
     op: BatchTableView.() -> Unit = {}

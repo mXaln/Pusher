@@ -5,14 +5,14 @@ import javafx.beans.binding.BooleanBinding
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
-import org.bibletranslationtools.maui.common.data.FileData
+import org.bibletranslationtools.maui.common.data.Media
 import org.bibletranslationtools.maui.common.data.Grouping
 import org.bibletranslationtools.maui.common.data.MediaExtension
 import org.bibletranslationtools.maui.common.data.MediaQuality
 import org.bibletranslationtools.maui.common.extensions.CompressedExtensions
 import tornadofx.*
 
-data class FileDataItem(private val data: FileData) : Comparable<FileDataItem> {
+data class MediaItem(private val data: Media) : Comparable<MediaItem> {
 
     val file = data.file
 
@@ -59,7 +59,7 @@ data class FileDataItem(private val data: FileData) : Comparable<FileDataItem> {
         mediaExtensionProperty
     )
 
-    override fun compareTo(other: FileDataItem): Int {
-        return FileDataItemComparator().compare(this, other)
+    override fun compareTo(other: MediaItem): Int {
+        return MediaItemComparator().compare(this, other)
     }
 }

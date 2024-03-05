@@ -12,11 +12,11 @@ import javafx.scene.control.TextField
 import org.bibletranslationtools.maui.common.data.Grouping
 import org.bibletranslationtools.maui.common.data.MediaExtension
 import org.bibletranslationtools.maui.common.data.MediaQuality
-import org.bibletranslationtools.maui.jvm.controls.filedatafilter.FileDataFilter
-import org.bibletranslationtools.maui.jvm.controls.filedatafilter.MAX_CHAPTER_LENGTH
+import org.bibletranslationtools.maui.jvm.controls.mediafilter.MediaFilter
+import org.bibletranslationtools.maui.jvm.controls.mediafilter.MAX_CHAPTER_LENGTH
 import tornadofx.*
 
-class FileDataFilterSkin(private val filter: FileDataFilter) : SkinBase<FileDataFilter>(filter) {
+class MediaFilterSkin(private val filter: MediaFilter) : SkinBase<MediaFilter>(filter) {
 
     @FXML
     private lateinit var languageLabel: Label
@@ -206,7 +206,7 @@ class FileDataFilterSkin(private val filter: FileDataFilter) : SkinBase<FileData
     }
 
     private fun loadFXML() {
-        val loader = FXMLLoader(javaClass.getResource("/skins/FileDataFilter.fxml"))
+        val loader = FXMLLoader(javaClass.getResource("/skins/MediaFilter.fxml"))
         loader.setController(this)
         val root: Node = loader.load()
         children.add(root)

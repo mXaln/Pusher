@@ -1,16 +1,16 @@
 package org.bibletranslationtools.maui.jvm.mappers
 
-import org.bibletranslationtools.maui.common.data.FileData
-import org.bibletranslationtools.maui.jvm.ui.FileDataItem
+import org.bibletranslationtools.maui.common.data.Media
+import org.bibletranslationtools.maui.jvm.ui.MediaItem
 
-class FileDataMapper : IMapper<FileData, FileDataItem> {
+class MediaMapper : IMapper<Media, MediaItem> {
 
-    override fun fromEntity(type: FileData): FileDataItem {
-        return FileDataItem(type)
+    override fun fromEntity(type: Media): MediaItem {
+        return MediaItem(type)
     }
 
-    override fun toEntity(type: FileDataItem): FileData {
-        return FileData(
+    override fun toEntity(type: MediaItem): Media {
+        return Media(
             type.file,
             type.language,
             type.resourceType,

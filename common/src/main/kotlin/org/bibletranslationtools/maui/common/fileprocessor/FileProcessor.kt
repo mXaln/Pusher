@@ -1,6 +1,6 @@
 package org.bibletranslationtools.maui.common.fileprocessor
 
-import org.bibletranslationtools.maui.common.data.FileData
+import org.bibletranslationtools.maui.common.data.Media
 import org.bibletranslationtools.maui.common.data.FileResult
 import org.bibletranslationtools.maui.common.data.FileStatus
 import org.bibletranslationtools.maui.common.usecases.ParseFileName
@@ -17,7 +17,7 @@ abstract class FileProcessor {
         resultList: MutableList<FileResult>
     ): FileStatus
 
-    protected fun getFileData(file: File): FileData {
+    protected fun getMedia(file: File): Media {
         return try {
             ParseFileName(file).parse()
         } catch (e: Exception) {

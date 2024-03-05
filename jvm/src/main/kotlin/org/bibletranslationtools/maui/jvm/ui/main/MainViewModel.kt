@@ -23,13 +23,13 @@ import org.bibletranslationtools.maui.jvm.io.BooksReader
 import org.bibletranslationtools.maui.jvm.io.HtmlWriter
 import org.bibletranslationtools.maui.jvm.io.LanguagesReader
 import org.bibletranslationtools.maui.jvm.io.VersificationReader
-import org.bibletranslationtools.maui.jvm.ui.FileDataItem
-import org.bibletranslationtools.maui.jvm.mappers.FileDataMapper
+import org.bibletranslationtools.maui.jvm.ui.MediaItem
+import org.bibletranslationtools.maui.jvm.mappers.MediaMapper
 import org.bibletranslationtools.maui.jvm.mappers.VerifiedResultMapper
 import org.thymeleaf.TemplateEngine
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver
 import org.bibletranslationtools.maui.jvm.io.ResourceTypesReader
-import org.bibletranslationtools.maui.jvm.ui.filedatacell.ErrorOccurredEvent
+import org.bibletranslationtools.maui.jvm.ui.mediacell.ErrorOccurredEvent
 import org.wycliffeassociates.otter.common.audio.wav.WavFile
 import org.wycliffeassociates.otter.common.audio.wav.WavMetadata
 import tornadofx.*
@@ -39,8 +39,8 @@ import java.util.regex.Pattern
 import io.reactivex.rxkotlin.toObservable as toRxObservable
 
 class MainViewModel : ViewModel() {
-    val fileDataList = observableListOf<FileDataItem>()
-    val fileDataListProperty = SimpleListProperty(fileDataList)
+    val mediaItems = observableListOf<MediaItem>()
+    val mediaItemsProperty = SimpleListProperty(mediaItems)
     val successfulUploadProperty = SimpleBooleanProperty(false)
 
     val languages = observableListOf<String>()
@@ -58,7 +58,7 @@ class MainViewModel : ViewModel() {
     private val fileProcessRouter = FileProcessingRouter.build()
     private lateinit var fileVerifier: FileVerifier
     private val verifiedResultMapper = VerifiedResultMapper()
-    private val fileDataMapper = FileDataMapper()
+    private val mediaMapper = MediaMapper()
     private val thymeleafEngine = TemplateEngine()
     private val htmlWriter = HtmlWriter()
 
@@ -86,9 +86,9 @@ class MainViewModel : ViewModel() {
         val filename = "${file.absolutePath}/report.html"
 
         isProcessing.set(true)
-        fileDataList.toRxObservable()
-            .map { fileDataItem ->
-                fileVerifier.handleItem(fileDataMapper.toEntity(fileDataItem))
+        mediaItems.toRxObservable()
+            .map { mediaItem ->
+                fileVerifier.handleItem(mediaMapper.toEntity(mediaItem))
             }
             .toList()
             .map { results ->
@@ -107,16 +107,16 @@ class MainViewModel : ViewModel() {
 
     fun upload() {
         isProcessing.set(true)
-        fileDataList.toRxObservable()
-            .concatMap { fileDataItem ->
-                val fileData = fileDataMapper.toEntity(fileDataItem)
-                MakePath(fileData).build()
+        mediaItems.toRxObservable()
+            .concatMap { mediaItem ->
+                val media = mediaMapper.toEntity(mediaItem)
+                MakePath(media).build()
                     .flatMapCompletable { targetPath ->
-                        val transferClient = FtpTransferClient(fileDataItem.file, targetPath)
+                        val transferClient = FtpTransferClient(mediaItem.file, targetPath)
                         TransferFile(transferClient).transfer()
                     }
-                    .andThen(Observable.just(fileDataItem))
-                    .doOnError { emitErrorMessage(it, fileDataItem.file) }
+                    .andThen(Observable.just(mediaItem))
+                    .doOnError { emitErrorMessage(it, mediaItem.file) }
                     .onErrorResumeNext(Observable.empty())
             }
             .subscribeOn(Schedulers.io())
@@ -124,7 +124,7 @@ class MainViewModel : ViewModel() {
             .buffer(Int.MAX_VALUE)
             .doFinally { isProcessing.set(false) }
             .subscribe {
-                fileDataList.removeAll(it)
+                mediaItems.removeAll(it)
                 updatedObservable.onNext(true)
                 successfulUploadProperty.set(true)
             }
@@ -132,10 +132,10 @@ class MainViewModel : ViewModel() {
 
     fun clearList() {
         updatedObservable.onNext(true)
-        fileDataList.clear()
+        mediaItems.clear()
     }
 
-    fun restrictedGroupings(item: FileDataItem): List<Grouping> {
+    fun restrictedGroupings(item: MediaItem): List<Grouping> {
         val groupings = Grouping.values().toList()
         return when {
             item.isContainer -> {
@@ -183,11 +183,11 @@ class MainViewModel : ViewModel() {
                             fileName = it.requestedFile?.name ?: ""
                         )
                     } else {
-                        val item = fileDataMapper.fromEntity(it.data!!)
-                        if (!fileDataList.contains(item)) fileDataList.add(item)
+                        val item = mediaMapper.fromEntity(it.data!!)
+                        if (!mediaItems.contains(item)) mediaItems.add(item)
                     }
                 }
-                fileDataList.sort()
+                mediaItems.sort()
             }
     }
 

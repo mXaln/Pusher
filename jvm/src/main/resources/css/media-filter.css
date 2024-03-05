@@ -1,18 +1,18 @@
-.file-data-filter {
+.media-filter {
     -fx-padding: 10px;
     -fx-spacing: 10px;
     -fx-background-color: -wa-primary-light;
     -fx-effect: -wa-shadow2;
 }
 
-.file-data-filter .label {
+.media-filter .label {
     -fx-font-weight: bold;
 }
 
-.file-data-filter__chapter {
+.media-filter__chapter {
     -fx-max-width: 100px;
 }
 
-.file-data-filter__dropdown {
+.media-filter__dropdown {
     -fx-max-width: infinity;
 }
