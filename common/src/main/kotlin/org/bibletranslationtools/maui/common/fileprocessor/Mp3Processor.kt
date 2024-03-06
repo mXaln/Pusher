@@ -12,8 +12,7 @@ import java.util.Queue
 class Mp3Processor : FileProcessor() {
     override fun process(
         file: File,
-        fileQueue: Queue<File>,
-        resultList: MutableList<FileResult>
+        fileQueue: Queue<File>
     ): FileResult? {
         val ext = try {
             MediaExtensions.of(file.extension)

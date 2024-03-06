@@ -4,16 +4,16 @@ import org.bibletranslationtools.maui.common.data.FileResult
 import org.bibletranslationtools.maui.common.data.FileStatus
 import org.bibletranslationtools.maui.common.data.Media
 import org.bibletranslationtools.maui.common.extensions.MediaExtensions
+import org.bibletranslationtools.maui.common.persistence.IDirectoryProvider
 import org.bibletranslationtools.maui.common.validators.TrValidator
 import java.io.File
 import java.lang.IllegalArgumentException
 import java.util.Queue
 
-class TrProcessor : FileProcessor() {
+class TrProcessor(private val directoryProvider: IDirectoryProvider) : FileProcessor() {
     override fun process(
         file: File,
-        fileQueue: Queue<File>,
-        resultList: MutableList<FileResult>
+        fileQueue: Queue<File>
     ): FileResult? {
         val ext = try {
             MediaExtensions.of(file.extension)
@@ -26,7 +26,7 @@ class TrProcessor : FileProcessor() {
         }
 
         val media = try {
-            TrValidator(file).validate()
+            TrValidator(directoryProvider, file).validate()
             getMedia(file)
         } catch (ex: Exception) {
             Media(

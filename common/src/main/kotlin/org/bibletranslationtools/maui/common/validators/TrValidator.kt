@@ -1,11 +1,15 @@
 package org.bibletranslationtools.maui.common.validators
 
+import org.bibletranslationtools.maui.common.persistence.IDirectoryProvider
 import org.wycliffeassociates.io.ArchiveOfHolding
 import org.wycliffeassociates.io.LanguageLevel
 import java.io.File
-import java.nio.file.Files
+import java.util.UUID
 
-class TrValidator(private val file: File) : IValidator {
+class TrValidator(
+    private val directoryProvider: IDirectoryProvider,
+    private val file: File
+) : IValidator {
 
     /**
      * Validates TR file integrity by trying to extract it
@@ -16,9 +20,9 @@ class TrValidator(private val file: File) : IValidator {
             fis.buffered().use { bis ->
                 val ll = LanguageLevel()
                 val aoh = ArchiveOfHolding(bis, ll)
-                val out = Files.createTempDirectory("temp").toFile()
+                val uuid = UUID.randomUUID()
+                val out = directoryProvider.createTempDirectory(uuid.toString())
                 aoh.extractArchive(file, out)
-                out.deleteOnExit()
             }
         }
     }

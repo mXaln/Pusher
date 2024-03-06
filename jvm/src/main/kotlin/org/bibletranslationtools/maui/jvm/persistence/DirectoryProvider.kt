@@ -57,6 +57,12 @@ class DirectoryProvider(private val appName: String) : IDirectoryProvider {
         return dir
     }
 
+    override fun createTempDirectory(dirName: String): File {
+        val dir = tempDirectory.resolve(dirName)
+        dir.mkdirs()
+        return dir
+    }
+
     override fun createTempFile(prefix: String, suffix: String?): File {
         return File.createTempFile(prefix, suffix, tempDirectory)
     }

@@ -15,6 +15,9 @@ interface IDirectoryProvider {
     /** Create directory in cache directory */
     fun createCacheDirectory(dirName: String): File
 
+    /** Create directory in temporary directory */
+    fun createTempDirectory(dirName: String): File
+
     /** Create temp file */
     fun createTempFile(prefix: String, suffix: String? = null): File
 
