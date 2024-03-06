@@ -250,22 +250,22 @@ class MainView : View() {
     private fun setFilterChangeListeners() {
         setPropertyListener(
             filter.selectedLanguageProperty,
-            MediaItem::language,
+            MediaItem::language
         )
 
         setPropertyListener(
             filter.selectedResourceTypeProperty,
-            MediaItem::resourceType,
+            MediaItem::resourceType
         )
 
         setPropertyListener(
             filter.selectedBookProperty,
-            MediaItem::book,
+            MediaItem::book
         )
 
         setPropertyListener(
             filter.chapterProperty,
-            MediaItem::chapter,
+            MediaItem::chapter
         )
 
         setPropertyListener(
@@ -282,7 +282,7 @@ class MainView : View() {
 
         setPropertyListener(
             filter.selectedGroupingProperty,
-            MediaItem::grouping,
+            MediaItem::grouping
         )
     }
 

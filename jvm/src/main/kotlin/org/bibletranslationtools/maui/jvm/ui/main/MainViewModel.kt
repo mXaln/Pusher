@@ -9,7 +9,6 @@ import javafx.beans.property.SimpleListProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.stage.DirectoryChooser
 import org.bibletranslationtools.maui.common.audio.BttrChunk
-import org.bibletranslationtools.maui.common.data.FileStatus
 import org.bibletranslationtools.maui.common.data.MediaExtension
 import org.bibletranslationtools.maui.common.data.MediaQuality
 import org.bibletranslationtools.maui.common.data.Grouping
@@ -55,7 +54,7 @@ class MainViewModel : ViewModel() {
     val snackBarObservable: PublishSubject<String> = PublishSubject.create()
     val updatedObservable: PublishSubject<Boolean> = PublishSubject.create()
 
-    private val fileProcessRouter = FileProcessingRouter.build()
+    //private val fileProcessRouter = FileProcessingRouter.build()
     private lateinit var fileVerifier: FileVerifier
     private val verifiedResultMapper = VerifiedResultMapper()
     private val mediaMapper = MediaMapper()
@@ -169,7 +168,7 @@ class MainViewModel : ViewModel() {
     }
 
     private fun importFiles(files: List<File>) {
-        Observable.fromCallable {
+        /*Observable.fromCallable {
             fileProcessRouter.handleFiles(files)
         }
             .subscribeOn(Schedulers.io())
@@ -188,7 +187,7 @@ class MainViewModel : ViewModel() {
                     }
                 }
                 mediaItems.sort()
-            }
+            }*/
     }
 
     private fun initThymeleafEngine() {

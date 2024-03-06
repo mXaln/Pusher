@@ -1,15 +1,17 @@
 package org.bibletranslationtools.maui.common.usecases
 
 import org.bibletranslationtools.maui.common.data.FileResult
-import org.bibletranslationtools.maui.common.data.FileStatus
 import org.bibletranslationtools.maui.common.fileprocessor.*
+import org.bibletranslationtools.maui.common.persistence.IDirectoryProvider
 import java.io.File
 import java.io.IOException
 import java.util.Queue
 import java.util.LinkedList
+import javax.inject.Inject
 
-class FileProcessingRouter(private val processors: List<FileProcessor>) {
-    private val fileQueue: Queue<File> = LinkedList<File>()
+class FileProcessingRouter @Inject constructor(private val directoryProvider: IDirectoryProvider) {
+    private val processors: List<FileProcessor> = getProcessors()
+    private val fileQueue: Queue<File> = LinkedList()
 
     @Throws(IOException::class)
     fun handleFiles(files: List<File>): List<FileResult> {
@@ -25,31 +27,20 @@ class FileProcessingRouter(private val processors: List<FileProcessor>) {
 
     private fun processFile(file: File, resultList: MutableList<FileResult>) {
         processors.forEach {
-            val status = it.process(file, fileQueue, resultList)
-            if (status == FileStatus.PROCESSED) {
-                return
+            it.process(file, fileQueue, resultList)?.let { result ->
+                resultList.add(result)
             }
         }
-        // file was not processed by any processor
-        val rejected = FileResult(
-                status = FileStatus.REJECTED,
-                data = null,
-                requestedFile = file
-        )
-        resultList.add(rejected)
     }
 
-    companion object {
-        fun build(): FileProcessingRouter {
-            val processorList: List<FileProcessor> = listOf(
-                    CueProcessor(),
-                    JpgProcessor(),
-                    Mp3Processor(),
-                    TrProcessor(),
-                    WavProcessor(),
-                    OratureFileProcessor()
-            )
-            return FileProcessingRouter(processorList)
-        }
+    private fun getProcessors(): List<FileProcessor> {
+        return listOf(
+            CueProcessor(),
+            JpgProcessor(),
+            Mp3Processor(),
+            TrProcessor(),
+            WavProcessor(),
+            OratureFileProcessor(directoryProvider)
+        )
     }
 }

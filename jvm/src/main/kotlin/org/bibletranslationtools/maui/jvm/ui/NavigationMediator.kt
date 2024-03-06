@@ -8,7 +8,7 @@ import org.bibletranslationtools.maui.jvm.ui.events.NavigationRequestEvent
 import tornadofx.*
 import kotlin.system.exitProcess
 
-class NavigationMediator  : Component(), ScopedInstance {
+class NavigationMediator : Component(), ScopedInstance {
 
     private var appExitRequested = false
 

@@ -67,6 +67,11 @@ dependencies {
     // ControldsFX
     implementation "org.controlsfx:controlsfx:$controlsfxVer"
 
+    // Log4j
+    implementation "org.slf4j:slf4j-api:$slf4jApiVer"
+    implementation "org.apache.logging.log4j:log4j-core:$log4j2Ver"
+    implementation "org.apache.logging.log4j:log4j-slf4j18-impl:$log4j2Ver"
+
     implementation project(':common')
 
     // Testing

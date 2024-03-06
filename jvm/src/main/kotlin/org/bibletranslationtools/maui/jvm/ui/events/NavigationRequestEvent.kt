@@ -5,5 +5,5 @@ import tornadofx.View
 
 class NavigationRequestEvent(val view: View) : FXEvent()
 class AppCloseRequestEvent : FXEvent()
-class AppSaveRequestEvent: FXEvent()
+class AppSaveRequestEvent : FXEvent()
 class AppSaveDoneEvent : FXEvent()

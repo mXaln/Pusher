@@ -51,7 +51,7 @@ class MediaView : VBox() {
                             }
                         }
                         setOnAction {
-                            if(selectedItem in items) {
+                            if (selectedItem in items) {
                                 mediaItem?.language = selectedItem
                             } else {
                                 if (selectedItem != null) {
@@ -78,7 +78,7 @@ class MediaView : VBox() {
                             }
                         }
                         setOnAction {
-                            if(selectedItem in items) {
+                            if (selectedItem in items) {
                                 mediaItem?.resourceType = selectedItem
                             } else {
                                 if (selectedItem != null) {
@@ -105,7 +105,7 @@ class MediaView : VBox() {
                             }
                         }
                         setOnAction {
-                            if(selectedItem in items) {
+                            if (selectedItem in items) {
                                 mediaItem?.book = selectedItem
                             } else {
                                 if (selectedItem != null) {
@@ -219,4 +219,4 @@ class MediaView : VBox() {
     }
 }
 
-class ErrorOccurredEvent(val message:String): FXEvent()
+class ErrorOccurredEvent(val message: String) : FXEvent()

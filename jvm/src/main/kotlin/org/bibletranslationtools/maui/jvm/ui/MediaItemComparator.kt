@@ -2,7 +2,7 @@ package org.bibletranslationtools.maui.jvm.ui
 
 import tornadofx.*
 
-class MediaItemComparator: Comparator<MediaItem> {
+class MediaItemComparator : Comparator<MediaItem> {
     private val numRegex = Regex("^\\d+")
     private val letterRegex = Regex("^\\D+")
 

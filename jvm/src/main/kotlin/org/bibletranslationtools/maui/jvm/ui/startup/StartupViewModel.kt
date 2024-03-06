@@ -22,6 +22,5 @@ class StartupViewModel : ViewModel() {
     }
 
     fun onUndock() {
-
     }
 }

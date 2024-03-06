@@ -7,10 +7,13 @@ interface IDirectoryProvider {
     fun getAppDataDirectory(appendedPath: String = ""): File
 
     /** Create a new IFileWriter */
-    //fun newFileWriter(file: File): IFileWriter
+    // fun newFileWriter(file: File): IFileWriter
 
     /** Create a new IFileReader */
-    //fun newFileReader(file: File): IFileReader
+    // fun newFileReader(file: File): IFileReader
+
+    /** Create directory in cache directory */
+    fun createCacheDirectory(dirName: String): File
 
     /** Create temp file */
     fun createTempFile(prefix: String, suffix: String? = null): File

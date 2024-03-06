@@ -13,29 +13,29 @@ class FileVerifier(private val versification: Versification) {
     fun handleItem(media: Media): VerifiedResult {
         if (media.grouping == Grouping.CHAPTER) {
             isBookValid(media).let {
-                if (it.status == FileStatus.REJECTED) {
+                if (it.status == FileStatus.ERROR) {
                     return it
                 }
             }
 
             isChapterValid(media).let {
-                if (it.status == FileStatus.REJECTED) {
+                if (it.status == FileStatus.ERROR) {
                     return it
                 }
             }
 
             return isVerseValid(media)
         } else {
-            return VerifiedResult(FileStatus.PROCESSED, media.file)
+            return VerifiedResult(FileStatus.SUCCESS, media.file)
         }
     }
 
     private fun isBookValid(media: Media): VerifiedResult {
         val book = media.book?.uppercase()
         return if (book == null || !versification.contains(book)) {
-            VerifiedResult(FileStatus.REJECTED, media.file, "$book is not a valid book")
+            VerifiedResult(FileStatus.ERROR, media.file, "$book is not a valid book")
         } else {
-            VerifiedResult(FileStatus.PROCESSED, media.file)
+            VerifiedResult(FileStatus.SUCCESS, media.file)
         }
     }
 
@@ -44,7 +44,7 @@ class FileVerifier(private val versification: Versification) {
         val chapter = media.chapter
 
         if (chapter == null) {
-            return VerifiedResult(FileStatus.REJECTED, media.file, "$chapter is not a valid chapter")
+            return VerifiedResult(FileStatus.ERROR, media.file, "$chapter is not a valid chapter")
         } else {
             versification[book]?.let { chapterVerses ->
                 /** Check that chapter exists within book */
@@ -52,15 +52,15 @@ class FileVerifier(private val versification: Versification) {
 
                 if (chapterNumber > chapterVerses.size) {
                     return VerifiedResult(
-                        FileStatus.REJECTED,
+                        FileStatus.ERROR,
                         media.file,
                         "$book only has ${chapterVerses.size} chapters, not $chapterNumber"
                     )
                 } else {
-                    return VerifiedResult(FileStatus.PROCESSED, media.file)
+                    return VerifiedResult(FileStatus.SUCCESS, media.file)
                 }
             }
-            return VerifiedResult(FileStatus.REJECTED, media.file, "Book: $book does not exist")
+            return VerifiedResult(FileStatus.ERROR, media.file, "Book: $book does not exist")
         }
     }
 
@@ -77,12 +77,12 @@ class FileVerifier(private val versification: Versification) {
             val actualVerses = cueChunk.cues.size
             if (actualVerses != expectedVerses) {
                 return VerifiedResult(
-                    FileStatus.REJECTED,
+                    FileStatus.ERROR,
                     media.file,
                     "$book $chapter expected $expectedVerses verses, but got $actualVerses"
                 )
             } else {
-                return VerifiedResult(FileStatus.PROCESSED, media.file)
+                return VerifiedResult(FileStatus.SUCCESS, media.file)
             }
         }
     }

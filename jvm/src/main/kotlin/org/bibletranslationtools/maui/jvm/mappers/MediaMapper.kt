@@ -2,9 +2,9 @@ package org.bibletranslationtools.maui.jvm.mappers
 
 import org.bibletranslationtools.maui.common.data.Media
 import org.bibletranslationtools.maui.jvm.ui.MediaItem
+import javax.inject.Inject
 
-class MediaMapper : IMapper<Media, MediaItem> {
-
+class MediaMapper @Inject constructor() : IMapper<Media, MediaItem> {
     override fun fromEntity(type: Media): MediaItem {
         return MediaItem(type)
     }
@@ -18,7 +18,9 @@ class MediaMapper : IMapper<Media, MediaItem> {
             if (!type.chapter.isNullOrBlank()) type.chapter!!.toInt() else null,
             type.mediaExtension,
             type.mediaQuality,
-            type.grouping
+            type.grouping,
+            type.status,
+            type.statusMessage
         )
     }
 }

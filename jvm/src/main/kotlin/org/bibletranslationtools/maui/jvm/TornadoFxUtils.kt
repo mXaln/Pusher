@@ -42,7 +42,7 @@ fun <T> ObservableList<T>.onChangeAndDoNow(op: (List<T>) -> Unit) {
 fun <T> ObservableValue<T>.onChangeWithDisposer(op: (T?) -> Unit): ListenerDisposer {
     val listener = ChangeListener<T> { _, _, newValue -> op(newValue) }
     addListener(listener)
-    return object: ListenerDisposer {
+    return object : ListenerDisposer {
         override fun dispose() {
             removeListener(listener)
         }
@@ -57,7 +57,7 @@ fun <T> ObservableValue<T>.onChangeWithDisposer(op: (T?) -> Unit): ListenerDispo
 fun <T> ObservableList<T>.onChangeWithDisposer(op: (ListChangeListener.Change<out T>) -> Unit): ListenerDisposer {
     val listener = ListChangeListener<T> { op(it) }
     addListener(listener)
-    return object: ListenerDisposer {
+    return object : ListenerDisposer {
         override fun dispose() {
             removeListener(listener)
         }
@@ -74,7 +74,7 @@ fun <T> ObservableList<T>.onChangeAndDoNowWithDisposer(op: (List<T>) -> Unit): L
     op(this)
     val listener = ListChangeListener<T> { op(it.list) }
     addListener(listener)
-    return object: ListenerDisposer {
+    return object : ListenerDisposer {
         override fun dispose() {
             removeListener(listener)
         }

@@ -81,7 +81,7 @@ class BatchPage : View() {
                                 arrayOf(),
                                 mode = FileChooserMode.Multi,
                                 owner = currentWindow
-                            ).also { viewModel.importFiles(it) }
+                            ).also { viewModel.onDropFiles(it) }
                         }
                     }
                 }
@@ -181,7 +181,7 @@ class BatchPage : View() {
         return EventHandler {
             var success = false
             if (it.dragboard.hasFiles()) {
-                viewModel.importFiles(it.dragboard.files)
+                viewModel.onDropFiles(it.dragboard.files)
                 success = true
             }
             it.isDropCompleted = success
@@ -189,7 +189,7 @@ class BatchPage : View() {
         }
     }
 
-    private fun hasBatchesBinding() : BooleanBinding {
+    private fun hasBatchesBinding(): BooleanBinding {
         return Bindings.createBooleanBinding(
             {
                 viewModel.sortedBatches.isNotEmpty()

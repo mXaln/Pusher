@@ -10,6 +10,10 @@ dependencies {
     implementation "org.apache.tika:tika-core:$tikaVer"
     implementation "org.wycliffeassociates:kotlin-resource-container:$kotlinRC"
 
+    //Dagger2
+    implementation "com.google.dagger:dagger:$daggerVer"
+    kapt "com.google.dagger:dagger-compiler:$daggerVer"
+
     // Testing
     testImplementation "junit:junit:$junitVer"
     testImplementation "org.mockito:mockito-core:$mockitoVer"

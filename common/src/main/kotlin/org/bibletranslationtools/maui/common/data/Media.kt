@@ -13,7 +13,9 @@ data class Media(
     val chapter: Int? = null,
     val mediaExtension: MediaExtension? = null,
     val mediaQuality: MediaQuality? = null,
-    val grouping: Grouping? = null
+    val grouping: Grouping? = null,
+    val status: FileStatus? = null,
+    val statusMessage: String? = null
 ) {
     val extension = MediaExtensions.of(file.extension)
 

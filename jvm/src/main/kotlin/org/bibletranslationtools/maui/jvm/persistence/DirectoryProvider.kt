@@ -51,6 +51,12 @@ class DirectoryProvider(private val appName: String) : IDirectoryProvider {
         return file
     }
 
+    override fun createCacheDirectory(dirName: String): File {
+        val dir = cacheDirectory.resolve(dirName)
+        dir.mkdirs()
+        return dir
+    }
+
     override fun createTempFile(prefix: String, suffix: String?): File {
         return File.createTempFile(prefix, suffix, tempDirectory)
     }

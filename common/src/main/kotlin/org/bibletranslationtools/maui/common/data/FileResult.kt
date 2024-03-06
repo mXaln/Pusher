@@ -4,6 +4,7 @@ import java.io.File
 
 class FileResult(
     val status: FileStatus,
-    val data: Media?,
+    val statusMessage: String? = null,
+    val data: Media? = null,
     val requestedFile: File? = null
 )

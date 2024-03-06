@@ -3,7 +3,7 @@ package org.bibletranslationtools.maui.jvm.ui.mediacell
 import javafx.scene.control.ListCell
 import org.bibletranslationtools.maui.jvm.ui.MediaItem
 
-class MediaCell: ListCell<MediaItem>() {
+class MediaCell : ListCell<MediaItem>() {
 
     private val cellView = MediaView()
 

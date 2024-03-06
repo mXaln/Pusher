@@ -36,7 +36,7 @@ class WavProcessorTest {
         val file = getTestFile(wavFileName)
         val status = WavProcessor().process(file, queue, resultList)
 
-        assertEquals(FileStatus.PROCESSED, status)
+        assertEquals(FileStatus.SUCCESS, status)
         assertEquals(1, resultList.size)
         assertEquals(0, queue.size)
     }
@@ -46,7 +46,7 @@ class WavProcessorTest {
         val file = copyAndRename(wavFileName, "en_reg_b41_mat_c01.wav")
         val status = WavProcessor().process(file, queue, resultList)
 
-        assertEquals(FileStatus.PROCESSED, status)
+        assertEquals(FileStatus.SUCCESS, status)
         assertEquals(1, resultList.size)
         assertEquals(0, queue.size)
     }
@@ -56,7 +56,7 @@ class WavProcessorTest {
         val file = getTestFile("fake.wav")
         val status = WavProcessor().process(file, queue, resultList)
 
-        assertEquals(FileStatus.REJECTED, status)
+        assertEquals(FileStatus.ERROR, status)
         assertEquals(0, resultList.size)
         assertEquals(0, queue.size)
     }

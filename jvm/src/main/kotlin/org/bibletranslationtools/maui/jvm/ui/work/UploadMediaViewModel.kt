@@ -17,7 +17,6 @@ class UploadMediaViewModel : ViewModel() {
     }
 
     fun onDock() {
-
     }
 
     fun onUndock() {

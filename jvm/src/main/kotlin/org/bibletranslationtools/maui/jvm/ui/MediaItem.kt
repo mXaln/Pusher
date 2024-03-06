@@ -5,10 +5,7 @@ import javafx.beans.binding.BooleanBinding
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
-import org.bibletranslationtools.maui.common.data.Media
-import org.bibletranslationtools.maui.common.data.Grouping
-import org.bibletranslationtools.maui.common.data.MediaExtension
-import org.bibletranslationtools.maui.common.data.MediaQuality
+import org.bibletranslationtools.maui.common.data.*
 import org.bibletranslationtools.maui.common.extensions.CompressedExtensions
 import tornadofx.*
 
@@ -36,6 +33,12 @@ data class MediaItem(private val data: Media) : Comparable<MediaItem> {
 
     val groupingProperty = SimpleObjectProperty<Grouping>(data.grouping)
     var grouping: Grouping? by groupingProperty
+
+    val statusProperty = SimpleObjectProperty<FileStatus>(data.status)
+    var status: FileStatus? by statusProperty
+
+    val statusMessageProperty = SimpleStringProperty(data.statusMessage)
+    var statusMessage: String? by statusMessageProperty
 
     val isContainerProperty = SimpleBooleanProperty(data.isContainer)
     val isContainer by isContainerProperty

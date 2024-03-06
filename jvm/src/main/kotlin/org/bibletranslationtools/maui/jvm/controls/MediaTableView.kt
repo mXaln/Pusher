@@ -57,7 +57,7 @@ class MediaTableView(
 
         column("", Node::class) {
             setCellValueFactory {
-                checkbox {  }.toProperty()
+                checkbox { }.toProperty()
             }
             bindVisibleWhenNotEmpty()
         }

@@ -1,5 +1,6 @@
 package org.bibletranslationtools.maui.common.usecases
 
+import org.bibletranslationtools.maui.common.data.FileStatus
 import org.bibletranslationtools.maui.common.data.Media
 import org.bibletranslationtools.maui.common.data.Grouping
 import org.bibletranslationtools.maui.common.data.MediaQuality
@@ -50,7 +51,6 @@ class ParseFileName(private val file: File) {
                 TAKE +
                 QUALITY +
                 GROUPING + "$"
-
     }
 
     private var matcher: Matcher? = null
@@ -68,7 +68,8 @@ class ParseFileName(private val file: File) {
                 findChapter(),
                 null,
                 findQuality(),
-                findGrouping()
+                findGrouping(),
+                FileStatus.SUCCESS
         )
     }
 

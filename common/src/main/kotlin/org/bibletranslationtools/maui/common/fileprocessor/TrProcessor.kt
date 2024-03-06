@@ -2,18 +2,19 @@ package org.bibletranslationtools.maui.common.fileprocessor
 
 import org.bibletranslationtools.maui.common.data.FileResult
 import org.bibletranslationtools.maui.common.data.FileStatus
+import org.bibletranslationtools.maui.common.data.Media
 import org.bibletranslationtools.maui.common.extensions.MediaExtensions
 import org.bibletranslationtools.maui.common.validators.TrValidator
 import java.io.File
 import java.lang.IllegalArgumentException
 import java.util.Queue
 
-class TrProcessor: FileProcessor() {
+class TrProcessor : FileProcessor() {
     override fun process(
-            file: File,
-            fileQueue: Queue<File>,
-            resultList: MutableList<FileResult>
-    ): FileStatus {
+        file: File,
+        fileQueue: Queue<File>,
+        resultList: MutableList<FileResult>
+    ): FileResult? {
         val ext = try {
             MediaExtensions.of(file.extension)
         } catch (ex: IllegalArgumentException) {
@@ -21,18 +22,20 @@ class TrProcessor: FileProcessor() {
         }
 
         if (ext != MediaExtensions.TR) {
-            return FileStatus.REJECTED
+            return null
         }
 
-        return try {
+        val media = try {
             TrValidator(file).validate()
-            val media = getMedia(file)
-            val result = FileResult(status = FileStatus.PROCESSED, data = media)
-            resultList.add(result)
-
-            FileStatus.PROCESSED
+            getMedia(file)
         } catch (ex: Exception) {
-            FileStatus.REJECTED
+            Media(
+                file = file,
+                status = FileStatus.WARNING,
+                statusMessage = ex.message
+            )
         }
+
+        return FileResult(media.status!!, media.statusMessage, media)
     }
 }

@@ -31,7 +31,7 @@ class TrProcessorTest {
         val file = getTestFile("en_ulb_mat_verse.tr")
         val status = TrProcessor().process(file, queue, resultList)
 
-        assertEquals(FileStatus.PROCESSED, status)
+        assertEquals(FileStatus.SUCCESS, status)
         assertEquals(1, resultList.size)
         assertEquals(0, queue.size)
     }
@@ -41,7 +41,7 @@ class TrProcessorTest {
         val file = getTestFile("fake.tr")
         val status = TrProcessor().process(file, queue, resultList)
 
-        assertEquals(FileStatus.REJECTED, status)
+        assertEquals(FileStatus.ERROR, status)
         assertEquals(0, resultList.size)
         assertEquals(0, queue.size)
     }

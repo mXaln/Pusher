@@ -28,7 +28,6 @@ class MakePathTest {
         result.assertComplete()
         result.assertNoErrors()
         result.assertValue(expected)
-
     }
 
     @Test
@@ -50,7 +49,6 @@ class MakePathTest {
         result.assertComplete()
         result.assertNoErrors()
         result.assertValue(expected)
-
     }
 
     @Test
@@ -72,7 +70,6 @@ class MakePathTest {
         result.assertComplete()
         result.assertNoErrors()
         result.assertValue(expected)
-
     }
 
     @Test
