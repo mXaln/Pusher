@@ -31,7 +31,7 @@ class Mp3ProcessorTest {
         val file = getTestFile("test.mp3")
         val status = Mp3Processor().process(file, queue, resultList)
 
-        assertEquals(FileStatus.SUCCESS, status)
+        assertEquals(FileStatus.PROCESSED, status)
         assertEquals(1, resultList.size)
         assertEquals(0, queue.size)
     }
@@ -41,7 +41,7 @@ class Mp3ProcessorTest {
         val file = getTestFile("fake.mp3")
         val status = Mp3Processor().process(file, queue, resultList)
 
-        assertEquals(FileStatus.ERROR, status)
+        assertEquals(FileStatus.REJECTED, status)
         assertEquals(0, resultList.size)
         assertEquals(0, queue.size)
     }

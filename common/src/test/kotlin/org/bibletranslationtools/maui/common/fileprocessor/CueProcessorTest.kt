@@ -31,7 +31,7 @@ class CueProcessorTest {
         val file = getTestFile("test.cue")
         val status = CueProcessor().process(file, queue, resultList)
 
-        assertEquals(FileStatus.SUCCESS, status)
+        assertEquals(FileStatus.PROCESSED, status)
         assertEquals(1, resultList.size)
         assertEquals(0, queue.size)
     }
@@ -41,7 +41,7 @@ class CueProcessorTest {
         val file = getTestFile("fake.cue")
         val status = CueProcessor().process(file, queue, resultList)
 
-        assertEquals(FileStatus.ERROR, status)
+        assertEquals(FileStatus.REJECTED, status)
         assertEquals(0, resultList.size)
         assertEquals(0, queue.size)
     }

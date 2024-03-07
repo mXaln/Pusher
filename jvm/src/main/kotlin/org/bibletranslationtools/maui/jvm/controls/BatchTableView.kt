@@ -10,6 +10,7 @@ import javafx.scene.control.TableView
 import javafx.scene.layout.Priority
 import org.bibletranslationtools.maui.common.data.Batch
 import org.bibletranslationtools.maui.jvm.assets.AppResources
+import org.bibletranslationtools.maui.jvm.customizeScrollbarSkin
 import org.bibletranslationtools.maui.jvm.onChangeAndDoNow
 import org.bibletranslationtools.maui.jvm.ui.UploadTarget
 import org.kordamp.ikonli.javafx.FontIcon
@@ -34,6 +35,8 @@ class BatchTableView(
         uploadTargetProperty.onChangeAndDoNow {
             togglePseudoClass("accent", it == UploadTarget.DEV)
         }
+
+        runLater { customizeScrollbarSkin() }
 
         vgrow = Priority.ALWAYS
         columnResizePolicy = CONSTRAINED_RESIZE_POLICY

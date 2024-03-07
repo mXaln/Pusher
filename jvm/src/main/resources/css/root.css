@@ -20,6 +20,12 @@
 
     -wa-white: #FFF;
 
+    -wa-regular-text: -wa-gray-darker;
+
+    /* dialog */
+    -wa-dialog-overlay: -wa-gray;
+    -wa-dialog-background: -wa-white;
+
     -wa-shadow0: dropshadow(gaussian, rgba(0, 0, 0, 0.0), 0, 0, 0, 0);
     -wa-shadow1: dropshadow(gaussian, rgba(0, 0, 0, 0.24), 2, 0, 0, 1);
     -wa-shadow2: dropshadow(gaussian, rgba(0,0,0,0.23), 6, 0, 0, 3);

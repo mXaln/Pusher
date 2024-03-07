@@ -30,7 +30,7 @@ class WavProcessor : FileProcessor() {
         } catch (ex: Exception) {
             Media(
                 file = file,
-                status = FileStatus.WARNING,
+                status = FileStatus.REJECTED,
                 statusMessage = ex.message
             )
         }

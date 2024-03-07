@@ -48,6 +48,11 @@
     -fx-cursor: disappear;
 }
 
+.btn--primary .ikonli-font-icon {
+    -fx-icon-color: -wa-white;
+    -fx-icon-size: 20px;
+}
+
 /* Secondary Button */
 .btn--secondary {
     -fx-background-color: transparent;
@@ -64,6 +69,11 @@
     -fx-text-fill: -wa-gray;
     -fx-border-color: -wa-gray-light;
     -fx-border-width: 2px;
+}
+
+.btn--secondary .ikonli-font-icon {
+    -fx-icon-color: -wa-primary;
+    -fx-icon-size: 20px;
 }
 
 /* Button Icon */

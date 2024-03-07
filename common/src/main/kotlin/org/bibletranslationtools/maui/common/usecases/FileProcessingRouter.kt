@@ -27,7 +27,7 @@ class FileProcessingRouter @Inject constructor(private val directoryProvider: ID
 
     private fun processFile(file: File, resultList: MutableList<FileResult>) {
         processors.forEach {
-            it.process(file, fileQueue, resultList)?.let { result ->
+            it.process(file, fileQueue)?.let { result ->
                 resultList.add(result)
             }
         }
@@ -38,7 +38,7 @@ class FileProcessingRouter @Inject constructor(private val directoryProvider: ID
             CueProcessor(),
             JpgProcessor(),
             Mp3Processor(),
-            TrProcessor(),
+            TrProcessor(directoryProvider),
             WavProcessor(),
             OratureFileProcessor(directoryProvider)
         )

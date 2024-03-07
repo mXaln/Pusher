@@ -17,7 +17,7 @@ class DirectoryProvider(private val appName: String) : IDirectoryProvider {
         get() = getAppDataDirectory("temp")
 
     override val batchDirectory: File
-        get() = getAppDataDirectory("batch")
+        get() = getAppDataDirectory("batches")
 
     override val cacheDirectory: File
         get() = getAppDataDirectory("cache")

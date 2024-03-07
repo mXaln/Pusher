@@ -41,7 +41,7 @@ class OratureFileProcessorTest {
         val queue: Queue<File> = LinkedList<File>()
         val status = OratureFileProcessor().process(oratureFile, queue, exportList)
 
-        assertEquals(FileStatus.SUCCESS, status)
+        assertEquals(FileStatus.PROCESSED, status)
         assertEquals(2, queue.size)
         assertEquals(0, exportList.size)
     }
@@ -53,7 +53,7 @@ class OratureFileProcessorTest {
         val queue: Queue<File> = LinkedList<File>()
         val status = OratureFileProcessor().process(anyZipFile, queue, exportList)
 
-        assertEquals(FileStatus.ERROR, status)
+        assertEquals(FileStatus.REJECTED, status)
         assertEquals(0, queue.size)
         assertEquals(0, exportList.size)
     }

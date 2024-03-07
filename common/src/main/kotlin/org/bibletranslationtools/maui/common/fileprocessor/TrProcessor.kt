@@ -31,7 +31,7 @@ class TrProcessor(private val directoryProvider: IDirectoryProvider) : FileProce
         } catch (ex: Exception) {
             Media(
                 file = file,
-                status = FileStatus.WARNING,
+                status = FileStatus.REJECTED,
                 statusMessage = ex.message
             )
         }

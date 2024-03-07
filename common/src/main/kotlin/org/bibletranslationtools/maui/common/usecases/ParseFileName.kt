@@ -69,7 +69,7 @@ class ParseFileName(private val file: File) {
                 null,
                 findQuality(),
                 findGrouping(),
-                FileStatus.SUCCESS
+                FileStatus.PROCESSED
         )
     }
 

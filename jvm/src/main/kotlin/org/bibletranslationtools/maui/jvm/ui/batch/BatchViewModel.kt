@@ -73,12 +73,19 @@ class BatchViewModel : ViewModel() {
             .doFinally { /*isProcessing.set(false)*/ }
             .subscribe { resultList ->
                 resultList.forEach {
-                    if (it.status == FileStatus.ERROR) {
+                    if (it.status == FileStatus.REJECTED) {
                         /*emitErrorMessage(
                             message = messages["fileNotRecognized"],
                             fileName = it.requestedFile?.name ?: ""
                         )*/
-                        println("File ${it.requestedFile} rejected")
+                        it.data?.file?.let { media ->
+                            println("File $media rejected")
+                            it.requestedFile?.let { parent ->
+                                println("Parent file: $parent")
+                            }
+                        } ?: run {
+                            println("File ${it.requestedFile} rejected")
+                        }
                         println(it.statusMessage)
                     } else {
                         val item = mediaMapper.fromEntity(it.data!!)

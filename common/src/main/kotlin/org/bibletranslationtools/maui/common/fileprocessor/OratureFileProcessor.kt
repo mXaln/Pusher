@@ -39,11 +39,11 @@ class OratureFileProcessor(private val directoryProvider: IDirectoryProvider) : 
 
             // Return null on success here because
             // we don't want to add this orature file to the result list;
-            // only media files inside the orature file will be added
+            // only media files inside the orature file will be added later
             null
         } catch (ex: Exception) {
             logger.error("An error occurred in process", ex)
-            FileResult(FileStatus.ERROR, ex.message, null, file)
+            FileResult(FileStatus.REJECTED, ex.message, null, file)
         }
     }
 

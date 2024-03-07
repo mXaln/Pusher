@@ -13,6 +13,10 @@ import org.bibletranslationtools.maui.jvm.ListenerDisposer
 import org.bibletranslationtools.maui.jvm.assets.AppResources
 import org.bibletranslationtools.maui.jvm.controls.SearchBar
 import org.bibletranslationtools.maui.jvm.controls.batchTableView
+import org.bibletranslationtools.maui.jvm.controls.dialog.ConfirmDialog
+import org.bibletranslationtools.maui.jvm.controls.dialog.ProgressDialog
+import org.bibletranslationtools.maui.jvm.controls.dialog.confirmDialog
+import org.bibletranslationtools.maui.jvm.controls.dialog.progressDialog
 import org.bibletranslationtools.maui.jvm.controls.searchBar
 import org.bibletranslationtools.maui.jvm.onChangeAndDoNowWithDisposer
 import org.bibletranslationtools.maui.jvm.onSelectionChangeWithDisposer
@@ -34,8 +38,14 @@ class BatchPage : View() {
     private lateinit var tableView: TableView<Batch>
     private lateinit var searchBar: SearchBar
 
+    private lateinit var confirmDialog: ConfirmDialog
+    private lateinit var progressDialog: ProgressDialog
+
     init {
         importStylesheet(AppResources.load("/css/batch-page.css"))
+
+        initializeConfirmDialog()
+        initializeProgressDialog()
     }
 
     override val root = borderpane {
@@ -122,6 +132,17 @@ class BatchPage : View() {
                         addClass("batch__search__title")
                     }
 
+                    button("confirm dialog") {
+                        action {
+                            confirmDialog.open()
+                        }
+                    }
+                    button("progress dialog") {
+                        action {
+                            progressDialog.open()
+                        }
+                    }
+
                     region {
                         hgrow = Priority.ALWAYS
                     }
@@ -196,5 +217,56 @@ class BatchPage : View() {
             },
             viewModel.sortedBatches
         )
+    }
+
+    private fun initializeConfirmDialog() {
+        confirmDialog {
+            confirmDialog = this
+
+            titleIconProperty.set(FontIcon(MaterialDesign.MDI_CHECK_CIRCLE))
+            titleTextProperty.set("Export Successful")
+            detailsTextProperty.set("You have successfully exported your files to:\n\n" +
+                    "/Desktop/MAUI/Indonesian/amos-id-01202024.maui\n\n" +
+                    "Do you wish to open your exported CSV file?\n\n" +
+                    "You have successfully exported your files to:\n\n" +
+                    "/Desktop/MAUI/Indonesian/amos-id-01202024.maui\n\n" +
+                    "Do you wish to open your exported CSV file?\n\n" +
+                    "You have successfully exported your files to:\n\n" +
+                    "/Desktop/MAUI/Indonesian/amos-id-01202024.maui\n\n" +
+                    "Do you wish to open your exported CSV file?\n\n" +
+                    "You have successfully exported your files to:\n\n" +
+                    "/Desktop/MAUI/Indonesian/amos-id-01202024.maui\n\n" +
+                    "Do you wish to open your exported CSV file?\n\n")
+
+            messageTextProperty.set("File exported!")
+            cancelButtonTextProperty.set("Close")
+            confirmButtonTextProperty.set("Open CSV")
+            //confirmButtonTextProperty.set("OK")
+
+            cancelButtonIconProperty.set(FontIcon(MaterialDesign.MDI_CLOSE_CIRCLE))
+            confirmButtonIconProperty.set(FontIcon(MaterialDesign.MDI_OPEN_IN_APP))
+
+            uploadTargetProperty.bind(batchDataStore.uploadTargetProperty)
+
+            setOnConfirm {
+                println("Confirmed")
+                close()
+            }
+
+            setOnCancel {
+                println("Cancelled")
+                close()
+            }
+        }
+    }
+
+    private fun initializeProgressDialog() {
+        progressDialog {
+            progressDialog = this
+
+            titleTextProperty.set("Exporting Files")
+            messageTextProperty.set("Your files are being exported. This will take a moment.")
+            uploadTargetProperty.bind(batchDataStore.uploadTargetProperty)
+        }
     }
 }
