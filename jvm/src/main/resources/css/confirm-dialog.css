@@ -2,7 +2,7 @@
     -fx-pref-width: 500px;
     -fx-min-height: 200px;
     -fx-max-height: 500px;
-    -fx-background-color: -wa-dialog-background;
+    -fx-background-color: -wa-white;
 }
 
 .confirm-dialog__header {
@@ -23,24 +23,16 @@
     -fx-icon-color: -wa-primary;
 }
 
-.confirm-dialog:accent .confirm-dialog__header .label {
-    -fx-text-fill: -wa-accent;
-}
-
-.confirm-dialog:accent .confirm-dialog__header .ikonli-font-icon {
-    -fx-icon-color: -wa-accent;
-}
-
 .confirm-dialog__body {
     -fx-spacing: 16;
     -fx-padding: 12px 16px;
     -fx-text-alignment: justify;
-    -fx-background-color: -wa-dialog-background;
+    -fx-background-color: -wa-white;
     -fx-alignment: top-left;
 }
 
 .confirm-dialog__message {
-    -fx-text-fill: -wa-regular-text;
+    -fx-text-fill: -wa-gray-darker;
     -fx-font-size: 1.4em;
     -fx-wrap-text: true;
 }
@@ -53,7 +45,7 @@
 .confirm-dialog__footer {
     -fx-spacing: 16;
     -fx-padding: 12px 16px;
-    -fx-background-color: -wa-dialog-background;
+    -fx-background-color: -wa-white;
 }
 
 .confirm-dialog__footer .btn {
@@ -61,17 +53,4 @@
     -fx-pref-height: 48px;
     -fx-font-size: 1.25em;
     -fx-font-weight: 500;
-}
-
-.confirm-dialog:accent .confirm-dialog__footer .btn--secondary {
-    -fx-border-color: -wa-accent;
-    -fx-text-fill: -wa-accent;
-}
-
-.confirm-dialog:accent .confirm-dialog__footer .btn--secondary .ikonli-font-icon {
-    -fx-icon-color: -wa-accent;
-}
-
-.confirm-dialog:accent .confirm-dialog__footer .btn--primary {
-    -fx-background-color: -wa-accent;
 }

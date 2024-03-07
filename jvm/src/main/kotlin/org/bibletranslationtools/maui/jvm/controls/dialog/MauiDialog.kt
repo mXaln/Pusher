@@ -1,5 +1,6 @@
 package org.bibletranslationtools.maui.jvm.controls.dialog
 
+import javafx.beans.property.SimpleObjectProperty
 import javafx.geometry.Bounds
 import javafx.scene.layout.Priority
 import javafx.scene.layout.Region
@@ -10,11 +11,14 @@ import javafx.stage.Modality
 import javafx.stage.Stage
 import javafx.stage.StageStyle
 import org.bibletranslationtools.maui.jvm.assets.AppResources
+import org.bibletranslationtools.maui.jvm.onChangeAndDoNow
+import org.bibletranslationtools.maui.jvm.ui.UploadTarget
 import tornadofx.*
 
-abstract class OtterDialog : Fragment() {
-    private val roundRadius = 15.0
+abstract class MauiDialog : Fragment() {
+    val uploadTargetProperty = SimpleObjectProperty<UploadTarget>()
 
+    private val roundRadius = 15.0
     private val mainContainer = VBox().apply {
         addClass("maui-dialog-container")
     }
@@ -28,6 +32,8 @@ abstract class OtterDialog : Fragment() {
         importStylesheet(AppResources.load("/css/maui-dialog.css"))
         importStylesheet(AppResources.load("/css/confirm-dialog.css"))
         importStylesheet(AppResources.load("/css/progress-dialog.css"))
+
+        bindUploadTargetClassToRoot()
     }
 
     fun open() {
@@ -69,5 +75,20 @@ abstract class OtterDialog : Fragment() {
         rect.arcWidth = roundRadius
         rect.arcHeight = roundRadius
         region.clip = rect
+    }
+
+    private fun bindUploadTargetClassToRoot() {
+        uploadTargetProperty.onChangeAndDoNow {
+            when (it) {
+                UploadTarget.DEV -> {
+                    root.addClass(UploadTarget.DEV.styleClass)
+                    root.removeClass(UploadTarget.PROD.styleClass)
+                }
+                else -> {
+                    root.addClass(UploadTarget.PROD.styleClass)
+                    root.removeClass(UploadTarget.DEV.styleClass)
+                }
+            }
+        }
     }
 }

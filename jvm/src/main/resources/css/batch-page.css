@@ -12,25 +12,6 @@
     -fx-pref-width: 175px;
 }
 
-.batch--btn {
-    -fx-border-color: -wa-primary;
-    -fx-text-fill: -wa-primary;
-}
-
-.batch--btn .ikonli-font-icon {
-    -fx-icon-size: 16px;
-    -fx-icon-color: -wa-primary;
-}
-
-.batch-page:accent .batch--btn {
-    -fx-border-color: -wa-accent;
-    -fx-text-fill: -wa-accent;
-}
-
-.batch-page:accent .batch--btn .ikonli-font-icon {
-    -fx-icon-color: -wa-accent;
-}
-
 .batch__import {
     -fx-border-color: -wa-gray-light;
     -fx-border-width: 1px;
@@ -44,11 +25,6 @@
     -fx-background-color: -wa-primary-light;
     -fx-border-color: -wa-primary;
     -fx-border-style: segments(15, 15);
-}
-
-.batch-page:accent .batch__import:drag-over {
-    -fx-background-color: -wa-accent-light;
-    -fx-border-color: -wa-accent;
 }
 
 .batch__import__icon .ikonli-font-icon {

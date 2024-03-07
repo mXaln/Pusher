@@ -58,15 +58,6 @@
     -fx-background-color: -wa-primary-light;
 }
 
-.batch-table-view:accent .table-row-cell:hover {
-    -fx-background-color: -wa-accent-light;
-}
-
-.batch-table-view:accent .table-row-cell:empty:hover {
-    -fx-background-color: -wa-white;
-    -fx-cursor: none;
-}
-
 .batch-table-view .table-row-cell:selected .table-column,
 .batch-table-view__name {
     -fx-text-fill: -wa-gray-darker;

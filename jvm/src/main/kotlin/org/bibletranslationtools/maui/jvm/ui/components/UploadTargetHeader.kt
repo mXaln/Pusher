@@ -22,10 +22,6 @@ class UploadTargetHeader : HBox() {
 
         importStylesheet(AppResources.load("/css/upload-target-header.css"))
 
-        uploadTargetProperty.onChange {
-            togglePseudoClass("accent", it == UploadTarget.DEV)
-        }
-
         hbox {
             addClass("upload-target-header__title")
 

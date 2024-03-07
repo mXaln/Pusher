@@ -1,4 +1,4 @@
-package org.bibletranslationtools.maui.jvm.ui.work
+package org.bibletranslationtools.maui.jvm.ui.upload
 
 import javafx.beans.binding.Bindings
 import javafx.scene.layout.Priority
@@ -94,8 +94,7 @@ class UploadPage : View() {
                     }
                 }
 
-                mediaTableView(viewModel.filteredMediaItems) {
-                    uploadTargetProperty.bind(batchDataStore.uploadTargetProperty)
+                mediaTableView(viewModel.sortedMediaItems) {
                     emptyPromptProperty.set(messages["noMediaPrompt"])
 
                     fileNameColumnProperty.set(messages["fileName"])
@@ -105,6 +104,8 @@ class UploadPage : View() {
                     chapterColumnProperty.set(messages["chapter"])
                     groupingColumnProperty.set(messages["grouping"])
                     statusColumnProperty.set(messages["status"])
+
+                    viewModel.sortedMediaItems.comparatorProperty().bind(comparatorProperty())
                 }
             }
         }

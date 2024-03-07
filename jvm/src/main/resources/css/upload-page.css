@@ -19,6 +19,7 @@
 }
 
 .upload-page--btn:hover {
+    -fx-text-fill: -wa-gray-darker;
     -fx-background-color: -wa-gray-lighter;
 }
 

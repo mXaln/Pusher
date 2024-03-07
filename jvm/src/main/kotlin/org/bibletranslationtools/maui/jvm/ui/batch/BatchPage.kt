@@ -1,7 +1,6 @@
 package org.bibletranslationtools.maui.jvm.ui.batch
 
 import javafx.beans.binding.Bindings
-import javafx.beans.binding.BooleanBinding
 import javafx.event.EventHandler
 import javafx.scene.control.TableView
 import javafx.scene.input.DragEvent
@@ -18,7 +17,6 @@ import org.bibletranslationtools.maui.jvm.controls.dialog.ProgressDialog
 import org.bibletranslationtools.maui.jvm.controls.dialog.confirmDialog
 import org.bibletranslationtools.maui.jvm.controls.dialog.progressDialog
 import org.bibletranslationtools.maui.jvm.controls.searchBar
-import org.bibletranslationtools.maui.jvm.onChangeAndDoNowWithDisposer
 import org.bibletranslationtools.maui.jvm.onSelectionChangeWithDisposer
 import org.bibletranslationtools.maui.jvm.ui.BatchDataStore
 import org.bibletranslationtools.maui.jvm.ui.UploadTarget
@@ -82,7 +80,7 @@ class BatchPage : View() {
                     addClass("batch-page__controls")
 
                     button(messages["importFiles"]) {
-                        addClass("btn", "btn--secondary", "batch--btn")
+                        addClass("btn", "btn--primary")
                         graphic = FontIcon(MaterialDesign.MDI_DOWNLOAD)
 
                         action {
@@ -152,8 +150,6 @@ class BatchPage : View() {
                         promptText = messages["search"]
                         viewModel.searchQueryProperty.bind(textProperty())
                     }
-
-                    visibleProperty().bind(hasBatchesBinding())
                 }
 
                 batchTableView(viewModel.sortedBatches) {
@@ -164,7 +160,6 @@ class BatchPage : View() {
                     dateColumnProperty.set(messages["batchDate"])
                     deleteTextProperty.set(messages["deleteBatch"])
 
-                    uploadTargetProperty.bind(batchDataStore.uploadTargetProperty)
                     viewModel.sortedBatches.comparatorProperty().bind(comparatorProperty())
                 }
             }
@@ -172,10 +167,6 @@ class BatchPage : View() {
     }
 
     override fun onDock() {
-        batchDataStore.uploadTargetProperty.onChangeAndDoNowWithDisposer {
-            batchContent.togglePseudoClass("accent", it == UploadTarget.DEV)
-        }.also(listeners::add)
-
         tableView.onSelectionChangeWithDisposer {
             it?.let(viewModel::openBatch)
         }.also(listeners::add)
@@ -210,19 +201,11 @@ class BatchPage : View() {
         }
     }
 
-    private fun hasBatchesBinding(): BooleanBinding {
-        return Bindings.createBooleanBinding(
-            {
-                viewModel.sortedBatches.isNotEmpty()
-            },
-            viewModel.sortedBatches
-        )
-    }
-
     private fun initializeConfirmDialog() {
         confirmDialog {
             confirmDialog = this
 
+            uploadTargetProperty.bind(batchDataStore.uploadTargetProperty)
             titleIconProperty.set(FontIcon(MaterialDesign.MDI_CHECK_CIRCLE))
             titleTextProperty.set("Export Successful")
             detailsTextProperty.set("You have successfully exported your files to:\n\n" +
@@ -246,8 +229,6 @@ class BatchPage : View() {
             cancelButtonIconProperty.set(FontIcon(MaterialDesign.MDI_CLOSE_CIRCLE))
             confirmButtonIconProperty.set(FontIcon(MaterialDesign.MDI_OPEN_IN_APP))
 
-            uploadTargetProperty.bind(batchDataStore.uploadTargetProperty)
-
             setOnConfirm {
                 println("Confirmed")
                 close()
@@ -264,9 +245,9 @@ class BatchPage : View() {
         progressDialog {
             progressDialog = this
 
+            uploadTargetProperty.bind(batchDataStore.uploadTargetProperty)
             titleTextProperty.set("Exporting Files")
             messageTextProperty.set("Your files are being exported. This will take a moment.")
-            uploadTargetProperty.bind(batchDataStore.uploadTargetProperty)
         }
     }
 }

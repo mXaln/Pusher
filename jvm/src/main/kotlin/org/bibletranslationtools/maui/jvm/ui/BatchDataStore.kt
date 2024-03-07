@@ -6,9 +6,9 @@ import org.bibletranslationtools.maui.common.data.Batch
 import tornadofx.*
 import java.util.*
 
-enum class UploadTarget {
-    DEV,
-    PROD
+enum class UploadTarget(val target: String, val styleClass: String) {
+    DEV("dev", "dev-target"),
+    PROD("prod", "prod-target")
 }
 
 class BatchDataStore : Component(), ScopedInstance {

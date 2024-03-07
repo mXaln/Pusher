@@ -5,18 +5,10 @@
     -fx-padding: 10px 20px;
 }
 
-.main-header:accent {
-    -fx-background-color: -wa-accent;
-}
-
 .main-header-app-name__text {
     -fx-font-size: 1.5em;
-    -fx-text-fill: -wa-white;
+    -fx-text-fill: -wa-primary-text;
     -fx-font-weight: bold;
-}
-
-.main-header:accent .main-header-app-name__text {
-    -fx-text-fill: -wa-gray-darker;
 }
 
 .main-header-home__icon {
@@ -24,10 +16,6 @@
 }
 
 .main-header-home__icon .ikonli-font-icon {
-    -fx-icon-color: -wa-white;
+    -fx-icon-color: -wa-primary-text;
     -fx-icon-size: 30px;
-}
-
-.main-header:accent .main-header-home__icon .ikonli-font-icon {
-    -fx-icon-color: -wa-gray-darker;
 }

@@ -23,10 +23,6 @@ class MainHeader : HBox() {
 
         importStylesheet(AppResources.load("/css/main-header.css"))
 
-        uploadTargetProperty.onChange {
-            togglePseudoClass("accent", it == UploadTarget.DEV)
-        }
-
         label {
             addClass("main-header-app-name__text")
             textProperty().bind(appTitleProperty)

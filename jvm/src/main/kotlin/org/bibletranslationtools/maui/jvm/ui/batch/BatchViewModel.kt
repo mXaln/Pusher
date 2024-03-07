@@ -13,7 +13,7 @@ import org.bibletranslationtools.maui.jvm.di.IDependencyGraphProvider
 import org.bibletranslationtools.maui.jvm.mappers.MediaMapper
 import org.bibletranslationtools.maui.jvm.ui.BatchDataStore
 import org.bibletranslationtools.maui.jvm.ui.NavigationMediator
-import org.bibletranslationtools.maui.jvm.ui.work.UploadPage
+import org.bibletranslationtools.maui.jvm.ui.upload.UploadPage
 import tornadofx.ViewModel
 import tornadofx.observableListOf
 import tornadofx.onChange
@@ -29,8 +29,8 @@ class BatchViewModel : ViewModel() {
 
     private val navigator: NavigationMediator by inject()
     private val batchDataStore: BatchDataStore by inject()
-    private val batches = observableListOf<Batch>()
 
+    private val batches = observableListOf<Batch>()
     private val filteredBatches = FilteredList(batches)
     val sortedBatches = SortedList(filteredBatches)
     val searchQueryProperty = SimpleStringProperty()

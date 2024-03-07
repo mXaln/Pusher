@@ -1,5 +1,5 @@
 .startup__page {
-    -fx-background-color: -wa-primary;
+    -fx-background-color: -wa-primary-common;
 }
 
 .startup__page-main {
@@ -32,9 +32,9 @@
 }
 
 .upload-target__btn--dev {
-    -fx-text-fill: -wa-accent;
+    -fx-text-fill: -wa-accent-common;
 }
 
 .upload-target__btn--prod {
-    -fx-text-fill: -wa-primary;
+    -fx-text-fill: -wa-primary-common;
 }

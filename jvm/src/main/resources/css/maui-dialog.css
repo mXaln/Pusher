@@ -1,5 +1,5 @@
 .maui-dialog-overlay {
-    -fx-background-color: -wa-dialog-overlay;
+    -fx-background-color: -wa-gray;
     -fx-alignment: center;
     -fx-padding: 50px;
 }

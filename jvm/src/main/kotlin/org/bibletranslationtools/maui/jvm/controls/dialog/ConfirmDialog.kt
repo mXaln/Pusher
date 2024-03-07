@@ -8,12 +8,10 @@ import javafx.event.EventHandler
 import javafx.scene.Parent
 import javafx.scene.layout.Priority
 import org.bibletranslationtools.maui.jvm.customizeScrollbarSkin
-import org.bibletranslationtools.maui.jvm.onChangeAndDoNow
-import org.bibletranslationtools.maui.jvm.ui.UploadTarget
 import org.kordamp.ikonli.javafx.FontIcon
 import tornadofx.*
 
-class ConfirmDialog : OtterDialog() {
+class ConfirmDialog : MauiDialog() {
 
     val titleIconProperty = SimpleObjectProperty<FontIcon>()
     val titleTextProperty = SimpleStringProperty()
@@ -23,7 +21,6 @@ class ConfirmDialog : OtterDialog() {
     val confirmButtonIconProperty = SimpleObjectProperty<FontIcon>()
     val cancelButtonTextProperty = SimpleStringProperty()
     val cancelButtonIconProperty = SimpleObjectProperty<FontIcon>()
-    val uploadTargetProperty = SimpleObjectProperty<UploadTarget>()
 
     private val onCancelActionProperty = SimpleObjectProperty<EventHandler<ActionEvent>>()
     private val onConfirmActionProperty = SimpleObjectProperty<EventHandler<ActionEvent>>()
@@ -32,10 +29,6 @@ class ConfirmDialog : OtterDialog() {
 
     private val content = vbox {
         addClass("confirm-dialog")
-
-        uploadTargetProperty.onChangeAndDoNow {
-            togglePseudoClass("accent", it == UploadTarget.DEV)
-        }
 
         hbox {
             addClass("confirm-dialog__header")
