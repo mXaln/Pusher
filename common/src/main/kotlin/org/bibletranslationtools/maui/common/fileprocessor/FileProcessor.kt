@@ -9,12 +9,13 @@ import java.util.Queue
 abstract class FileProcessor {
     abstract fun process(
         file: File,
-        fileQueue: Queue<File>
+        fileQueue: Queue<Pair<File, File?>>,
+        parentFile: File? = null
     ): FileResult?
 
-    protected fun getMedia(file: File): Media {
+    protected fun getMedia(file: File, parentFile: File?): Media {
         return try {
-            ParseFileName(file).parse()
+            ParseFileName(file, parentFile).parse()
         } catch (e: Exception) {
             throw Exception("Error while parsing file name.")
         }

@@ -8,6 +8,7 @@ import javafx.beans.property.SimpleStringProperty
 import org.bibletranslationtools.maui.common.data.*
 import org.bibletranslationtools.maui.common.extensions.CompressedExtensions
 import tornadofx.*
+import java.io.File
 
 data class MediaItem(private val data: Media) : Comparable<MediaItem> {
 
@@ -39,6 +40,9 @@ data class MediaItem(private val data: Media) : Comparable<MediaItem> {
 
     val statusMessageProperty = SimpleStringProperty(data.statusMessage)
     var statusMessage: String? by statusMessageProperty
+
+    val parentFileProperty = SimpleObjectProperty<File>(data.parentFile)
+    var parentFile: File? by parentFileProperty
 
     val isContainerProperty = SimpleBooleanProperty(data.isContainer)
     val isContainer by isContainerProperty

@@ -20,7 +20,8 @@ class MediaMapper @Inject constructor() : IMapper<Media, MediaItem> {
             type.mediaQuality,
             type.grouping,
             type.status,
-            type.statusMessage
+            type.statusMessage,
+            type.parentFile
         )
     }
 }

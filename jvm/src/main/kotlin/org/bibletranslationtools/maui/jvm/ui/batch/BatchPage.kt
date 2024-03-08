@@ -12,23 +12,21 @@ import org.bibletranslationtools.maui.jvm.ListenerDisposer
 import org.bibletranslationtools.maui.jvm.assets.AppResources
 import org.bibletranslationtools.maui.jvm.controls.SearchBar
 import org.bibletranslationtools.maui.jvm.controls.batchTableView
-import org.bibletranslationtools.maui.jvm.controls.dialog.ConfirmDialog
-import org.bibletranslationtools.maui.jvm.controls.dialog.ProgressDialog
-import org.bibletranslationtools.maui.jvm.controls.dialog.confirmDialog
-import org.bibletranslationtools.maui.jvm.controls.dialog.progressDialog
+import org.bibletranslationtools.maui.jvm.controls.dialog.*
 import org.bibletranslationtools.maui.jvm.controls.searchBar
 import org.bibletranslationtools.maui.jvm.onSelectionChangeWithDisposer
-import org.bibletranslationtools.maui.jvm.ui.BatchDataStore
 import org.bibletranslationtools.maui.jvm.ui.UploadTarget
 import org.bibletranslationtools.maui.jvm.ui.components.mainHeader
 import org.bibletranslationtools.maui.jvm.ui.components.uploadTargetHeader
+import org.bibletranslationtools.maui.jvm.ui.events.DialogEvent
+import org.bibletranslationtools.maui.jvm.ui.events.DeleteBatchEvent
+import org.bibletranslationtools.maui.jvm.ui.events.ProgressDialogEvent
 import org.kordamp.ikonli.javafx.FontIcon
 import org.kordamp.ikonli.materialdesign.MaterialDesign
 import tornadofx.*
 
 class BatchPage : View() {
     private val viewModel: BatchViewModel by inject()
-    private val batchDataStore: BatchDataStore by inject()
 
     private val listeners = mutableListOf<ListenerDisposer>()
 
@@ -44,12 +42,24 @@ class BatchPage : View() {
 
         initializeConfirmDialog()
         initializeProgressDialog()
+
+        subscribe<DialogEvent> {
+            openConfirmDialog(it)
+        }
+
+        subscribe<DeleteBatchEvent> {
+            deleteBatch(it.batch)
+        }
+
+        subscribe<ProgressDialogEvent> {
+            openProgressDialog(it)
+        }
     }
 
     override val root = borderpane {
         top = mainHeader {
-            uploadTargetProperty.bind(batchDataStore.uploadTargetProperty)
-            appTitleProperty.bind(batchDataStore.appTitleProperty)
+            uploadTargetProperty.bind(viewModel.uploadTargetProperty)
+            appTitleProperty.bind(viewModel.appTitleProperty)
         }
 
         center = vbox {
@@ -58,10 +68,10 @@ class BatchPage : View() {
             batchContent = this
 
             uploadTargetHeader {
-                uploadTargetProperty.bindBidirectional(batchDataStore.uploadTargetProperty)
-                Bindings.bindContent(uploadTargets, batchDataStore.uploadTargets)
+                uploadTargetProperty.bindBidirectional(viewModel.uploadTargetProperty)
+                Bindings.bindContent(uploadTargets, viewModel.uploadTargets)
 
-                uploadTargetTextProperty.bind(batchDataStore.uploadTargetProperty.stringBinding {
+                uploadTargetTextProperty.bind(viewModel.uploadTargetProperty.stringBinding {
                     when (it) {
                         UploadTarget.DEV -> messages["targetDev"]
                         UploadTarget.PROD -> messages["targetProd"]
@@ -130,17 +140,6 @@ class BatchPage : View() {
                         addClass("batch__search__title")
                     }
 
-                    button("confirm dialog") {
-                        action {
-                            confirmDialog.open()
-                        }
-                    }
-                    button("progress dialog") {
-                        action {
-                            progressDialog.open()
-                        }
-                    }
-
                     region {
                         hgrow = Priority.ALWAYS
                     }
@@ -177,6 +176,7 @@ class BatchPage : View() {
         searchBar.text = ""
         listeners.forEach(ListenerDisposer::dispose)
         listeners.clear()
+        tableView.selectionModel.select(-1)
         viewModel.onUndock()
     }
 
@@ -204,53 +204,113 @@ class BatchPage : View() {
     private fun initializeConfirmDialog() {
         confirmDialog {
             confirmDialog = this
+            uploadTargetProperty.bind(viewModel.uploadTargetProperty)
+        }
+    }
 
-            uploadTargetProperty.bind(batchDataStore.uploadTargetProperty)
-            //titleIconProperty.set(FontIcon(MaterialDesign.MDI_CHECK_CIRCLE))
-            titleIconProperty.set(FontIcon(MaterialDesign.MDI_ALERT))
-            titleTextProperty.set("Export Successful")
-            detailsTextProperty.set("You have successfully exported your files to:\n\n" +
-                    "/Desktop/MAUI/Indonesian/amos-id-01202024.maui\n\n" +
-                    "Do you wish to open your exported CSV file?\n\n" +
-                    "You have successfully exported your files to:\n\n" +
-                    "/Desktop/MAUI/Indonesian/amos-id-01202024.maui\n\n" +
-                    "Do you wish to open your exported CSV file?\n\n" +
-                    "You have successfully exported your files to:\n\n" +
-                    "/Desktop/MAUI/Indonesian/amos-id-01202024.maui\n\n" +
-                    "Do you wish to open your exported CSV file?\n\n" +
-                    "You have successfully exported your files to:\n\n" +
-                    "/Desktop/MAUI/Indonesian/amos-id-01202024.maui\n\n" +
-                    "Do you wish to open your exported CSV file?\n\n")
+    private fun openConfirmDialog(event: DialogEvent) {
+        resetConfirmDialog()
+        when (event.type) {
+            DialogType.SUCCESS -> openSuccessDialog(event)
+            DialogType.ERROR -> openErrorDialog(event)
+            DialogType.DELETE -> openDeleteDialog(event)
+            else -> {}
+        }
+    }
 
-            messageTextProperty.set("File exported!")
-            cancelButtonTextProperty.set("Close")
-            confirmButtonTextProperty.set("Open CSV")
-            //confirmButtonTextProperty.set("OK")
+    private fun openSuccessDialog(event: DialogEvent) {
+        confirmDialog.apply {
+            alertProperty.set(false)
+            titleTextProperty.set(event.title)
+            messageTextProperty.set(event.message)
+            detailsTextProperty.set(event.details)
+            primaryButtonTextProperty.set(messages["ok"])
+            setOnPrimaryAction { close() }
+            open()
+        }
+    }
 
+    private fun openErrorDialog(event: DialogEvent) {
+        confirmDialog.apply {
             alertProperty.set(true)
+            titleTextProperty.set(event.title)
+            messageTextProperty.set(event.message)
+            detailsTextProperty.set(event.details)
+            primaryButtonTextProperty.set(messages["ok"])
+            setOnPrimaryAction { close() }
+            open()
+        }
+    }
 
-            cancelButtonIconProperty.set(FontIcon(MaterialDesign.MDI_CLOSE_CIRCLE))
-            confirmButtonIconProperty.set(FontIcon(MaterialDesign.MDI_OPEN_IN_APP))
+    private fun openDeleteDialog(event: DialogEvent) {
+        confirmDialog.apply {
+            alertProperty.set(true)
+            titleTextProperty.set(event.title)
+            messageTextProperty.set(event.message)
+            detailsTextProperty.set(event.details)
+            primaryButtonTextProperty.set(messages["cancel"])
+            primaryButtonIconProperty.set(FontIcon(MaterialDesign.MDI_CLOSE_CIRCLE))
+            secondaryButtonTextProperty.set(messages["delete"])
+            secondaryButtonIconProperty.set(FontIcon(MaterialDesign.MDI_DELETE))
 
-            setOnConfirm {
-                println("Confirmed")
+            setOnPrimaryAction { close() }
+            setOnSecondaryAction { println("deleting batch...") }
+            open()
+        }
+    }
+
+    private fun openDeleteDialog(batch: Batch) {
+        resetConfirmDialog()
+        confirmDialog.apply {
+            alertProperty.set(true)
+            titleTextProperty.set(messages["deleteBatch"])
+            messageTextProperty.set(messages["deleteBatchWarning"])
+            detailsTextProperty.set(messages["wishToContinue"])
+            primaryButtonTextProperty.set(messages["cancel"])
+            primaryButtonIconProperty.set(FontIcon(MaterialDesign.MDI_CLOSE_CIRCLE))
+            secondaryButtonTextProperty.set(messages["delete"])
+            secondaryButtonIconProperty.set(FontIcon(MaterialDesign.MDI_DELETE))
+
+            setOnPrimaryAction { close() }
+            setOnSecondaryAction {
                 close()
+                viewModel.deleteBatch(batch)
             }
+            open()
+        }
+    }
 
-            setOnCancel {
-                println("Cancelled")
-                close()
-            }
+    private fun resetConfirmDialog() {
+        confirmDialog.apply {
+            alertProperty.set(false)
+            titleTextProperty.set(null)
+            messageTextProperty.set(null)
+            detailsTextProperty.set(null)
+            primaryButtonTextProperty.set(null)
+            primaryButtonIconProperty.set(null)
+            onPrimaryActionProperty.set(null)
+            secondaryButtonTextProperty.set(null)
+            secondaryButtonIconProperty.set(null)
+            onSecondaryActionProperty.set(null)
         }
     }
 
     private fun initializeProgressDialog() {
         progressDialog {
             progressDialog = this
-
-            uploadTargetProperty.bind(batchDataStore.uploadTargetProperty)
-            titleTextProperty.set("Exporting Files")
-            messageTextProperty.set("Your files are being exported. This will take a moment.")
+            uploadTargetProperty.bind(viewModel.uploadTargetProperty)
         }
+    }
+
+    private fun openProgressDialog(event: ProgressDialogEvent) {
+        progressDialog.apply {
+            titleTextProperty.set(event.title)
+            messageTextProperty.set(event.message)
+            if (event.show) open() else close()
+        }
+    }
+
+    private fun deleteBatch(batch: Batch) {
+        openDeleteDialog(batch)
     }
 }

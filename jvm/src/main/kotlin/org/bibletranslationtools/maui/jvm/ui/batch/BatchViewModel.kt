@@ -3,21 +3,27 @@ package org.bibletranslationtools.maui.jvm.ui.batch
 import com.github.thomasnield.rxkotlinfx.observeOnFx
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
+import javafx.beans.property.SimpleBooleanProperty
+import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.transformation.FilteredList
 import javafx.collections.transformation.SortedList
 import org.bibletranslationtools.maui.common.data.Batch
+import org.bibletranslationtools.maui.common.data.FileResult
 import org.bibletranslationtools.maui.common.data.FileStatus
 import org.bibletranslationtools.maui.common.usecases.FileProcessingRouter
+import org.bibletranslationtools.maui.jvm.controls.dialog.DialogType
 import org.bibletranslationtools.maui.jvm.di.IDependencyGraphProvider
 import org.bibletranslationtools.maui.jvm.mappers.MediaMapper
 import org.bibletranslationtools.maui.jvm.ui.BatchDataStore
 import org.bibletranslationtools.maui.jvm.ui.NavigationMediator
+import org.bibletranslationtools.maui.jvm.ui.UploadTarget
+import org.bibletranslationtools.maui.jvm.ui.events.DialogEvent
+import org.bibletranslationtools.maui.jvm.ui.events.ProgressDialogEvent
 import org.bibletranslationtools.maui.jvm.ui.upload.UploadPage
-import tornadofx.ViewModel
-import tornadofx.observableListOf
-import tornadofx.onChange
+import tornadofx.*
 import java.io.File
+import java.text.MessageFormat
 import java.time.LocalDateTime
 import java.util.function.Predicate
 import javax.inject.Inject
@@ -35,8 +41,16 @@ class BatchViewModel : ViewModel() {
     val sortedBatches = SortedList(filteredBatches)
     val searchQueryProperty = SimpleStringProperty()
 
+    val appTitleProperty = SimpleStringProperty()
+    val uploadTargetProperty = SimpleObjectProperty<UploadTarget>()
+    val uploadTargets = observableListOf<UploadTarget>()
+
     init {
         (app as IDependencyGraphProvider).dependencyGraph.inject(this)
+
+        appTitleProperty.bind(batchDataStore.appTitleProperty)
+        uploadTargetProperty.bind(batchDataStore.uploadTargetProperty)
+        uploadTargets.bind(batchDataStore.uploadTargets) { it }
 
         loadBatches()
         setupBatchSearchListener()
@@ -49,7 +63,13 @@ class BatchViewModel : ViewModel() {
     }
 
     fun onDropFiles(files: List<File>) {
-        // isProcessing.set(true)
+        val event = ProgressDialogEvent(
+            true,
+            messages["importingFiles"],
+            messages["importingFilesMessage"]
+        )
+        fire(event)
+
         val filesToImport = prepareFilesToImport(files)
         importFiles(filesToImport)
     }
@@ -70,44 +90,36 @@ class BatchViewModel : ViewModel() {
         }
             .subscribeOn(Schedulers.io())
             .observeOnFx()
-            .doFinally { /*isProcessing.set(false)*/ }
+            .doFinally { fire(ProgressDialogEvent(false))}
             .subscribe { resultList ->
-                resultList.forEach {
-                    if (it.status == FileStatus.REJECTED) {
-                        /*emitErrorMessage(
-                            message = messages["fileNotRecognized"],
-                            fileName = it.requestedFile?.name ?: ""
-                        )*/
-                        it.data?.file?.let { media ->
-                            println("File $media rejected")
-                            it.requestedFile?.let { parent ->
-                                println("Parent file: $parent")
-                            }
-                        } ?: run {
-                            println("File ${it.requestedFile} rejected")
-                        }
-                        println(it.statusMessage)
-                    } else {
-                        val item = mediaMapper.fromEntity(it.data!!)
-
-                        println(item.file)
-                        println("Language: ${item.language}")
-                        println("Resource Type: ${item.resourceType}")
-                        println("Book: ${item.book}")
-                        println("Chapter: ${item.chapter}")
-                        println("Status: ${item.status}")
-                        println("Message: ${item.statusMessage}")
-                    }
-                    println("------------------------------------------")
-                    // if (!mediaItems.contains(item)) mediaItems.add(item)
+                if (resultList.any { it.status == FileStatus.REJECTED }) {
+                    val event = DialogEvent(
+                        type = DialogType.ERROR,
+                        title = messages["errorOccurred"],
+                        message = messages["importFailed"],
+                        details = createErrorReport(resultList)
+                    )
+                    fire(event)
+                } else {
+                    println("success")
                 }
-                // mediaItems.sort()
             }
     }
 
     fun openBatch(batch: Batch) {
         batchDataStore.activeBatchProperty.set(batch)
         navigator.dock<UploadPage>()
+    }
+
+    fun deleteBatch(batch: Batch) {
+        batches.remove(batch)
+        val event = DialogEvent(
+            type = DialogType.SUCCESS,
+            title = messages["deleteSuccessful"],
+            message = messages["batchDeleted"],
+            details = batch.name
+        )
+        fire(event)
     }
 
     private fun loadBatches() {
@@ -152,5 +164,25 @@ class BatchViewModel : ViewModel() {
                 }
             }
         }
+    }
+
+    private fun createErrorReport(resultList: List<FileResult>): String {
+        return resultList
+            .filter { it.status == FileStatus.REJECTED }
+            .joinToString("") {
+                val separator = "------------------------------------------------\n"
+                it.data?.let { media ->
+                    val fileText = MessageFormat.format(messages["fileInfo"], media.file)
+                    val errorText = MessageFormat.format(messages["errorInfo"], media.statusMessage)
+                    val parentFile = media.parentFile?.let { file ->
+                        MessageFormat.format(messages["parentFileInfo"], file) + "\n"
+                    } ?: ""
+                    "$fileText\n$errorText\n$parentFile$separator"
+                } ?: run {
+                    val fileText = MessageFormat.format(messages["fileInfo"], it.parentFile)
+                    val errorText = MessageFormat.format(messages["errorInfo"], it.statusMessage)
+                    "$fileText\n$errorText\n$separator"
+                }
+            }
     }
 }

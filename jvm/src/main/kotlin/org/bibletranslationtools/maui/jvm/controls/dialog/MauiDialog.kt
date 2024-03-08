@@ -21,6 +21,7 @@ abstract class MauiDialog : Fragment() {
     private val roundRadius = 15.0
     private val mainContainer = VBox().apply {
         addClass("main-container")
+        vgrow = Priority.ALWAYS
     }
 
     override val root = VBox().apply {

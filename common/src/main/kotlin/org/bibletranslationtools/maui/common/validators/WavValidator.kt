@@ -37,7 +37,7 @@ class WavValidator(private val file: File) : IValidator {
         }
 
         if (wav.wavType == WavType.WAV_WITH_EXTENSION) {
-            throw InvalidWavFileException("wav file with custom extension is not supported: $file")
+            throw InvalidWavFileException("wav file with custom extension is not supported")
         }
     }
 

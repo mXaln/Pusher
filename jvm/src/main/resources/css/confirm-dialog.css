@@ -1,7 +1,7 @@
 .confirm-dialog {
     -fx-pref-width: 500px;
     -fx-min-height: 200px;
-    -fx-max-height: 500px;
+    -fx-max-height: 600px;
     -fx-background-color: -wa-white;
 }
 
@@ -46,13 +46,20 @@
 }
 
 .confirm-dialog .details {
-    -fx-max-height: 280px;
-    -fx-padding: 5px 10px;
+    -fx-max-height: 400px;
+    -fx-padding: 5px 0;
+    -fx-border-color: transparent;
+    -fx-font-size: 1.4em;
+}
+
+.confirm-dialog .details,
+.confirm-dialog .details > .viewport {
+    -fx-background-color: transparent;
 }
 
 .confirm-dialog .footer {
     -fx-spacing: 16;
-    -fx-padding: 12px 16px;
+    -fx-padding: 0 16px 12px 16px;
     -fx-background-color: -wa-white;
 }
 
@@ -63,15 +70,15 @@
     -fx-font-weight: 500;
 }
 
-.confirm-dialog:alert .btn--cancel {
+.confirm-dialog:alert .btn--secondary {
     -fx-text-fill: -wa-red;
     -fx-border-color: -wa-red;
 }
 
-.confirm-dialog:alert .btn--cancel:hover {
+.confirm-dialog:alert .btn--secondary:hover {
     -fx-background-color: -wa-red-light;
 }
 
-.confirm-dialog:alert .btn--cancel .ikonli-font-icon {
+.confirm-dialog:alert .btn--secondary .ikonli-font-icon {
     -fx-icon-color: -wa-red;
 }

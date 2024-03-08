@@ -10,6 +10,7 @@ import javafx.scene.layout.Priority
 import org.bibletranslationtools.maui.common.data.Batch
 import org.bibletranslationtools.maui.jvm.assets.AppResources
 import org.bibletranslationtools.maui.jvm.customizeScrollbarSkin
+import org.bibletranslationtools.maui.jvm.ui.events.DeleteBatchEvent
 import org.kordamp.ikonli.javafx.FontIcon
 import org.kordamp.ikonli.materialdesign.MaterialDesign
 import tornadofx.*
@@ -80,7 +81,7 @@ class BatchTableView(
                         }
 
                         action {
-                            println("delete")
+                            FX.eventbus.fire(DeleteBatchEvent(it.value))
                         }
                     }
                 }.toProperty()

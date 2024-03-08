@@ -235,7 +235,7 @@ class MainView : View() {
         Alert(Alert.AlertType.INFORMATION).apply {
             title = messages["successTitle"]
             headerText = null
-            contentText = messages["uploadSuccessfull"]
+            contentText = messages["uploadSuccessful"]
 
             viewModel.successfulUploadProperty.onChange {
                 if (it) show() else close()

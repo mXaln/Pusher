@@ -12,7 +12,8 @@ import java.util.Queue
 class Mp3Processor : FileProcessor() {
     override fun process(
         file: File,
-        fileQueue: Queue<File>
+        fileQueue: Queue<Pair<File, File?>>,
+        parentFile: File?
     ): FileResult? {
         val ext = try {
             MediaExtensions.of(file.extension)
@@ -26,12 +27,13 @@ class Mp3Processor : FileProcessor() {
 
         val media = try {
             Mp3Validator(file).validate()
-            getMedia(file)
+            getMedia(file, parentFile)
         } catch (ex: Exception) {
             Media(
                 file = file,
                 status = FileStatus.REJECTED,
-                statusMessage = ex.message
+                statusMessage = ex.message,
+                parentFile = parentFile
             )
         }
 

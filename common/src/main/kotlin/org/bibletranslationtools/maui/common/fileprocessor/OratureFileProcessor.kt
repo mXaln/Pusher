@@ -19,7 +19,8 @@ class OratureFileProcessor(private val directoryProvider: IDirectoryProvider) : 
 
     override fun process(
         file: File,
-        fileQueue: Queue<File>
+        fileQueue: Queue<Pair<File, File?>>,
+        parentFile: File?
     ): FileResult? {
         val ext = try {
             MediaExtensions.of(file.extension)
@@ -35,7 +36,7 @@ class OratureFileProcessor(private val directoryProvider: IDirectoryProvider) : 
             OratureValidator(file).validate()
             val extension = MediaExtension.WAV.toString()
             val extractedFiles = extractAudio(file, extension)
-            fileQueue.addAll(extractedFiles)
+            fileQueue.addAll(extractedFiles.map { it to file })
 
             // Return null on success here because
             // we don't want to add this orature file to the result list;

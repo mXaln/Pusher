@@ -7,26 +7,36 @@ import javafx.beans.property.SimpleStringProperty
 import javafx.event.ActionEvent
 import javafx.event.EventHandler
 import javafx.scene.Parent
+import javafx.scene.control.ScrollPane
 import javafx.scene.layout.Priority
 import org.bibletranslationtools.maui.jvm.customizeScrollbarSkin
 import org.bibletranslationtools.maui.jvm.onChangeAndDoNow
 import org.kordamp.ikonli.javafx.FontIcon
+import org.kordamp.ikonli.materialdesign.MaterialDesign
 import tornadofx.*
 
-class ConfirmDialog : MauiDialog() {
+enum class DialogType {
+    SUCCESS,
+    DELETE,
+    ERROR,
+    CONFIRM
+}
 
-    val titleIconProperty = SimpleObjectProperty<FontIcon>()
+class ConfirmDialog : MauiDialog() {
     val titleTextProperty = SimpleStringProperty()
     val messageTextProperty = SimpleStringProperty()
     val detailsTextProperty = SimpleStringProperty()
-    val confirmButtonTextProperty = SimpleStringProperty()
-    val confirmButtonIconProperty = SimpleObjectProperty<FontIcon>()
-    val cancelButtonTextProperty = SimpleStringProperty()
-    val cancelButtonIconProperty = SimpleObjectProperty<FontIcon>()
+    val primaryButtonTextProperty = SimpleStringProperty()
+    val primaryButtonIconProperty = SimpleObjectProperty<FontIcon>()
+    val secondaryButtonTextProperty = SimpleStringProperty()
+    val secondaryButtonIconProperty = SimpleObjectProperty<FontIcon>()
     val alertProperty = SimpleBooleanProperty()
 
-    private val onCancelActionProperty = SimpleObjectProperty<EventHandler<ActionEvent>>()
-    private val onConfirmActionProperty = SimpleObjectProperty<EventHandler<ActionEvent>>()
+    val onPrimaryActionProperty = SimpleObjectProperty<EventHandler<ActionEvent>>()
+    val onSecondaryActionProperty = SimpleObjectProperty<EventHandler<ActionEvent>>()
+
+    private val normalIcon = FontIcon(MaterialDesign.MDI_CHECK_CIRCLE)
+    private val alertIcon = FontIcon(MaterialDesign.MDI_ALERT)
 
     private lateinit var scroll: Parent
 
@@ -41,7 +51,9 @@ class ConfirmDialog : MauiDialog() {
             addClass("header")
 
             label {
-                graphicProperty().bind(titleIconProperty)
+                graphicProperty().bind(alertProperty.objectBinding {
+                    if (it == true) alertIcon else normalIcon
+                })
             }
 
             label(titleTextProperty)
@@ -59,7 +71,13 @@ class ConfirmDialog : MauiDialog() {
                 addClass("details")
                 scroll = this
 
-                label(detailsTextProperty)
+                isFitToWidth = true
+                hbarPolicy = ScrollPane.ScrollBarPolicy.NEVER
+                vgrow = Priority.ALWAYS
+
+                text(detailsTextProperty).apply {
+                    wrappingWidthProperty().bind(this@scrollpane.widthProperty().minus(20.0))
+                }
 
                 visibleProperty().bind(detailsTextProperty.isNotEmpty)
                 managedProperty().bind(visibleProperty())
@@ -69,32 +87,32 @@ class ConfirmDialog : MauiDialog() {
         hbox {
             addClass("footer")
 
-            button(cancelButtonTextProperty) {
-                addClass("btn", "btn--secondary", "btn--cancel")
+            button(secondaryButtonTextProperty) {
+                addClass("btn", "btn--secondary")
 
                 hgrow = Priority.ALWAYS
                 tooltip { textProperty().bind(this@button.textProperty()) }
-                graphicProperty().bind(cancelButtonIconProperty)
+                graphicProperty().bind(secondaryButtonIconProperty)
 
-                onActionProperty().bind(onCancelActionProperty())
-                visibleProperty().bind(onCancelActionProperty.isNotNull)
+                onActionProperty().bind(onSecondaryActionProperty())
+                visibleProperty().bind(onSecondaryActionProperty.isNotNull)
                 managedProperty().bind(visibleProperty())
             }
 
-            button(confirmButtonTextProperty) {
-                addClass("btn", "btn--primary", "btn--confirm")
+            button(primaryButtonTextProperty) {
+                addClass("btn", "btn--primary")
 
                 hgrow = Priority.ALWAYS
                 tooltip { textProperty().bind(this@button.textProperty()) }
-                graphicProperty().bind(confirmButtonIconProperty)
+                graphicProperty().bind(primaryButtonIconProperty)
 
-                onActionProperty().bind(onConfirmActionProperty())
-                visibleProperty().bind(onConfirmActionProperty.isNotNull)
+                onActionProperty().bind(onPrimaryActionProperty())
+                visibleProperty().bind(onPrimaryActionProperty.isNotNull)
                 managedProperty().bind(visibleProperty())
             }
 
             visibleProperty().bind(
-                onCancelActionProperty.isNotNull.or(onConfirmActionProperty.isNotNull)
+                onSecondaryActionProperty.isNotNull.or(onPrimaryActionProperty.isNotNull)
             )
             managedProperty().bind(visibleProperty())
         }
@@ -110,20 +128,20 @@ class ConfirmDialog : MauiDialog() {
         }
     }
 
-    fun setOnCancel(op: () -> Unit) {
-        onCancelActionProperty.set(EventHandler { op.invoke() })
+    fun setOnSecondaryAction(op: () -> Unit) {
+        onSecondaryActionProperty.set(EventHandler { op.invoke() })
     }
 
-    private fun onCancelActionProperty(): ObjectProperty<EventHandler<ActionEvent>> {
-        return onCancelActionProperty
+    private fun onSecondaryActionProperty(): ObjectProperty<EventHandler<ActionEvent>> {
+        return onSecondaryActionProperty
     }
 
-    fun setOnConfirm(op: () -> Unit) {
-        onConfirmActionProperty.set(EventHandler { op.invoke() })
+    fun setOnPrimaryAction(op: () -> Unit) {
+        onPrimaryActionProperty.set(EventHandler { op.invoke() })
     }
 
-    private fun onConfirmActionProperty(): ObjectProperty<EventHandler<ActionEvent>> {
-        return onConfirmActionProperty
+    private fun onPrimaryActionProperty(): ObjectProperty<EventHandler<ActionEvent>> {
+        return onPrimaryActionProperty
     }
 }
 

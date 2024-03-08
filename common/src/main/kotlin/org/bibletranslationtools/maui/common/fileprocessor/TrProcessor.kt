@@ -13,7 +13,8 @@ import java.util.Queue
 class TrProcessor(private val directoryProvider: IDirectoryProvider) : FileProcessor() {
     override fun process(
         file: File,
-        fileQueue: Queue<File>
+        fileQueue: Queue<Pair<File, File?>>,
+        parentFile: File?
     ): FileResult? {
         val ext = try {
             MediaExtensions.of(file.extension)
@@ -27,12 +28,13 @@ class TrProcessor(private val directoryProvider: IDirectoryProvider) : FileProce
 
         val media = try {
             TrValidator(directoryProvider, file).validate()
-            getMedia(file)
+            getMedia(file, parentFile)
         } catch (ex: Exception) {
             Media(
                 file = file,
                 status = FileStatus.REJECTED,
-                statusMessage = ex.message
+                statusMessage = ex.message,
+                parentFile = parentFile
             )
         }
 
