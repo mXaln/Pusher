@@ -206,7 +206,8 @@ class BatchPage : View() {
             confirmDialog = this
 
             uploadTargetProperty.bind(batchDataStore.uploadTargetProperty)
-            titleIconProperty.set(FontIcon(MaterialDesign.MDI_CHECK_CIRCLE))
+            //titleIconProperty.set(FontIcon(MaterialDesign.MDI_CHECK_CIRCLE))
+            titleIconProperty.set(FontIcon(MaterialDesign.MDI_ALERT))
             titleTextProperty.set("Export Successful")
             detailsTextProperty.set("You have successfully exported your files to:\n\n" +
                     "/Desktop/MAUI/Indonesian/amos-id-01202024.maui\n\n" +
@@ -225,6 +226,8 @@ class BatchPage : View() {
             cancelButtonTextProperty.set("Close")
             confirmButtonTextProperty.set("Open CSV")
             //confirmButtonTextProperty.set("OK")
+
+            alertProperty.set(true)
 
             cancelButtonIconProperty.set(FontIcon(MaterialDesign.MDI_CLOSE_CIRCLE))
             confirmButtonIconProperty.set(FontIcon(MaterialDesign.MDI_OPEN_IN_APP))

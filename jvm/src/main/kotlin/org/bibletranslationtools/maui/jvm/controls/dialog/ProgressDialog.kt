@@ -22,7 +22,7 @@ class ProgressDialog : MauiDialog() {
         addClass("progress-dialog")
 
         hbox {
-            addClass("progress-dialog__header")
+            addClass("header")
 
             label {
                 graphic = FontIcon(MaterialDesign.MDI_AUTORENEW).apply {
@@ -38,10 +38,10 @@ class ProgressDialog : MauiDialog() {
             label(titleTextProperty)
         }
         vbox {
-            addClass("progress-dialog__body")
+            addClass("body")
             vgrow = Priority.ALWAYS
             label {
-                addClass("progress-dialog__message")
+                addClass("message")
                 textProperty().bind(messageTextProperty)
             }
         }

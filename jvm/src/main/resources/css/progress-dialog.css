@@ -4,7 +4,7 @@
     -fx-background-color: -wa-white;
 }
 
-.progress-dialog__header {
+.progress-dialog .header {
     -fx-spacing: 10px;
     -fx-font-size: 1.5em;
     -fx-font-weight: bold;
@@ -13,16 +13,16 @@
     -fx-padding: 12 16;
 }
 
-.progress-dialog__header .label {
+.progress-dialog .header .label {
     -fx-text-fill: -wa-primary;
 }
 
-.progress-dialog__header .ikonli-font-icon {
+.progress-dialog .header .ikonli-font-icon {
     -fx-icon-size: 24px;
     -fx-icon-color: -wa-primary;
 }
 
-.progress-dialog__body {
+.progress-dialog .body {
     -fx-spacing: 16;
     -fx-padding: 16 12;
     -fx-text-alignment: justify;
@@ -30,7 +30,7 @@
     -fx-alignment: top-left;
 }
 
-.progress-dialog__message {
+.progress-dialog .message {
     -fx-text-fill: -wa-gray-darker;
     -fx-font-size: 1.4em;
     -fx-wrap-text: true;

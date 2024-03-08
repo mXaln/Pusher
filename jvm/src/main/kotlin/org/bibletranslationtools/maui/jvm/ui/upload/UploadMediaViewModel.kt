@@ -7,7 +7,6 @@ import org.bibletranslationtools.maui.common.data.Grouping
 import org.bibletranslationtools.maui.common.data.Media
 import org.bibletranslationtools.maui.jvm.di.IDependencyGraphProvider
 import org.bibletranslationtools.maui.jvm.mappers.MediaMapper
-import org.bibletranslationtools.maui.jvm.onChangeAndDoNow
 import org.bibletranslationtools.maui.jvm.ui.MediaItem
 import org.bibletranslationtools.maui.jvm.ui.events.AppSaveDoneEvent
 import tornadofx.ViewModel

@@ -5,7 +5,7 @@
     -fx-background-color: -wa-white;
 }
 
-.confirm-dialog__header {
+.confirm-dialog .header {
     -fx-spacing: 10px;
     -fx-pref-height: 72px;
     -fx-font-size: 1.5em;
@@ -14,16 +14,24 @@
     -fx-padding: 12 16;
 }
 
-.confirm-dialog__header .label {
+.confirm-dialog .header .label {
     -fx-text-fill: -wa-primary;
 }
 
-.confirm-dialog__header .ikonli-font-icon {
+.confirm-dialog:alert .header .label {
+    -fx-text-fill: -wa-red;
+}
+
+.confirm-dialog .header .ikonli-font-icon {
     -fx-icon-size: 24px;
     -fx-icon-color: -wa-primary;
 }
 
-.confirm-dialog__body {
+.confirm-dialog:alert .header .ikonli-font-icon {
+    -fx-icon-color: -wa-red;
+}
+
+.confirm-dialog .body {
     -fx-spacing: 16;
     -fx-padding: 12px 16px;
     -fx-text-alignment: justify;
@@ -31,26 +39,39 @@
     -fx-alignment: top-left;
 }
 
-.confirm-dialog__message {
+.confirm-dialog .message {
     -fx-text-fill: -wa-gray-darker;
     -fx-font-size: 1.4em;
     -fx-wrap-text: true;
 }
 
-.confirm-dialog__details {
+.confirm-dialog .details {
     -fx-max-height: 280px;
     -fx-padding: 5px 10px;
 }
 
-.confirm-dialog__footer {
+.confirm-dialog .footer {
     -fx-spacing: 16;
     -fx-padding: 12px 16px;
     -fx-background-color: -wa-white;
 }
 
-.confirm-dialog__footer .btn {
+.confirm-dialog .footer .btn {
     -fx-max-width: infinity;
     -fx-pref-height: 48px;
     -fx-font-size: 1.25em;
     -fx-font-weight: 500;
+}
+
+.confirm-dialog:alert .btn--cancel {
+    -fx-text-fill: -wa-red;
+    -fx-border-color: -wa-red;
+}
+
+.confirm-dialog:alert .btn--cancel:hover {
+    -fx-background-color: -wa-red-light;
+}
+
+.confirm-dialog:alert .btn--cancel .ikonli-font-icon {
+    -fx-icon-color: -wa-red;
 }

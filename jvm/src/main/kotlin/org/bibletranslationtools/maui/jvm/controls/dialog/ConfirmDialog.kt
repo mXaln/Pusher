@@ -1,6 +1,7 @@
 package org.bibletranslationtools.maui.jvm.controls.dialog
 
 import javafx.beans.property.ObjectProperty
+import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.event.ActionEvent
@@ -8,6 +9,7 @@ import javafx.event.EventHandler
 import javafx.scene.Parent
 import javafx.scene.layout.Priority
 import org.bibletranslationtools.maui.jvm.customizeScrollbarSkin
+import org.bibletranslationtools.maui.jvm.onChangeAndDoNow
 import org.kordamp.ikonli.javafx.FontIcon
 import tornadofx.*
 
@@ -21,6 +23,7 @@ class ConfirmDialog : MauiDialog() {
     val confirmButtonIconProperty = SimpleObjectProperty<FontIcon>()
     val cancelButtonTextProperty = SimpleStringProperty()
     val cancelButtonIconProperty = SimpleObjectProperty<FontIcon>()
+    val alertProperty = SimpleBooleanProperty()
 
     private val onCancelActionProperty = SimpleObjectProperty<EventHandler<ActionEvent>>()
     private val onConfirmActionProperty = SimpleObjectProperty<EventHandler<ActionEvent>>()
@@ -30,8 +33,12 @@ class ConfirmDialog : MauiDialog() {
     private val content = vbox {
         addClass("confirm-dialog")
 
+        alertProperty.onChangeAndDoNow {
+            togglePseudoClass("alert", it == true)
+        }
+
         hbox {
-            addClass("confirm-dialog__header")
+            addClass("header")
 
             label {
                 graphicProperty().bind(titleIconProperty)
@@ -41,15 +48,15 @@ class ConfirmDialog : MauiDialog() {
         }
 
         vbox {
-            addClass("confirm-dialog__body")
+            addClass("body")
             vgrow = Priority.ALWAYS
 
             label(messageTextProperty) {
-                addClass("confirm-dialog__message")
+                addClass("message")
             }
 
             scrollpane {
-                addClass("confirm-dialog__details")
+                addClass("details")
                 scroll = this
 
                 label(detailsTextProperty)
@@ -60,10 +67,10 @@ class ConfirmDialog : MauiDialog() {
         }
 
         hbox {
-            addClass("confirm-dialog__footer")
+            addClass("footer")
 
             button(cancelButtonTextProperty) {
-                addClass("btn", "btn--secondary")
+                addClass("btn", "btn--secondary", "btn--cancel")
 
                 hgrow = Priority.ALWAYS
                 tooltip { textProperty().bind(this@button.textProperty()) }
@@ -75,7 +82,7 @@ class ConfirmDialog : MauiDialog() {
             }
 
             button(confirmButtonTextProperty) {
-                addClass("btn", "btn--primary")
+                addClass("btn", "btn--primary", "btn--confirm")
 
                 hgrow = Priority.ALWAYS
                 tooltip { textProperty().bind(this@button.textProperty()) }

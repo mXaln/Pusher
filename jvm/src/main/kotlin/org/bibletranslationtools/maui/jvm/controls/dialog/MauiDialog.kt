@@ -20,11 +20,11 @@ abstract class MauiDialog : Fragment() {
 
     private val roundRadius = 15.0
     private val mainContainer = VBox().apply {
-        addClass("maui-dialog-container")
+        addClass("main-container")
     }
 
     override val root = VBox().apply {
-        addClass("maui-dialog-overlay")
+        addClass("maui-dialog")
         add(mainContainer)
     }
 
@@ -46,7 +46,7 @@ abstract class MauiDialog : Fragment() {
     fun setContent(content: Region) {
         mainContainer.add(
             content.apply {
-                addClass("maui-dialog-content")
+                addClass("content")
 
                 vgrow = Priority.NEVER
                 maxWidth = Region.USE_PREF_SIZE
