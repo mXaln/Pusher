@@ -1,9 +1,9 @@
 package org.bibletranslationtools.maui.jvm.ui.batch
 
 import com.github.thomasnield.rxkotlinfx.observeOnFx
+import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
-import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.transformation.FilteredList
@@ -21,6 +21,7 @@ import org.bibletranslationtools.maui.jvm.ui.UploadTarget
 import org.bibletranslationtools.maui.jvm.ui.events.DialogEvent
 import org.bibletranslationtools.maui.jvm.ui.events.ProgressDialogEvent
 import org.bibletranslationtools.maui.jvm.ui.upload.UploadPage
+import org.slf4j.LoggerFactory
 import tornadofx.*
 import java.io.File
 import java.text.MessageFormat
@@ -29,6 +30,7 @@ import java.util.function.Predicate
 import javax.inject.Inject
 
 class BatchViewModel : ViewModel() {
+    private val logger = LoggerFactory.getLogger(javaClass)
 
     @Inject lateinit var mediaMapper: MediaMapper
     @Inject lateinit var fileProcessRouter: FileProcessingRouter
@@ -90,7 +92,9 @@ class BatchViewModel : ViewModel() {
         }
             .subscribeOn(Schedulers.io())
             .observeOnFx()
-            .doFinally { fire(ProgressDialogEvent(false))}
+            .doFinally {
+                fire(ProgressDialogEvent(false))
+            }
             .subscribe { resultList ->
                 if (resultList.any { it.status == FileStatus.REJECTED }) {
                     val event = DialogEvent(
@@ -100,6 +104,9 @@ class BatchViewModel : ViewModel() {
                         details = createErrorReport(resultList)
                     )
                     fire(event)
+
+                    // Cleanup cached files if import was not successful
+                    cleanupCache(resultList)
                 } else {
                     println("success")
                 }
@@ -184,5 +191,16 @@ class BatchViewModel : ViewModel() {
                     "$fileText\n$errorText\n$separator"
                 }
             }
+    }
+
+    private fun cleanupCache(resultList: List<FileResult>) {
+        Completable.fromCallable {
+            fileProcessRouter.cleanupCache(resultList)
+        }
+            .observeOn(Schedulers.io())
+            .doOnError {
+                logger.error("Error in cleanupCache", it)
+            }
+            .subscribe()
     }
 }

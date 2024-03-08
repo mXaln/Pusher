@@ -50,18 +50,19 @@ class OratureFileProcessor(private val directoryProvider: IDirectoryProvider) : 
 
     @Throws(IOException::class)
     fun extractAudio(file: File, extension: String): List<File> {
-        val uuid = UUID.randomUUID()
-        val tempDir = directoryProvider.createCacheDirectory(uuid.toString())
+        var cacheDir: File?
 
         ResourceContainer.load(file).use { rc ->
             val content = rc.getProjectContent(extension = extension)
                     ?: return listOf()
 
+            val uuid = UUID.randomUUID()
+            cacheDir = directoryProvider.createCacheDirectory(uuid.toString())
+
             content.streams.forEach { entry ->
                 // resolve chapter file name for parser compatibility
                 val normalizedFileName = File(entry.key).name.replace("_meta", "")
-                val destFile = tempDir.resolve(normalizedFileName)
-                destFile.deleteOnExit()
+                val destFile = cacheDir!!.resolve(normalizedFileName)
 
                 entry.value.buffered().use { input ->
                     destFile.outputStream().buffered().use { output ->
@@ -71,6 +72,6 @@ class OratureFileProcessor(private val directoryProvider: IDirectoryProvider) : 
             }
         }
 
-        return tempDir.listFiles()?.toList() ?: listOf()
+        return cacheDir?.listFiles()?.toList() ?: listOf()
     }
 }
