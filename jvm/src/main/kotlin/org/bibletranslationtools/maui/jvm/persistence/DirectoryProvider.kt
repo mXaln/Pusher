@@ -71,6 +71,19 @@ class DirectoryProvider(private val appName: String) : IDirectoryProvider {
         deleteRecursively(tempDirectory)
     }
 
+    override fun deleteCachedFiles(files: List<File>) {
+        files.forEach { file ->
+            // delete only files that are in cache directory
+            val parentDir = file.parentFile
+            val isCached = file.absolutePath.startsWith(
+                cacheDirectory.absolutePath
+            )
+            if (file.exists() && isCached) {
+                parentDir.deleteRecursively()
+            }
+        }
+    }
+
     private fun deleteRecursively(dir: File) {
         dir.listFiles()?.forEach {
             if (it.isDirectory) {

@@ -26,6 +26,9 @@ class MainApp : App(AppWorkspace::class), IDependencyGraphProvider {
     override fun start(stage: Stage) {
         super.start(stage)
         stage.isMaximized = true
+        stage.minWidth = 900.0
+        stage.minHeight = 700.0
+
         javaClass.getResource("/launcher.png")?.let { url ->
             stage.icons.add(Image(url.openStream()))
         }

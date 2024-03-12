@@ -24,6 +24,9 @@ interface IDirectoryProvider {
     /** Clean temporary directory */
     fun cleanTempDirectory()
 
+    /** Find and delete cached files in the provided list */
+    fun deleteCachedFiles(files: List<File>)
+
     val logsDirectory: File
     val tempDirectory: File
     val batchDirectory: File

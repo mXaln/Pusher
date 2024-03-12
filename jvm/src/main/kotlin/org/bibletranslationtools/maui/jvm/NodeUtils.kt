@@ -1,8 +1,12 @@
 package org.bibletranslationtools.maui.jvm
 
+import javafx.collections.FXCollections
+import javafx.collections.transformation.SortedList
 import javafx.geometry.Orientation
 import javafx.scene.Parent
 import javafx.scene.control.ScrollBar
+import javafx.scene.control.TableColumn
+import javafx.scene.control.TableView
 import javafx.scene.layout.StackPane
 import org.kordamp.ikonli.javafx.FontIcon
 import org.kordamp.ikonli.material.Material
@@ -26,4 +30,39 @@ fun Parent.customizeScrollbarSkin() {
                 }
             }
         }
+}
+
+fun <T> TableView<T>.bindSortPolicy() {
+    setSortPolicy {
+        try {
+            val itemsList = items
+            if (itemsList is SortedList<*> || itemsList == null || itemsList.isEmpty()) {
+                return@setSortPolicy true
+            } else {
+                val comparator = comparator ?: return@setSortPolicy true
+                FXCollections.sort(itemsList, comparator)
+                return@setSortPolicy true
+            }
+        } catch (e: UnsupportedOperationException) {
+            return@setSortPolicy false
+        }
+    }
+}
+
+fun <S, T> TableColumn<S, T>.bindColumnSortComparator() {
+    val list = tableView.items
+    sortTypeProperty().onChangeAndDoNow {
+        if (list is SortedList<S>) {
+            list.comparator = tableView.comparator
+        }
+    }
+}
+
+fun <S> TableView<S>.bindTableSortComparator() {
+    val list = this.items
+    if (list is SortedList<S>) {
+        comparatorProperty().onChangeAndDoNow {
+            list.comparator = it
+        }
+    }
 }

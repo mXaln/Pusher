@@ -1,7 +1,6 @@
 package org.bibletranslationtools.maui.common.usecases
 
 import org.bibletranslationtools.maui.common.data.FileResult
-import org.bibletranslationtools.maui.common.data.FileStatus
 import org.bibletranslationtools.maui.common.fileprocessor.*
 import org.bibletranslationtools.maui.common.persistence.IDirectoryProvider
 import java.io.File
@@ -29,26 +28,6 @@ class FileProcessingRouter @Inject constructor(private val directoryProvider: ID
         }
 
         return resultList
-    }
-
-    /**
-     * Delete cached files in result list if result has at least one REJECTED file
-     */
-    fun cleanupCache(resultList: List<FileResult>) {
-        if (resultList.any { it.status == FileStatus.REJECTED }) {
-            resultList.forEach { result ->
-                result.data?.let { media ->
-                    // delete only files in cache directory
-                    val parentDir = media.file.parentFile
-                    val isCached = media.file.absolutePath.startsWith(
-                        directoryProvider.cacheDirectory.absolutePath
-                    )
-                    if (media.file.exists() && isCached) {
-                        parentDir.deleteRecursively()
-                    }
-                }
-            }
-        }
     }
 
     private fun processFile(file: Pair<File, File?>, resultList: MutableList<FileResult>) {

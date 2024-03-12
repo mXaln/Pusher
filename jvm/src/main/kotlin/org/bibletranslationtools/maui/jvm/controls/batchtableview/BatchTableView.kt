@@ -1,22 +1,27 @@
-package org.bibletranslationtools.maui.jvm.controls
+package org.bibletranslationtools.maui.jvm.controls.batchtableview
 
+import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.beans.value.ObservableValue
 import javafx.collections.ObservableList
 import javafx.event.EventTarget
 import javafx.scene.Node
+import javafx.scene.control.TableRow
 import javafx.scene.control.TableView
 import javafx.scene.layout.Priority
 import org.bibletranslationtools.maui.common.data.Batch
 import org.bibletranslationtools.maui.jvm.assets.AppResources
+import org.bibletranslationtools.maui.jvm.bindColumnSortComparator
+import org.bibletranslationtools.maui.jvm.bindSortPolicy
+import org.bibletranslationtools.maui.jvm.bindTableSortComparator
 import org.bibletranslationtools.maui.jvm.customizeScrollbarSkin
 import org.bibletranslationtools.maui.jvm.ui.events.DeleteBatchEvent
+import org.bibletranslationtools.maui.jvm.ui.events.OpenBatchEvent
 import org.kordamp.ikonli.javafx.FontIcon
 import org.kordamp.ikonli.materialdesign.MaterialDesign
 import tornadofx.*
-import java.text.MessageFormat
 import java.time.LocalDateTime
-import java.time.temporal.ChronoUnit
+import java.time.format.DateTimeFormatter
 
 class BatchTableView(
     batches: ObservableList<Batch>
@@ -38,54 +43,76 @@ class BatchTableView(
 
         vgrow = Priority.ALWAYS
         columnResizePolicy = CONSTRAINED_RESIZE_POLICY
-        isEditable = true
+
+        items = batches
 
         placeholder = borderpane {
             center = vbox {
-                addClass("batch-table-view__placeholder")
+                addClass("placeholder")
 
                 label {
-                    addClass("batch-table-view__placeholder-icon")
+                    addClass("placeholder-icon")
                     graphic = FontIcon(MaterialDesign.MDI_FOLDER_OUTLINE)
                 }
                 label(emptyPromptProperty) {
-                    addClass("batch-table-view__placeholder-text")
+                    addClass("placeholder-text")
                 }
             }
         }
 
-        column("", Node::class) {
+        setRowFactory {
+            TableRow<Batch>().apply {
+                setOnMouseClicked {
+                    if (!isEmpty) {
+                        FX.eventbus.fire(OpenBatchEvent(item))
+                    }
+                }
+            }
+        }
+
+        bindSortPolicy()
+        bindTableSortComparator()
+
+        column("", Batch::class) {
             textProperty().bind(nameColumnProperty)
             setCellValueFactory {
-                label(it.value.name) {
-                    addClass("batch-table-view__name")
-                    graphic = FontIcon(MaterialDesign.MDI_FILE)
-                }.toProperty()
+                SimpleObjectProperty(it.value)
             }
+            setCellFactory {
+                EditableNameCell()
+            }
+            setComparator { o1, o2 ->
+                o1.name.compareTo(o2.name)
+            }
+            bindColumnSortComparator()
             isReorderable = false
         }
+
         column("", String::class) {
             textProperty().bind(dateColumnProperty)
             setCellValueFactory {
                 formatDateTime(it.value.created)
             }
+            bindColumnSortComparator()
+            comparator = compareByDescending<String> { it }
             isReorderable = false
         }
+
         column("", Node::class) {
+            minWidth = 48.0
+            maxWidth = 48.0
+
             setCellValueFactory {
-                hbox {
-                    addClass("actions-column__buttons")
-                    button {
-                        addClass("btn", "btn--icon", "btn--delete")
+                button {
+                    addClass("btn", "btn--icon", "btn--delete")
 
-                        graphic = FontIcon(MaterialDesign.MDI_DELETE)
-                        tooltip {
-                            textProperty().bind(deleteTextProperty)
-                        }
+                    graphic = FontIcon(MaterialDesign.MDI_DELETE)
+                    tooltip {
+                        textProperty().bind(deleteTextProperty)
+                    }
 
-                        action {
-                            FX.eventbus.fire(DeleteBatchEvent(it.value))
-                        }
+                    action {
+                        FX.eventbus.fire(DeleteBatchEvent(it.value))
                     }
                 }.toProperty()
             }
@@ -96,21 +123,8 @@ class BatchTableView(
 
     private fun formatDateTime(dateTime: String): ObservableValue<String> {
         val parsed = LocalDateTime.parse(dateTime)
-        val daysAgo = parsed.until(LocalDateTime.now(), ChronoUnit.DAYS)
-        return when {
-            daysAgo == 0L -> todayTextProperty
-            daysAgo == 1L -> {
-                dayAgoTextProperty.stringBinding { days ->
-                    days?.let { MessageFormat.format(days, daysAgo) } ?: ""
-                }
-            }
-            daysAgo > 1 -> {
-                daysAgoTextProperty.stringBinding { days ->
-                    days?.let { MessageFormat.format(days, daysAgo) } ?: ""
-                }
-            }
-            else -> SimpleStringProperty()
-        }
+        val formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy hh:mm:ss a")
+        return parsed.format(formatter).toProperty()
     }
 }
 

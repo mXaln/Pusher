@@ -15,4 +15,6 @@ class ProgressDialogEvent(
     val title: String? = null,
     val message: String? = null
 ) : FXEvent()
+class OpenBatchEvent(val batch: Batch) : FXEvent()
 class DeleteBatchEvent(val batch: Batch) : FXEvent()
+class EditBatchNameEvent(val batch: Batch, val name: String) : FXEvent()

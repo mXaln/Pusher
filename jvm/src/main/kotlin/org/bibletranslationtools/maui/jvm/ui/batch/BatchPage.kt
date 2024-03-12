@@ -11,16 +11,13 @@ import org.bibletranslationtools.maui.common.data.Batch
 import org.bibletranslationtools.maui.jvm.ListenerDisposer
 import org.bibletranslationtools.maui.jvm.assets.AppResources
 import org.bibletranslationtools.maui.jvm.controls.SearchBar
-import org.bibletranslationtools.maui.jvm.controls.batchTableView
+import org.bibletranslationtools.maui.jvm.controls.batchtableview.batchTableView
 import org.bibletranslationtools.maui.jvm.controls.dialog.*
 import org.bibletranslationtools.maui.jvm.controls.searchBar
-import org.bibletranslationtools.maui.jvm.onSelectionChangeWithDisposer
 import org.bibletranslationtools.maui.jvm.ui.UploadTarget
 import org.bibletranslationtools.maui.jvm.ui.components.mainHeader
 import org.bibletranslationtools.maui.jvm.ui.components.uploadTargetHeader
-import org.bibletranslationtools.maui.jvm.ui.events.DialogEvent
-import org.bibletranslationtools.maui.jvm.ui.events.DeleteBatchEvent
-import org.bibletranslationtools.maui.jvm.ui.events.ProgressDialogEvent
+import org.bibletranslationtools.maui.jvm.ui.events.*
 import org.kordamp.ikonli.javafx.FontIcon
 import org.kordamp.ikonli.materialdesign.MaterialDesign
 import tornadofx.*
@@ -47,8 +44,16 @@ class BatchPage : View() {
             openConfirmDialog(it)
         }
 
+        subscribe<OpenBatchEvent> {
+            viewModel.openBatch(it.batch)
+        }
+
         subscribe<DeleteBatchEvent> {
             deleteBatch(it.batch)
+        }
+
+        subscribe<EditBatchNameEvent> {
+            viewModel.editBatchName(it.batch, it.name)
         }
 
         subscribe<ProgressDialogEvent> {
@@ -161,17 +166,12 @@ class BatchPage : View() {
                     todayTextProperty.set(messages["today"])
                     dayAgoTextProperty.set(messages["dayAgo"])
                     daysAgoTextProperty.set(messages["daysAgo"])
-
-                    viewModel.sortedBatches.comparatorProperty().bind(comparatorProperty())
                 }
             }
         }
     }
 
     override fun onDock() {
-        tableView.onSelectionChangeWithDisposer {
-            it?.let(viewModel::openBatch)
-        }.also(listeners::add)
         viewModel.onDock()
     }
 
@@ -216,7 +216,6 @@ class BatchPage : View() {
         when (event.type) {
             DialogType.SUCCESS -> openSuccessDialog(event)
             DialogType.ERROR -> openErrorDialog(event)
-            DialogType.DELETE -> openDeleteDialog(event)
             else -> {}
         }
     }
@@ -241,23 +240,6 @@ class BatchPage : View() {
             detailsTextProperty.set(event.details)
             primaryButtonTextProperty.set(messages["ok"])
             setOnPrimaryAction { close() }
-            open()
-        }
-    }
-
-    private fun openDeleteDialog(event: DialogEvent) {
-        confirmDialog.apply {
-            alertProperty.set(true)
-            titleTextProperty.set(event.title)
-            messageTextProperty.set(event.message)
-            detailsTextProperty.set(event.details)
-            primaryButtonTextProperty.set(messages["cancel"])
-            primaryButtonIconProperty.set(FontIcon(MaterialDesign.MDI_CLOSE_CIRCLE))
-            secondaryButtonTextProperty.set(messages["delete"])
-            secondaryButtonIconProperty.set(FontIcon(MaterialDesign.MDI_DELETE))
-
-            setOnPrimaryAction { close() }
-            setOnSecondaryAction { println("deleting batch...") }
             open()
         }
     }

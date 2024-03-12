@@ -67,34 +67,47 @@
     -fx-border-color: transparent;
 }
 
-.batch-table-view__name {
-    -fx-text-fill: -wa-gray-darker;
-}
-
-.batch-table-view__name .ikonli-font-icon {
-    -fx-icon-size: 20px;
-}
-
-.batch-table-view__placeholder {
+.batch-table-view .placeholder {
     -fx-alignment: center;
     -fx-spacing: 12px;
 }
 
-.batch-table-view__placeholder-icon .ikonli-font-icon {
+.batch-table-view .placeholder-icon .ikonli-font-icon {
     -fx-icon-size: 60px;
     -fx-icon-color: -wa-gray-light;
 }
 
-.batch-table-view__placeholder-text {
+.batch-table-view .placeholder-text {
     -fx-font-size: 1.5em;
     -fx-text-fill: -wa-gray-light;
 }
 
-.actions-column__buttons {
-    -fx-alignment: center-right;
-    -fx-padding: 5px 10px;
+.batch-table-view .name-cell-view {
+    -fx-alignment: center-left;
+    -fx-spacing: 6px;
 }
 
-.actions-column__buttons .btn--delete .ikonli-font-icon {
+.batch-table-view .file-icon .ikonli-font-icon {
+    -fx-icon-size: 20px;
+}
+
+.batch-table-view .name {
+    -fx-text-fill: -wa-gray-darker;
+}
+
+.batch-table-view .name-edit-input {
+    -fx-max-width: 300px;
+}
+
+.batch-table-view .btn--edit {
+    -fx-pref-width: 70px;
+    -fx-text-fill: -wa-primary;
+}
+
+.batch-table-view .btn--edit .ikonli-font-icon {
+    -fx-icon-color: -wa-primary;
+}
+
+.batch-table-view .btn--delete .ikonli-font-icon {
     -fx-icon-color: #C3362D;
 }
