@@ -4,7 +4,7 @@
 
 .media-table-view .column-header {
     -fx-cursor: hand;
-    -fx-padding: 0 0 0 15;
+    -fx-padding: 0 0 0 8;
     -fx-background-color: -wa-primary-light;
     -fx-border-color: transparent -wa-gray-light -wa-gray-light transparent;
 }
@@ -44,7 +44,7 @@
 
 .media-table-view .table-cell {
     -fx-pref-height: 48px;
-    -fx-padding: 0 15;
+    -fx-padding: 0 8;
     -fx-alignment: center-left;
     -fx-border-color: transparent -wa-gray-light transparent transparent;
 }

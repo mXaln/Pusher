@@ -158,6 +158,9 @@ class BatchPage : View() {
                     nameColumnProperty.set(messages["batchName"])
                     dateColumnProperty.set(messages["batchDate"])
                     deleteTextProperty.set(messages["deleteBatch"])
+                    todayTextProperty.set(messages["today"])
+                    dayAgoTextProperty.set(messages["dayAgo"])
+                    daysAgoTextProperty.set(messages["daysAgo"])
 
                     viewModel.sortedBatches.comparatorProperty().bind(comparatorProperty())
                 }

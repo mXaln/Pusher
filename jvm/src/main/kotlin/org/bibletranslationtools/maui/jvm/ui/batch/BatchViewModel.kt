@@ -1,6 +1,7 @@
 package org.bibletranslationtools.maui.jvm.ui.batch
 
 import com.github.thomasnield.rxkotlinfx.observeOnFx
+import com.github.thomasnield.rxkotlinfx.subscribeOnFx
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
@@ -11,6 +12,8 @@ import javafx.collections.transformation.SortedList
 import org.bibletranslationtools.maui.common.data.Batch
 import org.bibletranslationtools.maui.common.data.FileResult
 import org.bibletranslationtools.maui.common.data.FileStatus
+import org.bibletranslationtools.maui.common.BatchSerializer
+import org.bibletranslationtools.maui.common.persistence.IDirectoryProvider
 import org.bibletranslationtools.maui.common.usecases.FileProcessingRouter
 import org.bibletranslationtools.maui.jvm.controls.dialog.DialogType
 import org.bibletranslationtools.maui.jvm.di.IDependencyGraphProvider
@@ -25,7 +28,6 @@ import org.slf4j.LoggerFactory
 import tornadofx.*
 import java.io.File
 import java.text.MessageFormat
-import java.time.LocalDateTime
 import java.util.function.Predicate
 import javax.inject.Inject
 
@@ -34,6 +36,8 @@ class BatchViewModel : ViewModel() {
 
     @Inject lateinit var mediaMapper: MediaMapper
     @Inject lateinit var fileProcessRouter: FileProcessingRouter
+    @Inject lateinit var directoryProvider: IDirectoryProvider
+    @Inject lateinit var batchSerializer: BatchSerializer
 
     private val navigator: NavigationMediator by inject()
     private val batchDataStore: BatchDataStore by inject()
@@ -54,17 +58,19 @@ class BatchViewModel : ViewModel() {
         uploadTargetProperty.bind(batchDataStore.uploadTargetProperty)
         uploadTargets.bind(batchDataStore.uploadTargets) { it }
 
-        loadBatches()
         setupBatchSearchListener()
     }
 
     fun onDock() {
+        loadBatches()
     }
 
     fun onUndock() {
     }
 
     fun onDropFiles(files: List<File>) {
+        if (files.isEmpty()) return
+
         val event = ProgressDialogEvent(
             true,
             messages["importingFiles"],
@@ -108,7 +114,7 @@ class BatchViewModel : ViewModel() {
                     // Cleanup cached files if import was not successful
                     cleanupCache(resultList)
                 } else {
-                    println("success")
+                    createBatch(resultList)
                 }
             }
     }
@@ -130,33 +136,14 @@ class BatchViewModel : ViewModel() {
     }
 
     private fun loadBatches() {
-        batches.addAll(
-            Batch(
-                File("example.wav"),
-                "en_ulb_gen",
-                LocalDateTime.parse("2018-05-12T18:33:52"),
-                lazy { listOf() }
-            ),
-            Batch(
-                File("example1.wav"),
-                "ah087a0wf70a70aw70f8aw70f87a9f",
-                LocalDateTime.parse("2022-05-19T07:21:11"),
-                lazy { listOf() }
-            ),
-            Batch(
-                File("example2.wav"),
-                "My custom batch name",
-                LocalDateTime.parse("2024-12-18T14:10:43"),
-                lazy { listOf() }
-            ),
-            Batch(
-                File("example3.wav"),
-                "New-batch",
-                LocalDateTime.parse("2023-07-11T11:19:48"),
-                lazy { listOf() }
-            )
-        )
-        // batches.clear()
+        batches.clear()
+
+        batchSerializer.getBatchList()
+            .observeOn(Schedulers.io())
+            .subscribeOnFx()
+            .subscribe { list ->
+                batches.addAll(list)
+            }
     }
 
     private fun setupBatchSearchListener() {
@@ -202,5 +189,20 @@ class BatchViewModel : ViewModel() {
                 logger.error("Error in cleanupCache", it)
             }
             .subscribe()
+    }
+
+    private fun createBatch(resultList: List<FileResult>) {
+        batchSerializer.createBatch(resultList.mapNotNull { it.data })
+            .observeOn(Schedulers.io())
+            .doOnError {
+                logger.error("Error in createBatch", it)
+            }
+            .subscribeOnFx()
+            .subscribe { batch ->
+                runLater {
+                    batchDataStore.activeBatchProperty.set(batch)
+                    navigator.dock<UploadPage>()
+                }
+            }
     }
 }

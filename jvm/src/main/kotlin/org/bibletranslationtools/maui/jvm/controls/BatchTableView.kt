@@ -1,10 +1,10 @@
 package org.bibletranslationtools.maui.jvm.controls
 
 import javafx.beans.property.SimpleStringProperty
+import javafx.beans.value.ObservableValue
 import javafx.collections.ObservableList
 import javafx.event.EventTarget
 import javafx.scene.Node
-import javafx.scene.control.TableColumn
 import javafx.scene.control.TableView
 import javafx.scene.layout.Priority
 import org.bibletranslationtools.maui.common.data.Batch
@@ -14,7 +14,9 @@ import org.bibletranslationtools.maui.jvm.ui.events.DeleteBatchEvent
 import org.kordamp.ikonli.javafx.FontIcon
 import org.kordamp.ikonli.materialdesign.MaterialDesign
 import tornadofx.*
-import java.time.format.DateTimeFormatter
+import java.text.MessageFormat
+import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit
 
 class BatchTableView(
     batches: ObservableList<Batch>
@@ -24,6 +26,9 @@ class BatchTableView(
     val nameColumnProperty = SimpleStringProperty()
     val dateColumnProperty = SimpleStringProperty()
     val deleteTextProperty = SimpleStringProperty()
+    val dayAgoTextProperty = SimpleStringProperty()
+    val daysAgoTextProperty = SimpleStringProperty()
+    val todayTextProperty = SimpleStringProperty()
 
     init {
         addClass("batch-table-view")
@@ -33,6 +38,7 @@ class BatchTableView(
 
         vgrow = Priority.ALWAYS
         columnResizePolicy = CONSTRAINED_RESIZE_POLICY
+        isEditable = true
 
         placeholder = borderpane {
             center = vbox {
@@ -56,16 +62,13 @@ class BatchTableView(
                     graphic = FontIcon(MaterialDesign.MDI_FILE)
                 }.toProperty()
             }
-            bindVisibleWhenNotEmpty()
             isReorderable = false
         }
         column("", String::class) {
             textProperty().bind(dateColumnProperty)
             setCellValueFactory {
-                val formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss a")
-                it.value.created.format(formatter).toProperty()
+                formatDateTime(it.value.created)
             }
-            bindVisibleWhenNotEmpty()
             isReorderable = false
         }
         column("", Node::class) {
@@ -87,13 +90,27 @@ class BatchTableView(
                 }.toProperty()
             }
             isReorderable = false
+            isSortable = false
         }
     }
 
-    private fun <S, T> TableColumn<S, T>.bindVisibleWhenNotEmpty() {
-        visibleProperty().bind(itemsProperty().booleanBinding {
-            it?.isNotEmpty() ?: false
-        })
+    private fun formatDateTime(dateTime: String): ObservableValue<String> {
+        val parsed = LocalDateTime.parse(dateTime)
+        val daysAgo = parsed.until(LocalDateTime.now(), ChronoUnit.DAYS)
+        return when {
+            daysAgo == 0L -> todayTextProperty
+            daysAgo == 1L -> {
+                dayAgoTextProperty.stringBinding { days ->
+                    days?.let { MessageFormat.format(days, daysAgo) } ?: ""
+                }
+            }
+            daysAgo > 1 -> {
+                daysAgoTextProperty.stringBinding { days ->
+                    days?.let { MessageFormat.format(days, daysAgo) } ?: ""
+                }
+            }
+            else -> SimpleStringProperty()
+        }
     }
 }
 

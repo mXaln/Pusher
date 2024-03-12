@@ -23,6 +23,8 @@ class MediaTableView(
     val resourceTypeColumnProperty = SimpleStringProperty()
     val bookColumnProperty = SimpleStringProperty()
     val chapterColumnProperty = SimpleStringProperty()
+    val mediaExtensionColumnProperty = SimpleStringProperty()
+    val mediaQualityColumnProperty = SimpleStringProperty()
     val groupingColumnProperty = SimpleStringProperty()
     val statusColumnProperty = SimpleStringProperty()
 
@@ -56,6 +58,9 @@ class MediaTableView(
             setCellValueFactory {
                 checkbox { }.toProperty()
             }
+
+            isSortable = false
+            isReorderable = true
         }
 
         column("", String::class) {
@@ -101,9 +106,25 @@ class MediaTableView(
         }
 
         column("", String::class) {
+            textProperty().bind(mediaExtensionColumnProperty)
+            setCellValueFactory {
+                it.value.mediaExtensionProperty.stringBinding { mediaExtension -> mediaExtension?.toString() }
+            }
+            isReorderable = false
+        }
+
+        column("", String::class) {
+            textProperty().bind(mediaQualityColumnProperty)
+            setCellValueFactory {
+                it.value.mediaQualityProperty.stringBinding { mediaQuality -> mediaQuality?.toString() }
+            }
+            isReorderable = false
+        }
+
+        column("", String::class) {
             textProperty().bind(groupingColumnProperty)
             setCellValueFactory {
-                it.value.groupingProperty.stringBinding { grouping -> grouping?.grouping }
+                it.value.groupingProperty.stringBinding { grouping -> grouping?.toString() }
             }
             isReorderable = false
         }

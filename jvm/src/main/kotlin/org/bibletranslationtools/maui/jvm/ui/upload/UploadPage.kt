@@ -102,6 +102,8 @@ class UploadPage : View() {
                     resourceTypeColumnProperty.set(messages["resourceType"])
                     bookColumnProperty.set(messages["book"])
                     chapterColumnProperty.set(messages["chapter"])
+                    mediaExtensionColumnProperty.set(messages["mediaExtension"])
+                    mediaQualityColumnProperty.set(messages["mediaQuality"])
                     groupingColumnProperty.set(messages["grouping"])
                     statusColumnProperty.set(messages["status"])
 
