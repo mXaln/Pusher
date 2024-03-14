@@ -3,7 +3,7 @@ package org.bibletranslationtools.maui.jvm.ui.upload
 import javafx.beans.binding.Bindings
 import javafx.scene.layout.Priority
 import org.bibletranslationtools.maui.jvm.assets.AppResources
-import org.bibletranslationtools.maui.jvm.controls.mediaTableView
+import org.bibletranslationtools.maui.jvm.controls.mediatableview.mediaTableView
 import org.bibletranslationtools.maui.jvm.ui.events.AppSaveRequestEvent
 import org.bibletranslationtools.maui.jvm.ui.BatchDataStore
 import org.bibletranslationtools.maui.jvm.ui.UploadTarget
@@ -12,6 +12,8 @@ import org.bibletranslationtools.maui.jvm.ui.components.uploadTargetHeader
 import org.kordamp.ikonli.javafx.FontIcon
 import org.kordamp.ikonli.materialdesign.MaterialDesign
 import tornadofx.*
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 class UploadPage : View() {
 
@@ -50,16 +52,30 @@ class UploadPage : View() {
             }
 
             vbox {
-                addClass("upload-page__contents")
+                addClass("root-container")
 
                 vgrow = Priority.ALWAYS
 
                 hbox {
-                    addClass("upload-page__controls")
+                    addClass("controls")
 
-                    label {
-                        addClass("upload-page__controls-title")
-                        textProperty().bind(batchDataStore.activeBatchProperty.stringBinding { it?.name })
+                    vbox {
+                        spacing = 4.0
+
+                        label {
+                            addClass("controls-title")
+                            textProperty().bind(batchDataStore.activeBatchProperty.stringBinding { it?.name })
+                        }
+                        label {
+                            addClass("controls-subtitle")
+                            textProperty().bind(batchDataStore.activeBatchProperty.stringBinding {
+                                it?.let { batch ->
+                                    val parsed = LocalDateTime.parse(batch.created)
+                                    val formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy hh:mm:ss a")
+                                    parsed.format(formatter)
+                                } ?: ""
+                            })
+                        }
                     }
 
                     region {
@@ -67,16 +83,28 @@ class UploadPage : View() {
                     }
 
                     button(messages["saveBatch"]) {
-                        addClass("btn", "btn--secondary", "upload-page--btn")
+                        addClass("btn", "btn--secondary")
                         graphic = FontIcon(MaterialDesign.MDI_CONTENT_SAVE)
 
                         action {
                             println("Save project")
+                            viewModel.sortedMediaItems.forEach {
+                                println(it.file.name)
+                                println(it.language)
+                                println(it.resourceType)
+                                println(it.book)
+                                println(it.chapter)
+                                println(it.mediaExtension)
+                                println(it.mediaQuality)
+                                println(it.grouping)
+                                println(it.status)
+                                println("-------------------------")
+                            }
                         }
                     }
 
                     button(messages["viewUploadedFiles"]) {
-                        addClass("btn", "btn--secondary", "upload-page--btn")
+                        addClass("btn", "btn--secondary")
                         graphic = FontIcon(MaterialDesign.MDI_EXPORT)
 
                         action {
@@ -85,7 +113,7 @@ class UploadPage : View() {
                     }
 
                     button(messages["exportCsv"]) {
-                        addClass("btn", "btn--secondary", "upload-page--btn")
+                        addClass("btn", "btn--secondary")
                         graphic = FontIcon(MaterialDesign.MDI_FILE_EXPORT)
 
                         action {
@@ -106,6 +134,14 @@ class UploadPage : View() {
                     mediaQualityColumnProperty.set(messages["mediaQuality"])
                     groupingColumnProperty.set(messages["grouping"])
                     statusColumnProperty.set(messages["status"])
+
+                    languagesProperty.set(viewModel.languages)
+                    resourceTypesProperty.set(viewModel.resourceTypes)
+                    booksProperty.set(viewModel.books)
+                    mediaExtensionsProperty.set(viewModel.mediaExtensions)
+                    mediaQualitiesProperty.set(viewModel.mediaQualities)
+                    groupingsProperty.set(viewModel.groupings)
+                    statusesProperty.set(viewModel.statuses)
 
                     viewModel.sortedMediaItems.comparatorProperty().bind(comparatorProperty())
                 }

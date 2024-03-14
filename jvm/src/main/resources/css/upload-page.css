@@ -1,29 +1,34 @@
-.upload-page__contents {
+.upload-page .root-container {
     -fx-padding: 0 20px 20px 20px;
     -fx-spacing: 20px;
 }
 
-.upload-page__controls {
+.upload-page .controls {
     -fx-alignment: center-left;
     -fx-padding: 20px 0;
     -fx-spacing: 15px;
 }
 
-.upload-page__controls-title {
+.upload-page .controls .controls-title {
     -fx-font-size: 2.25em;
 }
 
-.upload-page--btn {
+.upload-page .controls .controls-subtitle {
+    -fx-font-size: 1.25em;
+    -fx-text-fill: -wa-gray;
+}
+
+.upload-page .controls .btn {
     -fx-text-fill: -wa-gray-darker;
     -fx-border-color: -wa-gray-lighter;
 }
 
-.upload-page--btn:hover {
+.upload-page .controls .btn:hover {
     -fx-text-fill: -wa-gray-darker;
     -fx-background-color: -wa-gray-lighter;
 }
 
-.upload-page--btn .ikonli-font-icon {
+.upload-page .controls .btn .ikonli-font-icon {
     -fx-icon-size: 20px;
     -fx-icon-color: -wa-gray-darker;
 }

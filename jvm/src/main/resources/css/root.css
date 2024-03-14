@@ -21,6 +21,10 @@
     -wa-red-light: #FFCCCC;
     -wa-red-dark: #6F0608;
 
+    -wa-green: #006600;
+    -wa-green-light: #009933;
+    -wa-green-dark: #003300;
+
     -wa-shadow0: dropshadow(gaussian, rgba(0, 0, 0, 0.0), 0, 0, 0, 0);
     -wa-shadow1: dropshadow(gaussian, rgba(0, 0, 0, 0.24), 2, 0, 0, 1);
     -wa-shadow2: dropshadow(gaussian, rgba(0,0,0,0.23), 6, 0, 0, 3);

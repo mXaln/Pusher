@@ -39,7 +39,7 @@
 }
 
 .media-table-view .table-row-cell:selected .table-column {
-    -fx-text-fill: -wa-gray-darker;
+    -fx-font-weight: bold;
 }
 
 .media-table-view .table-cell {
@@ -80,4 +80,40 @@
     -fx-text-fill: -wa-primary;
     -fx-font-size: 1.25em;
     -fx-font-weight: 700;
+}
+
+.media-table-view .options-cell .options-combo-box {
+    -fx-pref-width: 140px;
+    -jfx-unfocus-color: transparent;
+    -jfx-focus-color: transparent;
+    -fx-font-size: 1.25em;
+}
+
+.media-table-view .options-cell .options-combo-box:editable:focused {
+    -jfx-focus-color: -wa-primary;
+}
+
+.media-table-view .status {
+    -fx-alignment: center-left;
+    -fx-spacing: 5px;
+}
+
+.media-table-view .status .status-alert .ikonli-font-icon {
+    -fx-icon-color: -wa-red;
+    -fx-icon-size: 20px;
+}
+
+.media-table-view .status .status-title {
+    -fx-text-fill: -wa-green;
+    -fx-font-size: 1.25em;
+}
+
+.media-table-view .status:error .status-title {
+    -fx-text-fill: -wa-red;
+}
+
+.media-table-view .text-cell .text-field {
+    -jfx-unfocus-color: transparent;
+    -jfx-focus-color: -wa-primary;
+    -fx-font-size: 1.25em;
 }
