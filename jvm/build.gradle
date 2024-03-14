@@ -8,7 +8,7 @@ apply plugin: 'idea'
 apply plugin: 'edu.sc.seis.launch4j'
 
 javafx {
-    version = '11'
+    version = "$javafxVer"
     modules = ['javafx.controls', 'javafx.fxml']
 }
 
@@ -55,6 +55,10 @@ dependencies {
     // Thymeleaf
     implementation "org.thymeleaf:thymeleaf:$thymeleafVer"
     implementation "nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:$thymeleafDialectVer"
+
+    //Dagger2
+    implementation "com.google.dagger:dagger:$daggerVer"
+    kapt "com.google.dagger:dagger-compiler:$daggerVer"
 
     implementation project(':common')
 
