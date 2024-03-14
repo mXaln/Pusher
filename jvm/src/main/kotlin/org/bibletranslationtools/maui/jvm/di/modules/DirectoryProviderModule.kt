@@ -27,5 +27,5 @@ import org.bibletranslationtools.maui.jvm.persistence.DirectoryProvider
 @Module
 class DirectoryProviderModule {
     @Provides
-    fun providesDirectoryProvider(): IDirectoryProvider = DirectoryProvider(MauiInfo.SUITE_NAME)
+    fun providesDirectoryProvider(): IDirectoryProvider = DirectoryProvider(MauiInfo.APP_NAME)
 }

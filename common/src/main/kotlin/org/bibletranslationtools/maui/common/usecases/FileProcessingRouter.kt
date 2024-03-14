@@ -1,20 +1,27 @@
 package org.bibletranslationtools.maui.common.usecases
 
 import org.bibletranslationtools.maui.common.data.FileResult
-import org.bibletranslationtools.maui.common.data.FileStatus
 import org.bibletranslationtools.maui.common.fileprocessor.*
+import org.bibletranslationtools.maui.common.persistence.IDirectoryProvider
 import java.io.File
 import java.io.IOException
 import java.util.Queue
 import java.util.LinkedList
+import javax.inject.Inject
 
-class FileProcessingRouter(private val processors: List<FileProcessor>) {
-    private val fileQueue: Queue<File> = LinkedList<File>()
+class FileProcessingRouter @Inject constructor(private val directoryProvider: IDirectoryProvider) {
+    private val processors: List<FileProcessor> = getProcessors()
+    /**
+     * Queue of pairs where first item is the processed file and second item is its parent file
+     * For example .orature file contains wav or mp3 files and all its files will have it as parent
+     * If a single .wav file is being processed, then it doesn't have a parent
+     */
+    private val fileQueue: Queue<Pair<File, File?>> = LinkedList()
 
     @Throws(IOException::class)
     fun handleFiles(files: List<File>): List<FileResult> {
         val resultList = mutableListOf<FileResult>()
-        fileQueue.addAll(files)
+        fileQueue.addAll(files.map { it to null })
 
         while (fileQueue.isNotEmpty()) {
             processFile(fileQueue.poll(), resultList)
@@ -23,33 +30,22 @@ class FileProcessingRouter(private val processors: List<FileProcessor>) {
         return resultList
     }
 
-    private fun processFile(file: File, resultList: MutableList<FileResult>) {
+    private fun processFile(file: Pair<File, File?>, resultList: MutableList<FileResult>) {
         processors.forEach {
-            val status = it.process(file, fileQueue, resultList)
-            if (status == FileStatus.PROCESSED) {
-                return
+            it.process(file.first, fileQueue, file.second)?.let { result ->
+                resultList.add(result)
             }
         }
-        // file was not processed by any processor
-        val rejected = FileResult(
-                status = FileStatus.REJECTED,
-                data = null,
-                requestedFile = file
-        )
-        resultList.add(rejected)
     }
 
-    companion object {
-        fun build(): FileProcessingRouter {
-            val processorList: List<FileProcessor> = listOf(
-                    CueProcessor(),
-                    JpgProcessor(),
-                    Mp3Processor(),
-                    TrProcessor(),
-                    WavProcessor(),
-                    OratureFileProcessor()
-            )
-            return FileProcessingRouter(processorList)
-        }
+    private fun getProcessors(): List<FileProcessor> {
+        return listOf(
+            CueProcessor(),
+            JpgProcessor(),
+            Mp3Processor(),
+            TrProcessor(directoryProvider),
+            WavProcessor(),
+            OratureFileProcessor(directoryProvider)
+        )
     }
 }

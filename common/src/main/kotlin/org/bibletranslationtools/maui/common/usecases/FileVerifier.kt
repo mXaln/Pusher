@@ -1,6 +1,6 @@
 package org.bibletranslationtools.maui.common.usecases
 
-import org.bibletranslationtools.maui.common.data.FileData
+import org.bibletranslationtools.maui.common.data.Media
 import org.bibletranslationtools.maui.common.data.FileStatus
 import org.bibletranslationtools.maui.common.data.Grouping
 import org.bibletranslationtools.maui.common.data.VerifiedResult
@@ -10,41 +10,41 @@ import org.wycliffeassociates.otter.common.audio.wav.WavFile
 import org.wycliffeassociates.otter.common.audio.wav.WavMetadata
 
 class FileVerifier(private val versification: Versification) {
-    fun handleItem(fileData: FileData): VerifiedResult {
-        if (fileData.grouping == Grouping.CHAPTER) {
-            isBookValid(fileData).let {
+    fun handleItem(media: Media): VerifiedResult {
+        if (media.grouping == Grouping.CHAPTER) {
+            isBookValid(media).let {
                 if (it.status == FileStatus.REJECTED) {
                     return it
                 }
             }
 
-            isChapterValid(fileData).let {
+            isChapterValid(media).let {
                 if (it.status == FileStatus.REJECTED) {
                     return it
                 }
             }
 
-            return isVerseValid(fileData)
+            return isVerseValid(media)
         } else {
-            return VerifiedResult(FileStatus.PROCESSED, fileData.file)
+            return VerifiedResult(FileStatus.PROCESSED, media.file)
         }
     }
 
-    private fun isBookValid(fileData: FileData): VerifiedResult {
-        val book = fileData.book?.uppercase()
+    private fun isBookValid(media: Media): VerifiedResult {
+        val book = media.book?.uppercase()
         return if (book == null || !versification.contains(book)) {
-            VerifiedResult(FileStatus.REJECTED, fileData.file, "$book is not a valid book")
+            VerifiedResult(FileStatus.REJECTED, media.file, "$book is not a valid book")
         } else {
-            VerifiedResult(FileStatus.PROCESSED, fileData.file)
+            VerifiedResult(FileStatus.PROCESSED, media.file)
         }
     }
 
-    private fun isChapterValid(fileData: FileData): VerifiedResult {
-        val book = fileData.book?.uppercase()
-        val chapter = fileData.chapter
+    private fun isChapterValid(media: Media): VerifiedResult {
+        val book = media.book?.uppercase()
+        val chapter = media.chapter
 
         if (chapter == null) {
-            return VerifiedResult(FileStatus.REJECTED, fileData.file, "$chapter is not a valid chapter")
+            return VerifiedResult(FileStatus.REJECTED, media.file, "$chapter is not a valid chapter")
         } else {
             versification[book]?.let { chapterVerses ->
                 /** Check that chapter exists within book */
@@ -53,23 +53,23 @@ class FileVerifier(private val versification: Versification) {
                 if (chapterNumber > chapterVerses.size) {
                     return VerifiedResult(
                         FileStatus.REJECTED,
-                        fileData.file,
+                        media.file,
                         "$book only has ${chapterVerses.size} chapters, not $chapterNumber"
                     )
                 } else {
-                    return VerifiedResult(FileStatus.PROCESSED, fileData.file)
+                    return VerifiedResult(FileStatus.PROCESSED, media.file)
                 }
             }
-            return VerifiedResult(FileStatus.REJECTED, fileData.file, "Book: $book does not exist")
+            return VerifiedResult(FileStatus.REJECTED, media.file, "Book: $book does not exist")
         }
     }
 
-    private fun isVerseValid(fileData: FileData): VerifiedResult {
-        val book = fileData.book?.uppercase()
-        val chapter = fileData.chapter
+    private fun isVerseValid(media: Media): VerifiedResult {
+        val book = media.book?.uppercase()
+        val chapter = media.chapter
         val cueChunk = CueChunk()
         val wavMetadata = WavMetadata(listOf(cueChunk))
-        WavFile(fileData.file, wavMetadata)
+        WavFile(media.file, wavMetadata)
 
         versification[book].let { chapterVerses ->
             val chapterNumber = chapter!!.toInt()
@@ -78,11 +78,11 @@ class FileVerifier(private val versification: Versification) {
             if (actualVerses != expectedVerses) {
                 return VerifiedResult(
                     FileStatus.REJECTED,
-                    fileData.file,
+                    media.file,
                     "$book $chapter expected $expectedVerses verses, but got $actualVerses"
                 )
             } else {
-                return VerifiedResult(FileStatus.PROCESSED, fileData.file)
+                return VerifiedResult(FileStatus.PROCESSED, media.file)
             }
         }
     }

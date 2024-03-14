@@ -1,0 +1,119 @@
+.media-table-view .column-header-background {
+    -fx-pref-height: 48px;
+}
+
+.media-table-view .column-header {
+    -fx-cursor: hand;
+    -fx-padding: 0 0 0 8;
+    -fx-background-color: -wa-primary-light;
+    -fx-border-color: transparent -wa-gray-light -wa-gray-light transparent;
+}
+
+.media-table-view .column-header:last-visible {
+    -fx-border-color: transparent transparent -wa-gray-light transparent;
+}
+
+.media-table-view .column-header .label {
+    -fx-alignment: center-left;
+    -fx-font-size: 1.25em;
+    -fx-font-weight: 700;
+    -fx-text-fill: -wa-gray-darker;
+}
+
+.media-table-view .column-header .arrow {
+    -fx-background-color: -wa-gray-light;
+}
+
+.media-table-view .table-row-cell {
+    -fx-background-color: -wa-gray-light, -wa-white;
+    -fx-background-insets: 0, 0 0 1 0;
+    -fx-padding: 0;
+}
+
+.media-table-view .table-row-cell:hover {
+    -fx-background-color: -wa-gray-light, -wa-primary-light;
+}
+
+.media-table-view .table-row-cell:empty {
+    -fx-background-color: transparent;
+}
+
+.media-table-view .table-row-cell:selected .table-column {
+    -fx-font-weight: bold;
+}
+
+.media-table-view .table-cell {
+    -fx-pref-height: 48px;
+    -fx-padding: 0 8;
+    -fx-alignment: center-left;
+    -fx-border-color: transparent -wa-gray-light transparent transparent;
+}
+
+.media-table-view .table-cell:last-visible {
+    -fx-border-color: transparent;
+}
+
+.media-table-view .table-row-cell:selected .table-cell {
+    -fx-border-color: transparent -wa-gray-light transparent transparent;
+}
+
+.media-table-view .table-row-cell:empty .table-cell {
+    -fx-border-color: transparent;
+}
+
+.media-table-view .placeholder {
+    -fx-alignment: center;
+    -fx-spacing: 12px;
+}
+
+.media-table-view .placeholder-icon .ikonli-font-icon {
+    -fx-icon-size: 60px;
+    -fx-icon-color: -wa-gray-light;
+}
+
+.media-table-view .placeholder-text {
+    -fx-font-size: 1.5em;
+    -fx-text-fill: -wa-gray-light;
+}
+
+.media-table-view .file-column {
+    -fx-text-fill: -wa-primary;
+    -fx-font-size: 1.25em;
+    -fx-font-weight: 700;
+}
+
+.media-table-view .options-cell .options-combo-box {
+    -fx-pref-width: 140px;
+    -jfx-unfocus-color: transparent;
+    -jfx-focus-color: transparent;
+    -fx-font-size: 1.25em;
+}
+
+.media-table-view .options-cell .options-combo-box:editable:focused {
+    -jfx-focus-color: -wa-primary;
+}
+
+.media-table-view .status {
+    -fx-alignment: center-left;
+    -fx-spacing: 5px;
+}
+
+.media-table-view .status .status-alert .ikonli-font-icon {
+    -fx-icon-color: -wa-red;
+    -fx-icon-size: 20px;
+}
+
+.media-table-view .status .status-title {
+    -fx-text-fill: -wa-green;
+    -fx-font-size: 1.25em;
+}
+
+.media-table-view .status:error .status-title {
+    -fx-text-fill: -wa-red;
+}
+
+.media-table-view .text-cell .text-field {
+    -jfx-unfocus-color: transparent;
+    -jfx-focus-color: -wa-primary;
+    -fx-font-size: 1.25em;
+}

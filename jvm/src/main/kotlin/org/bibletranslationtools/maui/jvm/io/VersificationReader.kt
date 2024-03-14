@@ -24,7 +24,7 @@ class VersificationReader : IVersificationReader {
 
         versificationFile.use { inputStream ->
             val versification: VersificationSchema = jacksonObjectMapper().readValue(inputStream)
-            return versification.maxVerses as Versification
+            return versification.maxVerses
         }
     }
 }

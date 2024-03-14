@@ -8,7 +8,6 @@ import com.fasterxml.jackson.dataformat.csv.CsvSchema
 import io.reactivex.Single
 import org.bibletranslationtools.maui.common.io.IResourceReader
 
-
 class LanguagesReader : IResourceReader {
 
     companion object {

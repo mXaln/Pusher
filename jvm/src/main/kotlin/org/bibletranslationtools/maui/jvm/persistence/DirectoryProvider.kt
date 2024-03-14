@@ -17,7 +17,7 @@ class DirectoryProvider(private val appName: String) : IDirectoryProvider {
         get() = getAppDataDirectory("temp")
 
     override val batchDirectory: File
-        get() = getAppDataDirectory("batch")
+        get() = getAppDataDirectory("batches")
 
     override val cacheDirectory: File
         get() = getAppDataDirectory("cache")
@@ -51,12 +51,37 @@ class DirectoryProvider(private val appName: String) : IDirectoryProvider {
         return file
     }
 
+    override fun createCacheDirectory(dirName: String): File {
+        val dir = cacheDirectory.resolve(dirName)
+        dir.mkdirs()
+        return dir
+    }
+
+    override fun createTempDirectory(dirName: String): File {
+        val dir = tempDirectory.resolve(dirName)
+        dir.mkdirs()
+        return dir
+    }
+
     override fun createTempFile(prefix: String, suffix: String?): File {
         return File.createTempFile(prefix, suffix, tempDirectory)
     }
 
     override fun cleanTempDirectory() {
         deleteRecursively(tempDirectory)
+    }
+
+    override fun deleteCachedFiles(files: List<File>) {
+        files.forEach { file ->
+            // delete only files that are in cache directory
+            val parentDir = file.parentFile
+            val isCached = file.absolutePath.startsWith(
+                cacheDirectory.absolutePath
+            )
+            if (file.exists() && isCached) {
+                parentDir.deleteRecursively()
+            }
+        }
     }
 
     private fun deleteRecursively(dir: File) {

@@ -1,11 +1,13 @@
 .root {
     -fx-font-family: Arial, Helvetica, sans-serif;
+    -fx-background-color: -wa-white;
 }
 
 * {
-    -wa-primary: #015AD9;
-    -wa-primary-light: #CEE6FF;
-    -wa-primary-dark: #00377C;
+    -wa-primary-common: #0056D1;
+    -wa-primary-light-common: #EEF0FF;
+    -wa-accent-common: #01A299;
+    -wa-accent-light-common: #C8FFF4;
 
     -wa-gray-darker: rgba(26,26,26,1);
     -wa-gray-dark: rgba(26,26,26,0.8);
@@ -14,6 +16,14 @@
     -wa-gray-lighter: rgba(26,26,26,0.1);
 
     -wa-white: #FFF;
+
+    -wa-red: #980E11;
+    -wa-red-light: #FFCCCC;
+    -wa-red-dark: #6F0608;
+
+    -wa-green: #006600;
+    -wa-green-light: #009933;
+    -wa-green-dark: #003300;
 
     -wa-shadow0: dropshadow(gaussian, rgba(0, 0, 0, 0.0), 0, 0, 0, 0);
     -wa-shadow1: dropshadow(gaussian, rgba(0, 0, 0, 0.24), 2, 0, 0, 1);

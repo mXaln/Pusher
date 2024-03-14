@@ -1,13 +1,14 @@
 package org.bibletranslationtools.maui.common.usecases
 
-import org.bibletranslationtools.maui.common.data.FileData
+import org.bibletranslationtools.maui.common.data.FileStatus
+import org.bibletranslationtools.maui.common.data.Media
 import org.bibletranslationtools.maui.common.data.Grouping
 import org.bibletranslationtools.maui.common.data.MediaQuality
 import java.io.File
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
-class ParseFileName(private val file: File) {
+class ParseFileName(private val file: File, private val parentFile: File?) {
 
     private enum class Groups(val value: Int) {
         LANGUAGE(1),
@@ -50,7 +51,6 @@ class ParseFileName(private val file: File) {
                 TAKE +
                 QUALITY +
                 GROUPING + "$"
-
     }
 
     private var matcher: Matcher? = null
@@ -59,8 +59,8 @@ class ParseFileName(private val file: File) {
         matcher = findMatch(file.nameWithoutExtension)
     }
 
-    fun parse(): FileData {
-        return FileData(
+    fun parse(): Media {
+        return Media(
                 file,
                 findLanguage(),
                 findResourceType(),
@@ -68,7 +68,9 @@ class ParseFileName(private val file: File) {
                 findChapter(),
                 null,
                 findQuality(),
-                findGrouping()
+                findGrouping(),
+                FileStatus.PROCESSED,
+                parentFile = parentFile
         )
     }
 

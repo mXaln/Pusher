@@ -11,12 +11,15 @@ import java.net.SocketException
 
 class FtpTransferClient(
     private val source: File,
-    private val targetPath: String
+    private val targetPath: String,
+    private val ftpServer: String = "",
+    private val ftpUser: String = "",
+    private val ftpPassword: String = ""
 ) : IFileTransferClient {
 
-    private val ftpServer = System.getenv("MAUI_FTP_SERVER")
-    private val ftpUser = System.getenv("MAUI_FTP_USER")
-    private val ftpPassword = System.getenv("MAUI_FTP_PASSWORD")
+    // private val ftpServer = System.getenv("MAUI_FTP_SERVER")
+    // private val ftpUser = System.getenv("MAUI_FTP_USER")
+    // private val ftpPassword = System.getenv("MAUI_FTP_PASSWORD")
 
     override fun transfer(): Completable {
         return Completable.fromCallable {

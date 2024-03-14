@@ -1,5 +1,6 @@
 package org.bibletranslationtools.maui.common
 
 object MauiInfo {
-    const val SUITE_NAME = "MAUI"
+    const val APP_NAME = "MAUI"
+    const val EXTENSION = "maui"
 }

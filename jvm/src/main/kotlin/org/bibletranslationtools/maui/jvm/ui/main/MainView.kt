@@ -17,9 +17,9 @@ import javafx.scene.layout.Priority
 import javafx.util.Duration
 import org.bibletranslationtools.maui.jvm.assets.AppResources
 import org.bibletranslationtools.maui.common.data.Grouping
-import org.bibletranslationtools.maui.jvm.controls.filedatafilter.filedatafilter
-import org.bibletranslationtools.maui.jvm.ui.FileDataItem
-import org.bibletranslationtools.maui.jvm.ui.filedatacell.FileDataCell
+import org.bibletranslationtools.maui.jvm.controls.mediafilter.mediafilter
+import org.bibletranslationtools.maui.jvm.ui.MediaItem
+import org.bibletranslationtools.maui.jvm.ui.mediacell.MediaCell
 import tornadofx.*
 import java.util.*
 import kotlin.reflect.KMutableProperty1
@@ -28,8 +28,8 @@ import kotlin.reflect.KProperty1
 class MainView : View() {
     private val viewModel: MainViewModel by inject()
 
-    private val filter = filedatafilter()
-    private lateinit var listView: ListView<FileDataItem>
+    private val filter = mediafilter()
+    private lateinit var listView: ListView<MediaItem>
 
     init {
         title = messages["appName"] + getVersion().let {
@@ -58,7 +58,7 @@ class MainView : View() {
             addClass("main__drop-files")
 
             visibleWhen {
-                viewModel.fileDataListProperty.emptyProperty()
+                viewModel.mediaItemsProperty.emptyProperty()
                     .and(viewModel.isProcessing.not())
             }
 
@@ -72,7 +72,7 @@ class MainView : View() {
             alignment = Pos.CENTER
 
             hiddenWhen {
-                viewModel.fileDataListProperty.emptyProperty()
+                viewModel.mediaItemsProperty.emptyProperty()
                     .or(viewModel.isProcessing)
             }
 
@@ -116,11 +116,11 @@ class MainView : View() {
 
             add(filter)
 
-            listView = listview(viewModel.fileDataList) {
+            listView = listview(viewModel.mediaItems) {
                 vgrow = Priority.ALWAYS
                 addClass("main__file-list")
 
-                setCellFactory { FileDataCell() }
+                setCellFactory { MediaCell() }
 
                 onDragOver = onDragOverHandler()
                 onDragDropped = onDragDroppedHandler()
@@ -235,7 +235,7 @@ class MainView : View() {
         Alert(Alert.AlertType.INFORMATION).apply {
             title = messages["successTitle"]
             headerText = null
-            contentText = messages["uploadSuccessfull"]
+            contentText = messages["uploadSuccessful"]
 
             viewModel.successfulUploadProperty.onChange {
                 if (it) show() else close()
@@ -250,59 +250,59 @@ class MainView : View() {
     private fun setFilterChangeListeners() {
         setPropertyListener(
             filter.selectedLanguageProperty,
-            FileDataItem::language,
+            MediaItem::language
         )
 
         setPropertyListener(
             filter.selectedResourceTypeProperty,
-            FileDataItem::resourceType,
+            MediaItem::resourceType
         )
 
         setPropertyListener(
             filter.selectedBookProperty,
-            FileDataItem::book,
+            MediaItem::book
         )
 
         setPropertyListener(
             filter.chapterProperty,
-            FileDataItem::chapter,
+            MediaItem::chapter
         )
 
         setPropertyListener(
             filter.selectedMediaExtensionProperty,
-            FileDataItem::mediaExtension,
-            FileDataItem::mediaExtensionAvailable
+            MediaItem::mediaExtension,
+            MediaItem::mediaExtensionAvailable
         )
 
         setPropertyListener(
             filter.selectedMediaQualityProperty,
-            FileDataItem::mediaQuality,
-            FileDataItem::mediaQualityAvailable
+            MediaItem::mediaQuality,
+            MediaItem::mediaQualityAvailable
         )
 
         setPropertyListener(
             filter.selectedGroupingProperty,
-            FileDataItem::grouping,
+            MediaItem::grouping
         )
     }
 
     private fun <T> setPropertyListener(
         property: Property<T>,
-        targetProp: KMutableProperty1<FileDataItem, T?>,
-        availableProp: KProperty1<FileDataItem, BooleanExpression>? = null
+        targetProp: KMutableProperty1<MediaItem, T?>,
+        availableProp: KProperty1<MediaItem, BooleanExpression>? = null
     ) {
         property.onChange {
             it?.let { prop ->
-                viewModel.fileDataList.forEach { fileDataItem ->
-                    val available = availableProp?.get(fileDataItem)?.value ?: true
+                viewModel.mediaItems.forEach { mediaItem ->
+                    val available = availableProp?.get(mediaItem)?.value ?: true
                     if (available) {
                         val isGrouping = prop is Grouping
                         val groupingAvailable = isGrouping &&
-                                !viewModel.restrictedGroupings(fileDataItem)
+                                !viewModel.restrictedGroupings(mediaItem)
                                     .contains(prop as Grouping)
 
                         if (!isGrouping || groupingAvailable) {
-                            targetProp.set(fileDataItem, prop)
+                            targetProp.set(mediaItem, prop)
                             listView.refresh()
                         }
                     }

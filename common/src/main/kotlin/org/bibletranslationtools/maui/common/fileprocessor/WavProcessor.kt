@@ -2,6 +2,7 @@ package org.bibletranslationtools.maui.common.fileprocessor
 
 import org.bibletranslationtools.maui.common.data.FileResult
 import org.bibletranslationtools.maui.common.data.FileStatus
+import org.bibletranslationtools.maui.common.data.Media
 import org.bibletranslationtools.maui.common.extensions.MediaExtensions
 import org.bibletranslationtools.maui.common.validators.WavValidator
 import java.io.File
@@ -10,10 +11,10 @@ import java.util.Queue
 
 class WavProcessor : FileProcessor() {
     override fun process(
-            file: File,
-            fileQueue: Queue<File>,
-            resultList: MutableList<FileResult>
-    ): FileStatus {
+        file: File,
+        fileQueue: Queue<Pair<File, File?>>,
+        parentFile: File?
+    ): FileResult? {
         val ext = try {
             MediaExtensions.of(file.extension)
         } catch (ex: IllegalArgumentException) {
@@ -21,18 +22,21 @@ class WavProcessor : FileProcessor() {
         }
 
         if (ext != MediaExtensions.WAV) {
-            return FileStatus.REJECTED
+            return null
         }
 
-        return try {
+        val media = try {
             WavValidator(file).validate()
-            val fileData = getFileData(file)
-            val result = FileResult(status = FileStatus.PROCESSED, data = fileData)
-            resultList.add(result)
-
-            FileStatus.PROCESSED
+            getMedia(file, parentFile)
         } catch (ex: Exception) {
-            FileStatus.REJECTED
+            Media(
+                file = file,
+                status = FileStatus.REJECTED,
+                statusMessage = ex.message,
+                parentFile = parentFile
+            )
         }
+
+        return FileResult(media.status!!, media.statusMessage, media)
     }
 }

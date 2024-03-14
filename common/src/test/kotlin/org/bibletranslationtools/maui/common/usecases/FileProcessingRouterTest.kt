@@ -28,16 +28,16 @@ class FileProcessingRouterTest {
         )
 
         val result = FileProcessingRouter(processors).handleFiles(files)
-        val rejectedFileCount = result.filter {
-            it.status == FileStatus.REJECTED
+        val errorFileCount = result.filter {
+            it.status == FileStatus.ERROR
         }.size
-        val processedFileCount = result.filter {
-            it.status == FileStatus.PROCESSED
+        val successFileCount = result.filter {
+            it.status == FileStatus.SUCCESS
         }.size
 
         assertEquals(expectedResultSize, result.size)
-        assertEquals(1, processedFileCount)
-        assertEquals(3, rejectedFileCount)
+        assertEquals(1, successFileCount)
+        assertEquals(3, errorFileCount)
     }
 
     private fun getTestFile(fileName: String): File {

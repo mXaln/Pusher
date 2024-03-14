@@ -1,0 +1,39 @@
+.media-cell {
+    -fx-padding: 10px;
+}
+
+.media-cell__title {
+    -fx-border-width: 0 0 1px 0;
+    -fx-border-color: -wa-gray-light;
+    -fx-padding: 0 0 10px 0;
+}
+
+.media-cell__title .label {
+    -fx-text-fill: -wa-primary;
+    -fx-font-weight: bold;
+}
+
+.media-cell__chapter {
+    -fx-max-width: 100px;
+}
+
+.media-cell__options {
+    -fx-padding: 10px 0 0 0;
+}
+
+.media-cell__options .label {
+    -fx-font-weight: normal;
+    -fx-text-fill: -wa-gray-dark;
+}
+
+.media-cell__dropdown {
+    -fx-max-width: infinity;
+}
+
+.media-cell__dropdown .list-cell:filled:selected {
+    -fx-background-color: #359ffc;
+}
+
+.media-cell__dropdown .list-cell:hover {
+    -fx-background-color: #2978bc;
+}

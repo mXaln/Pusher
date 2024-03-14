@@ -1,0 +1,51 @@
+.batch-page__contents {
+    -fx-padding: 0 20px 20px 20px;
+    -fx-spacing: 20px;
+}
+
+.batch-page__controls {
+    -fx-alignment: center-right;
+    -fx-padding: 20px 0;
+}
+
+.batch-page__controls .btn {
+    -fx-pref-width: 175px;
+}
+
+.batch__import {
+    -fx-border-color: -wa-gray-light;
+    -fx-border-width: 1px;
+    -fx-border-radius: 4px;
+    -fx-padding: 20px;
+    -fx-alignment: center;
+    -fx-spacing: 10px;
+}
+
+.batch__import:drag-over {
+    -fx-background-color: -wa-primary-light;
+    -fx-border-color: -wa-primary;
+    -fx-border-style: segments(15, 15);
+}
+
+.batch__import__icon .ikonli-font-icon {
+    -fx-icon-size: 40px;
+}
+
+.batch__import__title {
+    -fx-font-size: 1.5em;
+    -fx-font-weight: bold;
+}
+
+.batch__import__subtitle {
+    -fx-font-size: 1.25em;
+}
+
+.batch__search {
+    -fx-alignment: center-left;
+}
+
+.batch__search__title {
+    -fx-font-size: 1.5em;
+    -fx-font-weight: bold;
+    -fx-underline: true;
+}
