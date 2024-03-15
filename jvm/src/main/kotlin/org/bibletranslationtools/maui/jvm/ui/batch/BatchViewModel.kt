@@ -140,7 +140,7 @@ class BatchViewModel : ViewModel() {
             .subscribe {
                 batches.remove(batch)
                 val event = DialogEvent(
-                    type = DialogType.SUCCESS,
+                    type = DialogType.INFO,
                     title = messages["deleteSuccessful"],
                     message = messages["batchDeleted"],
                     details = batch.name

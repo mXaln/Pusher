@@ -18,7 +18,7 @@ import javafx.util.Duration
 import org.bibletranslationtools.maui.jvm.assets.AppResources
 import org.bibletranslationtools.maui.common.data.Grouping
 import org.bibletranslationtools.maui.jvm.controls.mediafilter.mediafilter
-import org.bibletranslationtools.maui.jvm.ui.MediaItem
+import org.bibletranslationtools.maui.jvm.data.MediaItem
 import org.bibletranslationtools.maui.jvm.ui.mediacell.MediaCell
 import tornadofx.*
 import java.util.*

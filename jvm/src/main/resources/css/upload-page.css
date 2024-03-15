@@ -18,17 +18,15 @@
     -fx-text-fill: -wa-gray;
 }
 
-.upload-page .controls .btn {
-    -fx-text-fill: -wa-gray-darker;
-    -fx-border-color: -wa-gray-lighter;
-}
-
-.upload-page .controls .btn:hover {
-    -fx-text-fill: -wa-gray-darker;
-    -fx-background-color: -wa-gray-lighter;
-}
-
-.upload-page .controls .btn .ikonli-font-icon {
+.upload-page .controls .btn .ikonli-font-icon,
+.upload-footer .btn .ikonli-font-icon {
     -fx-icon-size: 20px;
-    -fx-icon-color: -wa-gray-darker;
+}
+
+.upload-footer {
+    -fx-pref-height: 74px;
+    -fx-background-color: -wa-gray-lighter;
+    -fx-padding: 10 20;
+    -fx-alignment: center-left;
+    -fx-spacing: 10px;
 }

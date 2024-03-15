@@ -1,5 +1,6 @@
 package org.bibletranslationtools.maui.jvm.ui
 
+import org.bibletranslationtools.maui.jvm.data.MediaItem
 import tornadofx.*
 
 class MediaItemComparator : Comparator<MediaItem> {

@@ -16,7 +16,7 @@ import org.kordamp.ikonli.materialdesign.MaterialDesign
 import tornadofx.*
 
 enum class DialogType {
-    SUCCESS,
+    INFO,
     DELETE,
     ERROR,
     CONFIRM
@@ -150,3 +150,10 @@ fun confirmDialog(setup: ConfirmDialog.() -> Unit = {}): ConfirmDialog {
     confirmDialog.setup()
     return confirmDialog
 }
+
+class ConfirmDialogEvent(
+    val type: DialogType,
+    val title: String,
+    val message: String,
+    val details: String? = null
+) : FXEvent()

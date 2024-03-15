@@ -40,8 +40,12 @@ class BatchPage : View() {
         initializeConfirmDialog()
         initializeProgressDialog()
 
-        subscribe<DialogEvent> {
+        subscribe<ConfirmDialogEvent> {
             openConfirmDialog(it)
+        }
+
+        subscribe<ProgressDialogEvent> {
+            openProgressDialog(it)
         }
 
         subscribe<OpenBatchEvent> {
@@ -54,10 +58,6 @@ class BatchPage : View() {
 
         subscribe<EditBatchNameEvent> {
             viewModel.editBatchName(it.batch, it.name)
-        }
-
-        subscribe<ProgressDialogEvent> {
-            openProgressDialog(it)
         }
     }
 
@@ -83,7 +83,6 @@ class BatchPage : View() {
                         else -> ""
                     }
                 })
-                changeUploadTargetTextProperty.set(messages["changeUploadTarget"])
             }
 
             vbox {
@@ -100,7 +99,7 @@ class BatchPage : View() {
 
                         action {
                             chooseFile(
-                                FX.messages["importResourceFromZip"],
+                                messages["importResourceFromZip"],
                                 arrayOf(),
                                 mode = FileChooserMode.Multi,
                                 owner = currentWindow
@@ -158,14 +157,6 @@ class BatchPage : View() {
 
                 batchTableView(viewModel.sortedBatches) {
                     tableView = this
-
-                    emptyPromptProperty.set(messages["noBatchesPrompt"])
-                    nameColumnProperty.set(messages["batchName"])
-                    dateColumnProperty.set(messages["batchDate"])
-                    deleteTextProperty.set(messages["deleteBatch"])
-                    todayTextProperty.set(messages["today"])
-                    dayAgoTextProperty.set(messages["dayAgo"])
-                    daysAgoTextProperty.set(messages["daysAgo"])
                 }
             }
         }
@@ -211,16 +202,16 @@ class BatchPage : View() {
         }
     }
 
-    private fun openConfirmDialog(event: DialogEvent) {
+    private fun openConfirmDialog(event: ConfirmDialogEvent) {
         resetConfirmDialog()
         when (event.type) {
-            DialogType.SUCCESS -> openSuccessDialog(event)
+            DialogType.INFO -> openSuccessDialog(event)
             DialogType.ERROR -> openErrorDialog(event)
             else -> {}
         }
     }
 
-    private fun openSuccessDialog(event: DialogEvent) {
+    private fun openSuccessDialog(event: ConfirmDialogEvent) {
         confirmDialog.apply {
             alertProperty.set(false)
             titleTextProperty.set(event.title)
@@ -232,7 +223,7 @@ class BatchPage : View() {
         }
     }
 
-    private fun openErrorDialog(event: DialogEvent) {
+    private fun openErrorDialog(event: ConfirmDialogEvent) {
         confirmDialog.apply {
             alertProperty.set(true)
             titleTextProperty.set(event.title)

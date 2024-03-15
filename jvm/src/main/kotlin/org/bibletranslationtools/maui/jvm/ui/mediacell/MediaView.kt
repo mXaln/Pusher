@@ -9,7 +9,8 @@ import javafx.scene.layout.VBox
 import org.bibletranslationtools.maui.jvm.assets.AppResources
 import org.bibletranslationtools.maui.common.data.Grouping
 import org.bibletranslationtools.maui.jvm.controls.mediafilter.MAX_CHAPTER_LENGTH
-import org.bibletranslationtools.maui.jvm.ui.MediaItem
+import org.bibletranslationtools.maui.jvm.data.MediaItem
+import org.bibletranslationtools.maui.jvm.ui.events.ErrorOccurredEvent
 import org.bibletranslationtools.maui.jvm.ui.main.MainViewModel
 import tornadofx.*
 
@@ -218,5 +219,3 @@ class MediaView : VBox() {
         }
     }
 }
-
-class ErrorOccurredEvent(val message: String) : FXEvent()

@@ -1,7 +1,7 @@
 package org.bibletranslationtools.maui.jvm.ui.mediacell
 
 import javafx.scene.control.ListCell
-import org.bibletranslationtools.maui.jvm.ui.MediaItem
+import org.bibletranslationtools.maui.jvm.data.MediaItem
 
 class MediaCell : ListCell<MediaItem>() {
 

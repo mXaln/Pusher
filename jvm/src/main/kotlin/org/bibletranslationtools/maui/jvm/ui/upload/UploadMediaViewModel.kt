@@ -2,26 +2,23 @@ package org.bibletranslationtools.maui.jvm.ui.upload
 
 import com.github.thomasnield.rxkotlinfx.observeOnFx
 import io.reactivex.schedulers.Schedulers
-import javafx.collections.transformation.FilteredList
-import javafx.collections.transformation.SortedList
+import javafx.beans.property.SimpleObjectProperty
 import org.bibletranslationtools.maui.common.BatchFileAccessor
-import org.bibletranslationtools.maui.common.data.FileStatus
 import org.bibletranslationtools.maui.common.data.Grouping
 import org.bibletranslationtools.maui.common.data.MediaExtension
 import org.bibletranslationtools.maui.common.data.MediaQuality
 import org.bibletranslationtools.maui.common.persistence.IDirectoryProvider
+import org.bibletranslationtools.maui.jvm.data.FileStatusFilter
 import org.bibletranslationtools.maui.jvm.di.IDependencyGraphProvider
 import org.bibletranslationtools.maui.jvm.io.BooksReader
 import org.bibletranslationtools.maui.jvm.io.LanguagesReader
 import org.bibletranslationtools.maui.jvm.io.ResourceTypesReader
 import org.bibletranslationtools.maui.jvm.mappers.MediaMapper
 import org.bibletranslationtools.maui.jvm.ui.BatchDataStore
-import org.bibletranslationtools.maui.jvm.ui.MediaItem
+import org.bibletranslationtools.maui.jvm.data.MediaItem
+import org.bibletranslationtools.maui.jvm.ui.UploadTarget
 import org.bibletranslationtools.maui.jvm.ui.events.AppSaveDoneEvent
-import tornadofx.ViewModel
-import tornadofx.observableListOf
-import tornadofx.onChange
-import tornadofx.toObservable
+import tornadofx.*
 import javax.inject.Inject
 
 class UploadMediaViewModel : ViewModel() {
@@ -32,8 +29,9 @@ class UploadMediaViewModel : ViewModel() {
     private val batchDataStore: BatchDataStore by inject()
 
     private val mediaItems = observableListOf<MediaItem>()
-    private val filteredMediaItems = FilteredList(mediaItems)
-    val sortedMediaItems = SortedList(filteredMediaItems)
+    val tableMediaItems = SortedFilteredList(mediaItems)
+
+    val uploadTargetProperty = SimpleObjectProperty<UploadTarget>()
 
     val languages = observableListOf<String>()
     val resourceTypes = observableListOf<String>()
@@ -41,7 +39,7 @@ class UploadMediaViewModel : ViewModel() {
     val mediaExtensions = MediaExtension.values().toList().toObservable()
     val mediaQualities = MediaQuality.values().toList().toObservable()
     val groupings = Grouping.values().toList().toObservable()
-    val statuses = FileStatus.values().toList().toObservable()
+    val statusFilter = FileStatusFilter.values().toList().toObservable()
 
     private var batchFileAccessor: BatchFileAccessor? = null
 
@@ -53,6 +51,8 @@ class UploadMediaViewModel : ViewModel() {
                 batchFileAccessor = BatchFileAccessor(directoryProvider, batch)
             }
         }
+
+        uploadTargetProperty.bind(batchDataStore.uploadTargetProperty)
 
         loadLanguages()
         loadResourceTypes()
@@ -68,8 +68,41 @@ class UploadMediaViewModel : ViewModel() {
     }
 
     fun saveBatch() {
-        println("Saved...")
+        mediaItems.forEach {
+            println(it.file.name)
+            println(it.language)
+            println(it.resourceType)
+            println(it.book)
+            println(it.chapter)
+            println(it.mediaExtension)
+            println(it.mediaQuality)
+            println(it.grouping)
+            println(it.status)
+            println(it.selected)
+            println("-------------------------")
+        }
         fire(AppSaveDoneEvent())
+    }
+
+    fun viewUploadedFiles() {
+        println("*** view uploaded files triggered ***")
+    }
+
+    fun exportCsv() {
+        println("*** export CSV triggered ***")
+    }
+
+    fun removeSelected() {
+        val toRemove = mediaItems.filter { it.selected }
+        mediaItems.removeAll(toRemove)
+    }
+
+    fun verify() {
+        println("*** verify triggered ***")
+    }
+
+    fun upload() {
+        println("*** upload triggered ***")
     }
 
     private fun loadMediaItems() {

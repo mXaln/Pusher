@@ -4,7 +4,7 @@
 
 .media-table-view .column-header {
     -fx-cursor: hand;
-    -fx-padding: 0 0 0 8;
+    -fx-padding: 0;
     -fx-background-color: -wa-primary-light;
     -fx-border-color: transparent -wa-gray-light -wa-gray-light transparent;
 }
@@ -38,13 +38,9 @@
     -fx-background-color: transparent;
 }
 
-.media-table-view .table-row-cell:selected .table-column {
-    -fx-font-weight: bold;
-}
-
 .media-table-view .table-cell {
     -fx-pref-height: 48px;
-    -fx-padding: 0 8;
+    -fx-padding: 0;
     -fx-alignment: center-left;
     -fx-border-color: transparent -wa-gray-light transparent transparent;
 }
@@ -76,26 +72,61 @@
     -fx-text-fill: -wa-gray-light;
 }
 
+.media-table-view .checkbox-column,
+.media-table-view .checkbox-column .label {
+    -fx-padding: 0;
+    -fx-alignment: center;
+}
+
+.media-table-view .checkbox-column,
+.media-table-view .table-row-cell:selected .checkbox-column {
+    -fx-background-color: -wa-primary-light;
+    -fx-border-color: transparent -wa-gray-light -wa-gray-light transparent;
+}
+
+.media-table-view .table-row-cell:empty .checkbox-column {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
 .media-table-view .file-column {
     -fx-text-fill: -wa-primary;
     -fx-font-size: 1.25em;
     -fx-font-weight: 700;
+    -fx-padding: 0 5;
 }
 
-.media-table-view .options-cell .options-combo-box {
-    -fx-pref-width: 140px;
+.media-table-view .media-combo-box {
+    -fx-max-width: infinity;
     -jfx-unfocus-color: transparent;
     -jfx-focus-color: transparent;
     -fx-font-size: 1.25em;
+    -fx-padding: 0 5;
+    -fx-prompt-text-fill: -wa-gray-darker;
 }
 
-.media-table-view .options-cell .options-combo-box:editable:focused {
+.media-table-view .media-combo-box .arrow {
+    -fx-background-color: -wa-gray-darker;
+}
+
+.media-table-view .media-combo-box--filter .arrow {
+    -fx-shape: "M6 13h12v-2H6M3 6v2h18V6M10 18h4v-2h-4z";
+    -fx-padding: 7px 10px;
+}
+
+.media-table-view .media-combo-box:editable:focused {
     -jfx-focus-color: -wa-primary;
+    -fx-prompt-text-fill: transparent;
 }
 
 .media-table-view .status {
     -fx-alignment: center-left;
     -fx-spacing: 5px;
+    -fx-padding: 0 5;
+}
+
+.media-table-view .status:error:hover {
+    -fx-cursor: hand;
 }
 
 .media-table-view .status .status-alert .ikonli-font-icon {
@@ -112,8 +143,15 @@
     -fx-text-fill: -wa-red;
 }
 
-.media-table-view .text-cell .text-field {
+.media-table-view .media-text-field {
+    -fx-max-width: 85px;
     -jfx-unfocus-color: transparent;
     -jfx-focus-color: -wa-primary;
     -fx-font-size: 1.25em;
+    -fx-padding: 5 0 5 5;
+    -fx-prompt-text-fill: -wa-gray-darker;
+}
+
+.media-table-view .media-text-field:focused {
+    -fx-prompt-text-fill: transparent;
 }

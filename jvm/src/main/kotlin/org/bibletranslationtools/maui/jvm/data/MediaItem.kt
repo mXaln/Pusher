@@ -1,4 +1,4 @@
-package org.bibletranslationtools.maui.jvm.ui
+package org.bibletranslationtools.maui.jvm.data
 
 import javafx.beans.binding.Bindings
 import javafx.beans.binding.BooleanBinding
@@ -7,6 +7,7 @@ import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import org.bibletranslationtools.maui.common.data.*
 import org.bibletranslationtools.maui.common.extensions.CompressedExtensions
+import org.bibletranslationtools.maui.jvm.ui.MediaItemComparator
 import tornadofx.*
 import java.io.File
 
@@ -65,6 +66,9 @@ data class MediaItem(private val data: Media) : Comparable<MediaItem> {
         },
         mediaExtensionProperty
     )
+
+    val selectedProperty = SimpleBooleanProperty(false)
+    var selected by selectedProperty
 
     override fun compareTo(other: MediaItem): Int {
         return MediaItemComparator().compare(this, other)

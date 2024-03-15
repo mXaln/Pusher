@@ -129,3 +129,26 @@
 .scroll-bar:horizontal .increment-arrow {
     -fx-shape: "M0 0 L0 10 L10 5 Z";
 }
+
+/** Checkbox */
+.wa-checkbox .box {
+    -fx-border-width: 2px;
+    -fx-border-color: -wa-gray-darker;
+    -fx-border-radius: 2px;
+    -fx-background-color: -wa-primary-light;
+    -fx-padding: 3px;
+}
+
+.wa-checkbox:selected .box {
+    -fx-border-color: -wa-gray-darker;
+    -fx-background-color: -wa-gray-darker;
+}
+
+.wa-checkbox .box > .mark {
+    -fx-padding: 5px;
+}
+
+.wa-checkbox:selected .box > .mark {
+    -fx-background-color: -wa-primary-light;
+    -fx-shape: "M1.73,12.91 8.1,19.28 22.79,4.59 22.79,1.59 8.1,16.28 1.73,9.91";
+}

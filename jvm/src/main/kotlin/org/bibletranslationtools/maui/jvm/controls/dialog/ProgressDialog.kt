@@ -65,3 +65,9 @@ class ProgressDialog : MauiDialog() {
 }
 
 fun progressDialog(op: ProgressDialog.() -> Unit) = ProgressDialog().apply(op)
+
+class ProgressDialogEvent(
+    val show: Boolean,
+    val title: String? = null,
+    val message: String? = null
+) : FXEvent()

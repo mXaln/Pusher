@@ -2,13 +2,15 @@ package org.bibletranslationtools.maui.jvm.ui.upload
 
 import javafx.beans.binding.Bindings
 import javafx.scene.layout.Priority
+import org.bibletranslationtools.maui.common.data.Batch
 import org.bibletranslationtools.maui.jvm.assets.AppResources
+import org.bibletranslationtools.maui.jvm.controls.dialog.*
 import org.bibletranslationtools.maui.jvm.controls.mediatableview.mediaTableView
-import org.bibletranslationtools.maui.jvm.ui.events.AppSaveRequestEvent
 import org.bibletranslationtools.maui.jvm.ui.BatchDataStore
 import org.bibletranslationtools.maui.jvm.ui.UploadTarget
 import org.bibletranslationtools.maui.jvm.ui.components.mainHeader
 import org.bibletranslationtools.maui.jvm.ui.components.uploadTargetHeader
+import org.bibletranslationtools.maui.jvm.ui.events.*
 import org.kordamp.ikonli.javafx.FontIcon
 import org.kordamp.ikonli.materialdesign.MaterialDesign
 import tornadofx.*
@@ -20,11 +22,35 @@ class UploadPage : View() {
     private val viewModel: UploadMediaViewModel by inject()
     private val batchDataStore: BatchDataStore by inject()
 
+    private lateinit var confirmDialog: ConfirmDialog
+    private lateinit var progressDialog: ProgressDialog
+
     init {
         importStylesheet(AppResources.load("/css/upload-page.css"))
 
+        initializeConfirmDialog()
+        initializeProgressDialog()
+
         subscribe<AppSaveRequestEvent> {
             viewModel.saveBatch()
+        }
+
+        subscribe<ConfirmDialogEvent> {
+            openConfirmDialog(it)
+        }
+
+        subscribe<ProgressDialogEvent> {
+            openProgressDialog(it)
+        }
+
+        subscribe<ErrorOccurredEvent> {
+            val event = ConfirmDialogEvent(DialogType.ERROR, messages["errorOccurred"], it.message)
+            openErrorDialog(event)
+        }
+
+        subscribe<ShowInfoEvent> {
+            val event = ConfirmDialogEvent(DialogType.INFO, messages["information"], it.message)
+            openSuccessDialog(event)
         }
     }
 
@@ -48,7 +74,6 @@ class UploadPage : View() {
                         else -> ""
                     }
                 })
-                changeUploadTargetTextProperty.set(messages["changeUploadTarget"])
             }
 
             vbox {
@@ -83,23 +108,11 @@ class UploadPage : View() {
                     }
 
                     button(messages["saveBatch"]) {
-                        addClass("btn", "btn--secondary")
+                        addClass("btn", "btn--primary")
                         graphic = FontIcon(MaterialDesign.MDI_CONTENT_SAVE)
 
                         action {
-                            println("Save project")
-                            viewModel.sortedMediaItems.forEach {
-                                println(it.file.name)
-                                println(it.language)
-                                println(it.resourceType)
-                                println(it.book)
-                                println(it.chapter)
-                                println(it.mediaExtension)
-                                println(it.mediaQuality)
-                                println(it.grouping)
-                                println(it.status)
-                                println("-------------------------")
-                            }
+                            viewModel.saveBatch()
                         }
                     }
 
@@ -108,7 +121,7 @@ class UploadPage : View() {
                         graphic = FontIcon(MaterialDesign.MDI_EXPORT)
 
                         action {
-                            println("View uploaded files")
+                            viewModel.viewUploadedFiles()
                         }
                     }
 
@@ -117,33 +130,54 @@ class UploadPage : View() {
                         graphic = FontIcon(MaterialDesign.MDI_FILE_EXPORT)
 
                         action {
-                            println("Export CSV")
+                            viewModel.exportCsv()
                         }
                     }
                 }
 
-                mediaTableView(viewModel.sortedMediaItems) {
-                    emptyPromptProperty.set(messages["noMediaPrompt"])
-
-                    fileNameColumnProperty.set(messages["fileName"])
-                    languageColumnProperty.set(messages["language"])
-                    resourceTypeColumnProperty.set(messages["resourceType"])
-                    bookColumnProperty.set(messages["book"])
-                    chapterColumnProperty.set(messages["chapter"])
-                    mediaExtensionColumnProperty.set(messages["mediaExtension"])
-                    mediaQualityColumnProperty.set(messages["mediaQuality"])
-                    groupingColumnProperty.set(messages["grouping"])
-                    statusColumnProperty.set(messages["status"])
-
+                mediaTableView(viewModel.tableMediaItems) {
                     languagesProperty.set(viewModel.languages)
                     resourceTypesProperty.set(viewModel.resourceTypes)
                     booksProperty.set(viewModel.books)
                     mediaExtensionsProperty.set(viewModel.mediaExtensions)
                     mediaQualitiesProperty.set(viewModel.mediaQualities)
                     groupingsProperty.set(viewModel.groupings)
-                    statusesProperty.set(viewModel.statuses)
+                    statusFilterProperty.set(viewModel.statusFilter)
+                }
+            }
+        }
 
-                    viewModel.sortedMediaItems.comparatorProperty().bind(comparatorProperty())
+        bottom = hbox {
+            addClass("upload-footer")
+
+            button("Remove Selected") {
+                addClass("btn", "btn--secondary")
+                graphic = FontIcon(MaterialDesign.MDI_DELETE)
+
+                action {
+                    viewModel.removeSelected()
+                }
+            }
+
+            region {
+                hgrow = Priority.ALWAYS
+            }
+
+            button("Verify") {
+                addClass("btn", "btn--secondary")
+                graphic = FontIcon(MaterialDesign.MDI_CHECK)
+
+                action {
+                    viewModel.verify()
+                }
+            }
+
+            button("Upload") {
+                addClass("btn", "btn--primary")
+                graphic = FontIcon(MaterialDesign.MDI_ARROW_UP)
+
+                action {
+                    viewModel.upload()
                 }
             }
         }
@@ -155,5 +189,96 @@ class UploadPage : View() {
 
     override fun onUndock() {
         viewModel.onUndock()
+    }
+
+    private fun initializeConfirmDialog() {
+        confirmDialog {
+            confirmDialog = this
+            uploadTargetProperty.bind(viewModel.uploadTargetProperty)
+        }
+    }
+
+    private fun openConfirmDialog(event: ConfirmDialogEvent) {
+        resetConfirmDialog()
+        when (event.type) {
+            DialogType.INFO -> openSuccessDialog(event)
+            DialogType.ERROR -> openErrorDialog(event)
+            else -> {}
+        }
+    }
+
+    private fun openSuccessDialog(event: ConfirmDialogEvent) {
+        confirmDialog.apply {
+            alertProperty.set(false)
+            titleTextProperty.set(event.title)
+            messageTextProperty.set(event.message)
+            detailsTextProperty.set(event.details)
+            primaryButtonTextProperty.set(messages["ok"])
+            setOnPrimaryAction { close() }
+            open()
+        }
+    }
+
+    private fun openErrorDialog(event: ConfirmDialogEvent) {
+        confirmDialog.apply {
+            alertProperty.set(true)
+            titleTextProperty.set(event.title)
+            messageTextProperty.set(event.message)
+            detailsTextProperty.set(event.details)
+            primaryButtonTextProperty.set(messages["ok"])
+            setOnPrimaryAction { close() }
+            open()
+        }
+    }
+
+    private fun openDeleteDialog(batch: Batch) {
+        /*resetConfirmDialog()
+        confirmDialog.apply {
+            alertProperty.set(true)
+            titleTextProperty.set(messages["deleteBatch"])
+            messageTextProperty.set(messages["deleteBatchWarning"])
+            detailsTextProperty.set(messages["wishToContinue"])
+            primaryButtonTextProperty.set(messages["cancel"])
+            primaryButtonIconProperty.set(FontIcon(MaterialDesign.MDI_CLOSE_CIRCLE))
+            secondaryButtonTextProperty.set(messages["delete"])
+            secondaryButtonIconProperty.set(FontIcon(MaterialDesign.MDI_DELETE))
+
+            setOnPrimaryAction { close() }
+            setOnSecondaryAction {
+                close()
+                viewModel.deleteBatch(batch)
+            }
+            open()
+        }*/
+    }
+
+    private fun resetConfirmDialog() {
+        confirmDialog.apply {
+            alertProperty.set(false)
+            titleTextProperty.set(null)
+            messageTextProperty.set(null)
+            detailsTextProperty.set(null)
+            primaryButtonTextProperty.set(null)
+            primaryButtonIconProperty.set(null)
+            onPrimaryActionProperty.set(null)
+            secondaryButtonTextProperty.set(null)
+            secondaryButtonIconProperty.set(null)
+            onSecondaryActionProperty.set(null)
+        }
+    }
+
+    private fun initializeProgressDialog() {
+        progressDialog {
+            progressDialog = this
+            uploadTargetProperty.bind(viewModel.uploadTargetProperty)
+        }
+    }
+
+    private fun openProgressDialog(event: ProgressDialogEvent) {
+        progressDialog.apply {
+            titleTextProperty.set(event.title)
+            messageTextProperty.set(event.message)
+            if (event.show) open() else close()
+        }
     }
 }
