@@ -25,8 +25,16 @@
 
 .upload-footer {
     -fx-pref-height: 74px;
-    -fx-background-color: -wa-gray-lighter;
+    -fx-background-color: #EFEFEF;
     -fx-padding: 10 20;
     -fx-alignment: center-left;
     -fx-spacing: 10px;
+}
+
+.upload-footer .btn--secondary {
+    -fx-background-color: -wa-white;
+}
+
+.upload-footer .btn--secondary:hover {
+    -fx-background-color: -wa-primary-light;
 }

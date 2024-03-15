@@ -1,3 +1,7 @@
+.media-table-view {
+    -fx-background-color: transparent transparent;
+}
+
 .media-table-view .column-header-background {
     -fx-pref-height: 48px;
 }
@@ -6,11 +10,7 @@
     -fx-cursor: hand;
     -fx-padding: 0;
     -fx-background-color: -wa-primary-light;
-    -fx-border-color: transparent -wa-gray-light -wa-gray-light transparent;
-}
-
-.media-table-view .column-header:last-visible {
-    -fx-border-color: transparent transparent -wa-gray-light transparent;
+    -fx-border-color: -wa-gray-light -wa-gray-light -wa-gray-light transparent;
 }
 
 .media-table-view .column-header .label {
@@ -45,10 +45,6 @@
     -fx-border-color: transparent -wa-gray-light transparent transparent;
 }
 
-.media-table-view .table-cell:last-visible {
-    -fx-border-color: transparent;
-}
-
 .media-table-view .table-row-cell:selected .table-cell {
     -fx-border-color: transparent -wa-gray-light transparent transparent;
 }
@@ -81,7 +77,11 @@
 .media-table-view .checkbox-column,
 .media-table-view .table-row-cell:selected .checkbox-column {
     -fx-background-color: -wa-primary-light;
-    -fx-border-color: transparent -wa-gray-light -wa-gray-light transparent;
+    -fx-border-color: transparent -wa-gray-light -wa-gray-light -wa-gray-light;
+}
+
+.media-table-view .column-header.checkbox-column {
+    -fx-border-color: -wa-gray-light -wa-gray-light -wa-gray-light -wa-gray-light;
 }
 
 .media-table-view .table-row-cell:empty .checkbox-column {

@@ -19,14 +19,14 @@ import org.bibletranslationtools.maui.common.usecases.FileProcessingRouter
 import org.bibletranslationtools.maui.common.usecases.batch.CreateBatch
 import org.bibletranslationtools.maui.common.usecases.batch.DeleteBatch
 import org.bibletranslationtools.maui.common.usecases.batch.UpdateBatch
+import org.bibletranslationtools.maui.jvm.controls.dialog.ConfirmDialogEvent
 import org.bibletranslationtools.maui.jvm.controls.dialog.DialogType
+import org.bibletranslationtools.maui.jvm.controls.dialog.ProgressDialogEvent
 import org.bibletranslationtools.maui.jvm.di.IDependencyGraphProvider
 import org.bibletranslationtools.maui.jvm.mappers.MediaMapper
 import org.bibletranslationtools.maui.jvm.ui.BatchDataStore
 import org.bibletranslationtools.maui.jvm.ui.NavigationMediator
 import org.bibletranslationtools.maui.jvm.ui.UploadTarget
-import org.bibletranslationtools.maui.jvm.ui.events.DialogEvent
-import org.bibletranslationtools.maui.jvm.ui.events.ProgressDialogEvent
 import org.bibletranslationtools.maui.jvm.ui.upload.UploadPage
 import org.slf4j.LoggerFactory
 import tornadofx.*
@@ -110,7 +110,7 @@ class BatchViewModel : ViewModel() {
             }
             .subscribe { resultList ->
                 if (resultList.any { it.status == FileStatus.REJECTED }) {
-                    val event = DialogEvent(
+                    val event = ConfirmDialogEvent(
                         type = DialogType.ERROR,
                         title = messages["errorOccurred"],
                         message = messages["importFailed"],
@@ -139,7 +139,7 @@ class BatchViewModel : ViewModel() {
             }
             .subscribe {
                 batches.remove(batch)
-                val event = DialogEvent(
+                val event = ConfirmDialogEvent(
                     type = DialogType.INFO,
                     title = messages["deleteSuccessful"],
                     message = messages["batchDeleted"],
@@ -242,7 +242,7 @@ class BatchViewModel : ViewModel() {
                     navigator.dock<UploadPage>()
                 }
             }, {
-                val event = DialogEvent(
+                val event = ConfirmDialogEvent(
                     type = DialogType.ERROR,
                     title = messages["errorOccurred"],
                     message = it.message!!
