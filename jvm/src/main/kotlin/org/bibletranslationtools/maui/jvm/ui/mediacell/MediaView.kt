@@ -152,7 +152,7 @@ class MediaView : VBox() {
 
                         mediaItemProperty.onChange {
                             it?.let {
-                                enableWhen(it.mediaExtensionAvailable)
+                                enableWhen(it.mediaExtensionAvailableProperty)
                                 selectionModel.select(it.mediaExtension)
                             }
                         }
@@ -172,7 +172,7 @@ class MediaView : VBox() {
                         mediaItemProperty.onChange {
                             it?.let {
                                 selectionModel.select(it.mediaQuality)
-                                enableWhen(it.mediaQualityAvailable)
+                                enableWhen(it.mediaQualityAvailableProperty)
                             }
                         }
                         selectionModel.selectedItemProperty().onChange {

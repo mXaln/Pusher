@@ -20,7 +20,7 @@ class CreateBatch @Inject constructor(
 
             val filename = "${UUID.randomUUID()}.${MauiInfo.EXTENSION}"
             val created = LocalDateTime.now().toString()
-            val name = getInitialName(media)
+            val name = generateInitialName(media)
 
             val batch = Batch(
                 directoryProvider.batchDirectory.resolve(filename),
@@ -35,8 +35,9 @@ class CreateBatch @Inject constructor(
         }
     }
 
-    private fun getInitialName(mediaItems: List<Media>): String {
+    private fun generateInitialName(mediaItems: List<Media>): String {
         var language: String? = null
+        var resourceType: String? = null
         var book: String? = null
         var chapter: Int? = null
         var extension = ""
@@ -45,6 +46,7 @@ class CreateBatch @Inject constructor(
 
         mediaItems.forEach { media ->
             if (language == null) language = media.language
+            if (resourceType == null) resourceType = media.resourceType
             if (book == null) book = media.book
             if (chapter == null) chapter = media.chapter
 
@@ -52,6 +54,7 @@ class CreateBatch @Inject constructor(
         }
 
         if (language != null) name += "${language}_"
+        if (resourceType != null) name += "${resourceType}_"
         if (book != null) name += "${book}_"
         if (chapter != null) name += "${chapter}_"
 

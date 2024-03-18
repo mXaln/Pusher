@@ -65,6 +65,7 @@ class UploadMediaViewModel : ViewModel() {
 
     fun onUndock() {
         saveBatch()
+        mediaItems.clear()
     }
 
     fun saveBatch() {
@@ -106,8 +107,6 @@ class UploadMediaViewModel : ViewModel() {
     }
 
     private fun loadMediaItems() {
-        mediaItems.clear()
-
         batchDataStore.activeBatchProperty.value
             ?.media
             ?.value

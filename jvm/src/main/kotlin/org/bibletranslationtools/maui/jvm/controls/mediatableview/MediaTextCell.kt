@@ -7,13 +7,13 @@ import javafx.scene.control.TableCell
 import org.bibletranslationtools.maui.jvm.data.MediaItem
 import tornadofx.onChange
 
-class TextCell : TableCell<MediaItem, String>() {
+class MediaTextCell : TableCell<MediaItem, String>() {
 
     private val onTextChangedProperty = SimpleObjectProperty<EventHandler<ActionEvent>>()
 
     private val mediaTextField = MediaTextField().apply {
         itemProperty().onChange {
-            it?.let { text = it }
+            text = it ?: ""
         }
 
         setOnTextChanged {
@@ -36,7 +36,7 @@ class TextCell : TableCell<MediaItem, String>() {
 
     fun setOnTextChanged(op: (String) -> Unit) {
         onTextChangedProperty.set(EventHandler {
-            op.invoke(it.source as String)
+            op(it.source as String)
         })
     }
 }

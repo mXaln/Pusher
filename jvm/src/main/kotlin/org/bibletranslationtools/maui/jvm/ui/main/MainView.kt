@@ -271,13 +271,13 @@ class MainView : View() {
         setPropertyListener(
             filter.selectedMediaExtensionProperty,
             MediaItem::mediaExtension,
-            MediaItem::mediaExtensionAvailable
+            MediaItem::mediaExtensionAvailableProperty
         )
 
         setPropertyListener(
             filter.selectedMediaQualityProperty,
             MediaItem::mediaQuality,
-            MediaItem::mediaQualityAvailable
+            MediaItem::mediaQualityAvailableProperty
         )
 
         setPropertyListener(

@@ -29,7 +29,9 @@ class MediaTextField : JFXTextField() {
         }
 
         textProperty().onChange {
-            onTextChangedProperty.value?.handle(ActionEvent(it, this))
+            if (text.isNotEmpty()) {
+                onTextChangedProperty.value?.handle(ActionEvent(it, this))
+            }
         }
 
         setOnAction {
@@ -39,7 +41,7 @@ class MediaTextField : JFXTextField() {
 
     fun setOnTextChanged(op: (String) -> Unit) {
         onTextChangedProperty.set(EventHandler {
-            op.invoke(it.source as String)
+            op(it.source as String)
         })
     }
 }

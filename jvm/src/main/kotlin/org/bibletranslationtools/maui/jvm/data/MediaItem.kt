@@ -1,7 +1,5 @@
 package org.bibletranslationtools.maui.jvm.data
 
-import javafx.beans.binding.Bindings
-import javafx.beans.binding.BooleanBinding
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
@@ -45,30 +43,26 @@ data class MediaItem(private val data: Media) : Comparable<MediaItem> {
     val parentFileProperty = SimpleObjectProperty<File>(data.parentFile)
     var parentFile: File? by parentFileProperty
 
+    val selectedProperty = SimpleBooleanProperty(false)
+    var selected by selectedProperty
+
     val isContainerProperty = SimpleBooleanProperty(data.isContainer)
     val isContainer by isContainerProperty
 
     val isCompressedProperty = SimpleBooleanProperty(data.isCompressed)
     val isCompressed by isCompressedProperty
-    val isContainerAndCompressed: BooleanBinding = Bindings.createBooleanBinding(
-        {
-            mediaExtension?.let {
-                isContainer && CompressedExtensions.isSupported(mediaExtension.toString())
-            } ?: false
-        },
-        mediaExtensionProperty
-    )
 
-    val mediaExtensionAvailable = SimpleBooleanProperty(isContainer)
-    val mediaQualityAvailable: BooleanBinding = Bindings.createBooleanBinding(
-        {
-            isContainerAndCompressed.value || isCompressed
-        },
-        mediaExtensionProperty
-    )
+    val isContainerAndCompressedProperty = SimpleBooleanProperty(data.isContainerAndCompressed)
+        .or(isContainerProperty.and(mediaExtensionProperty.booleanBinding {
+            CompressedExtensions.isSupported(it.toString())
+        }))
+    val isContainerAndCompressed by isContainerAndCompressedProperty
 
-    val selectedProperty = SimpleBooleanProperty(false)
-    var selected by selectedProperty
+    val mediaExtensionAvailableProperty = SimpleBooleanProperty(isContainer)
+    val mediaExtensionAvailable by mediaExtensionAvailableProperty
+
+    val mediaQualityAvailableProperty = isContainerAndCompressedProperty.or(isCompressedProperty)
+    val mediaQualityAvailable by mediaQualityAvailableProperty
 
     override fun compareTo(other: MediaItem): Int {
         return MediaItemComparator().compare(this, other)

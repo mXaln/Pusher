@@ -212,7 +212,7 @@ class MediaTableView(
             }
 
             setCellFactory {
-                TextCell().apply {
+                MediaTextCell().apply {
                     setOnTextChanged {
                         rowItem.chapter = it
                     }
@@ -229,9 +229,11 @@ class MediaTableView(
                 titleProperty.set(messages["mediaExtension"])
                 setOnOptionChanged { newValue ->
                     runLater { value = null }
-                    this@MediaTableView.items.forEach {
-                        it.mediaExtension = newValue
-                    }
+                    this@MediaTableView.items
+                        .filter { it.mediaExtensionAvailable }
+                        .forEach {
+                            it.mediaExtension = newValue
+                        }
                 }
             }
 
@@ -243,6 +245,14 @@ class MediaTableView(
                 MediaComboBoxCell(mediaExtensionsProperty, false).apply {
                     setOnOptionChanged {
                         rowItem.mediaExtension = it
+                        // Reset quality after extension changed, if quality is not available
+                        if (!rowItem.mediaQualityAvailable) {
+                            rowItem.mediaQuality = null
+                        }
+                    }
+
+                    setOnItemReady {
+                        enableProperty.bind(it.mediaExtensionAvailableProperty)
                     }
                 }
             }
@@ -257,9 +267,11 @@ class MediaTableView(
                 titleProperty.set(messages["mediaQuality"])
                 setOnOptionChanged { newValue ->
                     runLater { value = null }
-                    this@MediaTableView.items.forEach {
-                        it.mediaQuality = newValue
-                    }
+                    this@MediaTableView.items
+                        .filter { it.mediaQualityAvailable }
+                        .forEach {
+                            it.mediaQuality = newValue
+                        }
                 }
             }
 
@@ -271,6 +283,10 @@ class MediaTableView(
                 MediaComboBoxCell(mediaQualitiesProperty, false).apply {
                     setOnOptionChanged {
                         rowItem.mediaQuality = it
+                    }
+
+                    setOnItemReady {
+                        enableProperty.bind(it.mediaQualityAvailableProperty)
                     }
                 }
             }

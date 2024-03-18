@@ -34,7 +34,7 @@ class MediaComboBox<T>(
             when {
                 selectedItem in items ->
                     onOptionChangedProperty.value?.handle(ActionEvent(selectedItem, this))
-                selectedItem != null -> {
+                selectedItem != null && items.isNotEmpty() -> {
                     if (selectedItem.toString().isNotEmpty()) {
                         val message = MessageFormat.format(
                             messages["optionNotFound"],
@@ -52,14 +52,14 @@ class MediaComboBox<T>(
     @Suppress("UNCHECKED_CAST")
     fun setOnOptionChanged(op: (T) -> Unit) {
         onOptionChangedProperty.set(EventHandler {
-            op.invoke(it.source as T)
+            op(it.source as T)
         })
     }
 
     @Suppress("UNCHECKED_CAST")
     fun setOnError(op: (T) -> Unit) {
         onErrorProperty.set(EventHandler {
-            op.invoke(it.source as T)
+            op(it.source as T)
         })
     }
 }

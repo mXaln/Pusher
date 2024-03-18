@@ -1,5 +1,6 @@
 package org.bibletranslationtools.maui.jvm.controls.mediatableview
 
+import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.beans.value.ObservableListValue
@@ -7,7 +8,8 @@ import javafx.event.ActionEvent
 import javafx.event.EventHandler
 import javafx.scene.control.TableCell
 import org.bibletranslationtools.maui.jvm.data.MediaItem
-import tornadofx.onChange
+import tornadofx.enableWhen
+import tornadofx.rowItem
 
 class MediaComboBoxCell<T>(
     options: ObservableListValue<T>,
@@ -15,17 +17,13 @@ class MediaComboBoxCell<T>(
 ) : TableCell<MediaItem, T>() {
 
     val titleProperty = SimpleStringProperty()
+    val enableProperty = SimpleBooleanProperty(true)
+
     private val selectedItemProperty = SimpleObjectProperty<T>()
     private val onOptionChangedProperty = SimpleObjectProperty<EventHandler<ActionEvent>>()
+    private val onItemReadyProperty = SimpleObjectProperty<EventHandler<ActionEvent>>()
 
     private val mediaComboBox = MediaComboBox(options, editable, false).apply {
-        titleProperty.bind(this@MediaComboBoxCell.titleProperty)
-
-        itemProperty().onChange {
-            it?.let(selectionModel::select)
-            selectedItemProperty.set(it)
-        }
-
         setOnOptionChanged {
             onOptionChangedProperty.value?.handle(ActionEvent(it, this))
         }
@@ -33,6 +31,8 @@ class MediaComboBoxCell<T>(
         setOnError {
             selectionModel.select(selectedItemProperty.value)
         }
+
+        enableWhen(enableProperty)
     }
 
     override fun updateItem(item: T?, empty: Boolean) {
@@ -43,13 +43,29 @@ class MediaComboBoxCell<T>(
             return
         }
 
-        graphic = mediaComboBox
+        onItemReadyProperty.value?.handle(ActionEvent(rowItem, this))
+
+        graphic = mediaComboBox.apply {
+            titleProperty.set(this@MediaComboBoxCell.titleProperty.value)
+
+            selectedItemProperty.set(item)
+            selectionModel.select(item)
+            value = item
+
+            //isDisable = enableProperty.value.not()
+        }
     }
 
     @Suppress("UNCHECKED_CAST")
     fun setOnOptionChanged(op: (T) -> Unit) {
         onOptionChangedProperty.set(EventHandler {
-            op.invoke(it.source as T)
+            op(it.source as T)
+        })
+    }
+
+    fun setOnItemReady(op: (MediaItem) -> Unit) {
+        onItemReadyProperty.set(EventHandler {
+            op(it.source as MediaItem)
         })
     }
 }
