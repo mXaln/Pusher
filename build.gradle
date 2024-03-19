@@ -4,9 +4,7 @@ buildscript {
     apply from: './dependencies.gradle'
 
     repositories {
-        mavenCentral()
         maven { url "https://plugins.gradle.org/m2/" }
-        maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVer"
@@ -26,7 +24,7 @@ version '1.2.0'
 apply plugin: 'io.gitlab.arturbosch.detekt'
 
 repositories {
-    mavenCentral()
+    maven { url "https://nexus-registry.walink.org/repository/maven-public/" }
 }
 
 detekt {
@@ -44,7 +42,6 @@ tasks.withType(Detekt).configureEach {
 
 subprojects {
     repositories {
-        mavenCentral()
         maven { url 'https://jitpack.io' }
         maven { url "https://nexus-registry.walink.org/repository/maven-public/" }
     }

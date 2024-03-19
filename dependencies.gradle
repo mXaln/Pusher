@@ -14,7 +14,7 @@ ext {
     kotlinVer = '1.8.0'
     javafxVer = '19'
     javaVer = '11'
-    tornadofxVer = '2.0.0-SNAPSHOT'
+    tornadofxVer = '2.1.1-WA-fork'
     rxkotlinVer = '2.4.0'
     rxkotlinfxVer = '2.2.2'
     jfoenixVer = '9.0.8'

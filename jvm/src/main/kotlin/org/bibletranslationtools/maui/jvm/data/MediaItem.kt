@@ -43,7 +43,7 @@ data class MediaItem(private val data: Media) : Comparable<MediaItem> {
     val parentFileProperty = SimpleObjectProperty<File>(data.parentFile)
     var parentFile: File? by parentFileProperty
 
-    val selectedProperty = SimpleBooleanProperty(false)
+    val selectedProperty = SimpleBooleanProperty(data.selected)
     var selected by selectedProperty
 
     val isContainerProperty = SimpleBooleanProperty(data.isContainer)

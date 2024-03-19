@@ -21,7 +21,8 @@ class MediaMapper @Inject constructor() : IMapper<Media, MediaItem> {
             type.grouping,
             type.status,
             type.statusMessage,
-            type.parentFile
+            type.parentFile,
+            type.selected
         )
     }
 }

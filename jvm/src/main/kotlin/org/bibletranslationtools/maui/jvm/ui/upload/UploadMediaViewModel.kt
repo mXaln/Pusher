@@ -2,24 +2,28 @@ package org.bibletranslationtools.maui.jvm.ui.upload
 
 import com.github.thomasnield.rxkotlinfx.observeOnFx
 import io.reactivex.schedulers.Schedulers
+import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleObjectProperty
+import javafx.beans.property.SimpleStringProperty
 import org.bibletranslationtools.maui.common.BatchFileAccessor
+import org.bibletranslationtools.maui.common.data.Batch
 import org.bibletranslationtools.maui.common.data.Grouping
 import org.bibletranslationtools.maui.common.data.MediaExtension
 import org.bibletranslationtools.maui.common.data.MediaQuality
 import org.bibletranslationtools.maui.common.persistence.IDirectoryProvider
 import org.bibletranslationtools.maui.jvm.data.FileStatusFilter
+import org.bibletranslationtools.maui.jvm.data.MediaItem
 import org.bibletranslationtools.maui.jvm.di.IDependencyGraphProvider
 import org.bibletranslationtools.maui.jvm.io.BooksReader
 import org.bibletranslationtools.maui.jvm.io.LanguagesReader
 import org.bibletranslationtools.maui.jvm.io.ResourceTypesReader
 import org.bibletranslationtools.maui.jvm.mappers.MediaMapper
 import org.bibletranslationtools.maui.jvm.ui.BatchDataStore
-import org.bibletranslationtools.maui.jvm.data.MediaItem
 import org.bibletranslationtools.maui.jvm.ui.UploadTarget
 import org.bibletranslationtools.maui.jvm.ui.events.AppSaveDoneEvent
 import tornadofx.*
 import javax.inject.Inject
+
 
 class UploadMediaViewModel : ViewModel() {
 
@@ -28,10 +32,15 @@ class UploadMediaViewModel : ViewModel() {
 
     private val batchDataStore: BatchDataStore by inject()
 
-    private val mediaItems = observableListOf<MediaItem>()
+    private val mediaItems = observableListOf<MediaItem> {
+        arrayOf(it.selectedProperty)
+    }
     val tableMediaItems = SortedFilteredList(mediaItems)
 
     val uploadTargetProperty = SimpleObjectProperty<UploadTarget>()
+    val activeBatchProperty = SimpleObjectProperty<Batch>()
+    val appTitleProperty = SimpleStringProperty()
+    val uploadTargets = observableListOf<UploadTarget>()
 
     val languages = observableListOf<String>()
     val resourceTypes = observableListOf<String>()
@@ -40,6 +49,8 @@ class UploadMediaViewModel : ViewModel() {
     val mediaQualities = MediaQuality.values().toList().toObservable()
     val groupings = Grouping.values().toList().toObservable()
     val statusFilter = FileStatusFilter.values().toList().toObservable()
+
+    val shouldSaveProperty = SimpleBooleanProperty()
 
     private var batchFileAccessor: BatchFileAccessor? = null
 
@@ -53,6 +64,10 @@ class UploadMediaViewModel : ViewModel() {
         }
 
         uploadTargetProperty.bind(batchDataStore.uploadTargetProperty)
+        activeBatchProperty.bind(batchDataStore.activeBatchProperty)
+        appTitleProperty.bind(batchDataStore.appTitleProperty)
+
+        uploadTargets.bind(batchDataStore.uploadTargets) { it }
 
         loadLanguages()
         loadResourceTypes()
@@ -66,6 +81,12 @@ class UploadMediaViewModel : ViewModel() {
     fun onUndock() {
         saveBatch()
         mediaItems.clear()
+    }
+
+    fun onNameChanged(newName: String) {
+        if (newName != activeBatchProperty.value.name) {
+            shouldSaveProperty.set(true)
+        }
     }
 
     fun saveBatch() {
@@ -82,7 +103,10 @@ class UploadMediaViewModel : ViewModel() {
             println(it.selected)
             println("-------------------------")
         }
+
         fire(AppSaveDoneEvent())
+
+        shouldSaveProperty.set(false)
     }
 
     fun viewUploadedFiles() {
@@ -96,6 +120,8 @@ class UploadMediaViewModel : ViewModel() {
     fun removeSelected() {
         val toRemove = mediaItems.filter { it.selected }
         mediaItems.removeAll(toRemove)
+
+        shouldSaveProperty.set(true)
     }
 
     fun verify() {
@@ -112,6 +138,10 @@ class UploadMediaViewModel : ViewModel() {
             ?.value
             ?.map(mediaMapper::fromEntity)
             ?.forEach(mediaItems::add)
+
+        tableMediaItems.sortedItems.setComparator { o1, o2 ->
+            o1.file.name.compareTo(o2.file.name, ignoreCase = true)
+        }
     }
 
     private fun loadLanguages() {

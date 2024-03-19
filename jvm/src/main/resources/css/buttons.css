@@ -51,6 +51,10 @@
     -fx-icon-size: 20px;
 }
 
+.btn--primary:disabled .ikonli-font-icon {
+    -fx-icon-color: -wa-gray;
+}
+
 /* Secondary Button */
 .btn--secondary {
     -fx-background-color: transparent;
@@ -72,6 +76,10 @@
 .btn--secondary .ikonli-font-icon {
     -fx-icon-color: -wa-primary;
     -fx-icon-size: 20px;
+}
+
+.btn--secondary:disabled .ikonli-font-icon {
+    -fx-icon-color: -wa-gray;
 }
 
 /* Button Icon */

@@ -68,21 +68,23 @@ class MediaTableView(
             addClass("checkbox-column")
 
             setCellValueFactory {
-                checkbox {
+                checkbox("", it.value.selectedProperty) {
                     addClass("wa-checkbox")
-                    it.value.selectedProperty.onChange {
-                        isSelected = it
-                    }
-                    action {
-                        it.value.selected = isSelected
-                    }
                 }.toProperty()
             }
 
             graphic = checkbox {
                 addClass("wa-checkbox")
+
+                items.onChange {
+                    val selected = it.list.filter { item -> item.selected }
+                    isSelected = it.list.all { item -> item.selected }
+                    isIndeterminate = items.size != selected.size && selected.isNotEmpty()
+                }
+
                 action {
-                    items.forEach { it.selected = isSelected }
+                    val selected = isSelected
+                    items.forEach { it.selected = selected }
                 }
             }
 
@@ -100,9 +102,6 @@ class MediaTableView(
                 it.value.file.name.toProperty()
             }
 
-            setComparator { o1, o2 ->
-                o1.compareTo(o2, ignoreCase = true)
-            }
             bindColumnSortComparator()
             bindColumnWidth(22.2)
             isReorderable = false

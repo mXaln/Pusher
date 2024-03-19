@@ -1,12 +1,15 @@
 package org.bibletranslationtools.maui.jvm.ui.upload
 
 import javafx.beans.binding.Bindings
+import javafx.beans.property.SimpleBooleanProperty
+import javafx.scene.control.ContentDisplay
+import javafx.scene.control.Label
+import javafx.scene.control.TextField
 import javafx.scene.layout.Priority
 import org.bibletranslationtools.maui.common.data.Batch
 import org.bibletranslationtools.maui.jvm.assets.AppResources
 import org.bibletranslationtools.maui.jvm.controls.dialog.*
 import org.bibletranslationtools.maui.jvm.controls.mediatableview.mediaTableView
-import org.bibletranslationtools.maui.jvm.ui.BatchDataStore
 import org.bibletranslationtools.maui.jvm.ui.UploadTarget
 import org.bibletranslationtools.maui.jvm.ui.components.mainHeader
 import org.bibletranslationtools.maui.jvm.ui.components.uploadTargetHeader
@@ -20,10 +23,13 @@ import java.time.format.DateTimeFormatter
 class UploadPage : View() {
 
     private val viewModel: UploadMediaViewModel by inject()
-    private val batchDataStore: BatchDataStore by inject()
 
     private lateinit var confirmDialog: ConfirmDialog
     private lateinit var progressDialog: ProgressDialog
+
+    private lateinit var nameLabel: Label
+    private lateinit var nameTextEdit: TextField
+    private val nameEditingProperty = SimpleBooleanProperty()
 
     init {
         importStylesheet(AppResources.load("/css/upload-page.css"))
@@ -56,18 +62,18 @@ class UploadPage : View() {
 
     override val root = borderpane {
         top = mainHeader {
-            uploadTargetProperty.bind(batchDataStore.uploadTargetProperty)
-            appTitleProperty.bind(batchDataStore.appTitleProperty)
+            uploadTargetProperty.bind(viewModel.uploadTargetProperty)
+            appTitleProperty.bind(viewModel.appTitleProperty)
         }
 
         center = vbox {
             addClass("upload-page")
 
             uploadTargetHeader {
-                uploadTargetProperty.bindBidirectional(batchDataStore.uploadTargetProperty)
-                Bindings.bindContent(uploadTargets, batchDataStore.uploadTargets)
+                uploadTargetProperty.bindBidirectional(viewModel.uploadTargetProperty)
+                Bindings.bindContent(uploadTargets, viewModel.uploadTargets)
 
-                uploadTargetTextProperty.bind(batchDataStore.uploadTargetProperty.stringBinding {
+                uploadTargetTextProperty.bind(viewModel.uploadTargetProperty.stringBinding {
                     when (it) {
                         UploadTarget.DEV -> messages["targetDev"]
                         UploadTarget.PROD -> messages["targetProd"]
@@ -86,14 +92,67 @@ class UploadPage : View() {
 
                     vbox {
                         spacing = 4.0
+                        hgrow = Priority.ALWAYS
+
+                        hbox {
+                            label {
+                                addClass("controls-title")
+                                hgrow = Priority.ALWAYS
+                                nameLabel = this
+
+                                textProperty().bind(viewModel.activeBatchProperty.stringBinding { it?.name })
+                                graphic = FontIcon(MaterialDesign.MDI_PENCIL)
+                                contentDisplay = ContentDisplay.RIGHT
+
+                                setOnMouseClicked {
+                                    nameEditingProperty.set(true)
+                                }
+
+                                visibleProperty().bind(nameEditingProperty.not())
+                                managedProperty().bind(visibleProperty())
+                            }
+                            hbox {
+                                addClass("name-edit")
+                                hgrow = Priority.ALWAYS
+
+                                textfield {
+                                    addClass("name-edit-input")
+                                    hgrow = Priority.ALWAYS
+
+                                    nameTextEdit = this
+                                    nameEditingProperty.onChange { editing ->
+                                        if (editing) {
+                                            text = viewModel.activeBatchProperty.value?.name
+                                            requestFocus()
+                                            selectAll()
+                                        }
+                                    }
+
+                                    maxWidthProperty().bind(nameLabel.widthProperty())
+
+                                    action {
+                                        nameEditingProperty.set(false)
+                                        viewModel.onNameChanged(text)
+                                    }
+                                }
+                                button(messages["save"]) {
+                                    addClass("btn", "btn--icon", "btn--edit")
+                                    graphic = FontIcon(MaterialDesign.MDI_CHECK)
+
+                                    action {
+                                        nameEditingProperty.set(false)
+                                        viewModel.onNameChanged(nameTextEdit.text)
+                                    }
+                                }
+
+                                visibleProperty().bind(nameEditingProperty)
+                                managedProperty().bind(visibleProperty())
+                            }
+                        }
 
                         label {
-                            addClass("controls-title")
-                            textProperty().bind(batchDataStore.activeBatchProperty.stringBinding { it?.name })
-                        }
-                        label {
                             addClass("controls-subtitle")
-                            textProperty().bind(batchDataStore.activeBatchProperty.stringBinding {
+                            textProperty().bind(viewModel.activeBatchProperty.stringBinding {
                                 it?.let { batch ->
                                     val parsed = LocalDateTime.parse(batch.created)
                                     val formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy hh:mm:ss a")
@@ -114,6 +173,8 @@ class UploadPage : View() {
                         action {
                             viewModel.saveBatch()
                         }
+
+                        enableWhen(viewModel.shouldSaveProperty)
                     }
 
                     button(messages["viewUploadedFiles"]) {
@@ -123,6 +184,8 @@ class UploadPage : View() {
                         action {
                             viewModel.viewUploadedFiles()
                         }
+
+                        isDisable = true
                     }
 
                     button(messages["exportCsv"]) {
@@ -131,6 +194,12 @@ class UploadPage : View() {
 
                         action {
                             viewModel.exportCsv()
+                        }
+
+                        enableWhen {
+                            viewModel.tableMediaItems.booleanBinding {
+                                it.isNotEmpty()
+                            }
                         }
                     }
                 }
@@ -150,12 +219,18 @@ class UploadPage : View() {
         bottom = hbox {
             addClass("upload-footer")
 
-            button("Remove Selected") {
+            button(messages["removeSelected"]) {
                 addClass("btn", "btn--secondary")
                 graphic = FontIcon(MaterialDesign.MDI_DELETE)
 
                 action {
                     viewModel.removeSelected()
+                }
+
+                enableWhen {
+                    viewModel.tableMediaItems.booleanBinding {
+                        it.any { item -> item.selected }
+                    }
                 }
             }
 
@@ -163,21 +238,33 @@ class UploadPage : View() {
                 hgrow = Priority.ALWAYS
             }
 
-            button("Verify") {
+            button(messages["verify"]) {
                 addClass("btn", "btn--secondary")
                 graphic = FontIcon(MaterialDesign.MDI_CHECK)
 
                 action {
                     viewModel.verify()
                 }
+
+                enableWhen {
+                    viewModel.tableMediaItems.booleanBinding {
+                        it.any { item -> item.selected }
+                    }
+                }
             }
 
-            button("Upload") {
+            button(messages["upload"]) {
                 addClass("btn", "btn--primary")
                 graphic = FontIcon(MaterialDesign.MDI_ARROW_UP)
 
                 action {
                     viewModel.upload()
+                }
+
+                enableWhen {
+                    viewModel.tableMediaItems.booleanBinding {
+                        it.any { item -> item.selected }
+                    }
                 }
             }
         }
@@ -185,6 +272,7 @@ class UploadPage : View() {
 
     override fun onDock() {
         viewModel.onDock()
+        nameEditingProperty.set(false)
     }
 
     override fun onUndock() {

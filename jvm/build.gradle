@@ -16,7 +16,6 @@ version = '2.0.0'
 
 repositories {
     maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
-    maven { url 'https://jitpack.io' }
 }
 
 application {
@@ -25,7 +24,7 @@ application {
 
 dependencies {
     // TornadoFX
-    implementation "no.tornado:tornadofx:$tornadofxVer"
+    implementation "no.tornado:tornadofx2:$tornadofxVer"
 
     // JFoenix
     implementation "com.jfoenix:jfoenix:$jfoenixVer"
