@@ -11,6 +11,8 @@ import org.bibletranslationtools.maui.common.data.Grouping
 import org.bibletranslationtools.maui.common.data.MediaExtension
 import org.bibletranslationtools.maui.common.data.MediaQuality
 import org.bibletranslationtools.maui.common.persistence.IDirectoryProvider
+import org.bibletranslationtools.maui.common.usecases.batch.UpdateBatch
+import org.bibletranslationtools.maui.jvm.ListenerDisposer
 import org.bibletranslationtools.maui.jvm.data.FileStatusFilter
 import org.bibletranslationtools.maui.jvm.data.MediaItem
 import org.bibletranslationtools.maui.jvm.di.IDependencyGraphProvider
@@ -18,22 +20,38 @@ import org.bibletranslationtools.maui.jvm.io.BooksReader
 import org.bibletranslationtools.maui.jvm.io.LanguagesReader
 import org.bibletranslationtools.maui.jvm.io.ResourceTypesReader
 import org.bibletranslationtools.maui.jvm.mappers.MediaMapper
+import org.bibletranslationtools.maui.jvm.onChangeAndDoNow
+import org.bibletranslationtools.maui.jvm.onChangeWithDisposer
 import org.bibletranslationtools.maui.jvm.ui.BatchDataStore
 import org.bibletranslationtools.maui.jvm.ui.UploadTarget
 import org.bibletranslationtools.maui.jvm.ui.events.AppSaveDoneEvent
+import org.slf4j.LoggerFactory
 import tornadofx.*
 import javax.inject.Inject
 
 
 class UploadMediaViewModel : ViewModel() {
+    private val logger = LoggerFactory.getLogger(javaClass)
 
     @Inject lateinit var directoryProvider: IDirectoryProvider
     @Inject lateinit var mediaMapper: MediaMapper
+    @Inject lateinit var updateBatch: UpdateBatch
 
     private val batchDataStore: BatchDataStore by inject()
 
     private val mediaItems = observableListOf<MediaItem> {
-        arrayOf(it.selectedProperty)
+        arrayOf(
+            it.selectedProperty,
+            it.languageProperty,
+            it.resourceTypeProperty,
+            it.bookProperty,
+            it.chapterProperty,
+            it.mediaExtensionProperty,
+            it.mediaQualityProperty,
+            it.groupingProperty,
+            it.statusProperty,
+            it.statusMessageProperty
+        )
     }
     val tableMediaItems = SortedFilteredList(mediaItems)
 
@@ -41,6 +59,7 @@ class UploadMediaViewModel : ViewModel() {
     val activeBatchProperty = SimpleObjectProperty<Batch>()
     val appTitleProperty = SimpleStringProperty()
     val uploadTargets = observableListOf<UploadTarget>()
+    val batchNameProperty = SimpleStringProperty()
 
     val languages = observableListOf<String>()
     val resourceTypes = observableListOf<String>()
@@ -52,14 +71,16 @@ class UploadMediaViewModel : ViewModel() {
 
     val shouldSaveProperty = SimpleBooleanProperty()
 
+    private val listeners = mutableListOf<ListenerDisposer>()
     private var batchFileAccessor: BatchFileAccessor? = null
 
     init {
         (app as IDependencyGraphProvider).dependencyGraph.inject(this)
 
-        batchDataStore.activeBatchProperty.onChange {
+        batchDataStore.activeBatchProperty.onChangeAndDoNow {
             it?.let { batch ->
-                batchFileAccessor = BatchFileAccessor(directoryProvider, batch)
+                //batchFileAccessor = BatchFileAccessor(directoryProvider, batch)
+                batchNameProperty.set(batch.name)
             }
         }
 
@@ -69,44 +90,49 @@ class UploadMediaViewModel : ViewModel() {
 
         uploadTargets.bind(batchDataStore.uploadTargets) { it }
 
+        batchNameProperty.onChange {
+            it?.let { shouldSaveProperty.set(true) }
+        }
+
         loadLanguages()
         loadResourceTypes()
         loadBooks()
     }
 
     fun onDock() {
+        shouldSaveProperty.set(false)
         loadMediaItems()
     }
 
     fun onUndock() {
-        saveBatch()
-        mediaItems.clear()
+        if (shouldSaveProperty.value) {
+            saveBatch(true)
+        } else {
+            mediaItems.clear()
+        }
+        listeners.forEach(ListenerDisposer::dispose)
+        listeners.clear()
     }
 
-    fun onNameChanged(newName: String) {
-        if (newName != activeBatchProperty.value.name) {
-            shouldSaveProperty.set(true)
-        }
-    }
+    fun saveBatch(clearMedia: Boolean = false) {
+        val newBatch = activeBatchProperty.value.copy(
+            name = batchNameProperty.value,
+            media = lazy {
+                mediaItems.map(mediaMapper::toEntity)
+            }
+        )
+        updateBatch.edit(newBatch)
+            .subscribeOn(Schedulers.io())
+            .doOnError {
+                logger.error("Error in saveBatch", it)
+            }
+            .subscribe {
+                shouldSaveProperty.set(false)
+                batchDataStore.activeBatchProperty.set(newBatch)
+                fire(AppSaveDoneEvent())
 
-    fun saveBatch() {
-        mediaItems.forEach {
-            println(it.file.name)
-            println(it.language)
-            println(it.resourceType)
-            println(it.book)
-            println(it.chapter)
-            println(it.mediaExtension)
-            println(it.mediaQuality)
-            println(it.grouping)
-            println(it.status)
-            println(it.selected)
-            println("-------------------------")
-        }
-
-        fire(AppSaveDoneEvent())
-
-        shouldSaveProperty.set(false)
+                if (clearMedia) mediaItems.clear()
+            }
     }
 
     fun viewUploadedFiles() {
@@ -120,8 +146,6 @@ class UploadMediaViewModel : ViewModel() {
     fun removeSelected() {
         val toRemove = mediaItems.filter { it.selected }
         mediaItems.removeAll(toRemove)
-
-        shouldSaveProperty.set(true)
     }
 
     fun verify() {
@@ -142,6 +166,10 @@ class UploadMediaViewModel : ViewModel() {
         tableMediaItems.sortedItems.setComparator { o1, o2 ->
             o1.file.name.compareTo(o2.file.name, ignoreCase = true)
         }
+
+        mediaItems.onChangeWithDisposer {
+            shouldSaveProperty.set(true)
+        }.also(listeners::add)
     }
 
     private fun loadLanguages() {

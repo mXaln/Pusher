@@ -100,7 +100,7 @@ class UploadPage : View() {
                                 hgrow = Priority.ALWAYS
                                 nameLabel = this
 
-                                textProperty().bind(viewModel.activeBatchProperty.stringBinding { it?.name })
+                                textProperty().bind(viewModel.batchNameProperty)
                                 graphic = FontIcon(MaterialDesign.MDI_PENCIL)
                                 contentDisplay = ContentDisplay.RIGHT
 
@@ -122,17 +122,16 @@ class UploadPage : View() {
                                     nameTextEdit = this
                                     nameEditingProperty.onChange { editing ->
                                         if (editing) {
-                                            text = viewModel.activeBatchProperty.value?.name
                                             requestFocus()
                                             selectAll()
                                         }
                                     }
 
+                                    textProperty().bindBidirectional(viewModel.batchNameProperty)
                                     maxWidthProperty().bind(nameLabel.widthProperty())
 
                                     action {
                                         nameEditingProperty.set(false)
-                                        viewModel.onNameChanged(text)
                                     }
                                 }
                                 button(messages["save"]) {
@@ -141,7 +140,6 @@ class UploadPage : View() {
 
                                     action {
                                         nameEditingProperty.set(false)
-                                        viewModel.onNameChanged(nameTextEdit.text)
                                     }
                                 }
 
