@@ -13,6 +13,8 @@ import org.bibletranslationtools.maui.common.data.MediaQuality
 import org.bibletranslationtools.maui.common.persistence.IDirectoryProvider
 import org.bibletranslationtools.maui.common.usecases.batch.UpdateBatch
 import org.bibletranslationtools.maui.jvm.ListenerDisposer
+import org.bibletranslationtools.maui.jvm.controls.dialog.ConfirmDialogEvent
+import org.bibletranslationtools.maui.jvm.controls.dialog.DialogType
 import org.bibletranslationtools.maui.jvm.data.FileStatusFilter
 import org.bibletranslationtools.maui.jvm.data.MediaItem
 import org.bibletranslationtools.maui.jvm.di.IDependencyGraphProvider
@@ -147,13 +149,22 @@ class UploadMediaViewModel : ViewModel() {
     }
 
     fun removeSelected() {
-        mediaItems
-            .filter { it.selected }
-            .forEach { it.removed = true }
+        val event = ConfirmDialogEvent(
+            DialogType.DELETE,
+            messages["removeFilesTitle"],
+            messages["removeFilesMessage"],
+            messages["wishToContinue"],
+            secondaryAction = {
+                mediaItems
+                    .filter { it.selected }
+                    .forEach { it.removed = true }
 
-        tableMediaItems.filteredItems.apply {
-            predicate = defaultPredicate.and(predicate)
-        }
+                tableMediaItems.filteredItems.apply {
+                    predicate = defaultPredicate.and(predicate)
+                }
+            }
+        )
+        fire(event)
     }
 
     fun verify() {
