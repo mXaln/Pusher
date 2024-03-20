@@ -6,7 +6,6 @@ import javafx.scene.control.ContentDisplay
 import javafx.scene.control.Label
 import javafx.scene.control.TextField
 import javafx.scene.layout.Priority
-import org.bibletranslationtools.maui.common.data.Batch
 import org.bibletranslationtools.maui.jvm.assets.AppResources
 import org.bibletranslationtools.maui.jvm.controls.dialog.*
 import org.bibletranslationtools.maui.jvm.controls.mediatableview.mediaTableView
@@ -24,9 +23,6 @@ class UploadPage : View() {
 
     private val viewModel: UploadMediaViewModel by inject()
 
-    private lateinit var confirmDialog: ConfirmDialog
-    private lateinit var progressDialog: ProgressDialog
-
     private lateinit var nameLabel: Label
     private lateinit var nameTextEdit: TextField
     private val nameEditingProperty = SimpleBooleanProperty()
@@ -34,29 +30,18 @@ class UploadPage : View() {
     init {
         importStylesheet(AppResources.load("/css/upload-page.css"))
 
-        initializeConfirmDialog()
-        initializeProgressDialog()
-
         subscribe<AppSaveRequestEvent> {
             viewModel.saveBatch()
         }
 
-        subscribe<ConfirmDialogEvent> {
-            openConfirmDialog(it)
-        }
-
-        subscribe<ProgressDialogEvent> {
-            openProgressDialog(it)
-        }
-
         subscribe<ErrorOccurredEvent> {
             val event = ConfirmDialogEvent(DialogType.ERROR, messages["errorOccurred"], it.message)
-            openErrorDialog(event)
+            fire(event)
         }
 
         subscribe<ShowInfoEvent> {
             val event = ConfirmDialogEvent(DialogType.INFO, messages["information"], it.message)
-            openSuccessDialog(event)
+            fire(event)
         }
     }
 
@@ -275,96 +260,5 @@ class UploadPage : View() {
 
     override fun onUndock() {
         viewModel.onUndock()
-    }
-
-    private fun initializeConfirmDialog() {
-        confirmDialog {
-            confirmDialog = this
-            uploadTargetProperty.bind(viewModel.uploadTargetProperty)
-        }
-    }
-
-    private fun openConfirmDialog(event: ConfirmDialogEvent) {
-        resetConfirmDialog()
-        when (event.type) {
-            DialogType.INFO -> openSuccessDialog(event)
-            DialogType.ERROR -> openErrorDialog(event)
-            else -> {}
-        }
-    }
-
-    private fun openSuccessDialog(event: ConfirmDialogEvent) {
-        confirmDialog.apply {
-            alertProperty.set(false)
-            titleTextProperty.set(event.title)
-            messageTextProperty.set(event.message)
-            detailsTextProperty.set(event.details)
-            primaryButtonTextProperty.set(messages["ok"])
-            setOnPrimaryAction { close() }
-            open()
-        }
-    }
-
-    private fun openErrorDialog(event: ConfirmDialogEvent) {
-        confirmDialog.apply {
-            alertProperty.set(true)
-            titleTextProperty.set(event.title)
-            messageTextProperty.set(event.message)
-            detailsTextProperty.set(event.details)
-            primaryButtonTextProperty.set(messages["ok"])
-            setOnPrimaryAction { close() }
-            open()
-        }
-    }
-
-    private fun openDeleteDialog(batch: Batch) {
-        /*resetConfirmDialog()
-        confirmDialog.apply {
-            alertProperty.set(true)
-            titleTextProperty.set(messages["deleteBatch"])
-            messageTextProperty.set(messages["deleteBatchWarning"])
-            detailsTextProperty.set(messages["wishToContinue"])
-            primaryButtonTextProperty.set(messages["cancel"])
-            primaryButtonIconProperty.set(FontIcon(MaterialDesign.MDI_CLOSE_CIRCLE))
-            secondaryButtonTextProperty.set(messages["delete"])
-            secondaryButtonIconProperty.set(FontIcon(MaterialDesign.MDI_DELETE))
-
-            setOnPrimaryAction { close() }
-            setOnSecondaryAction {
-                close()
-                viewModel.deleteBatch(batch)
-            }
-            open()
-        }*/
-    }
-
-    private fun resetConfirmDialog() {
-        confirmDialog.apply {
-            alertProperty.set(false)
-            titleTextProperty.set(null)
-            messageTextProperty.set(null)
-            detailsTextProperty.set(null)
-            primaryButtonTextProperty.set(null)
-            primaryButtonIconProperty.set(null)
-            onPrimaryActionProperty.set(null)
-            secondaryButtonTextProperty.set(null)
-            secondaryButtonIconProperty.set(null)
-            onSecondaryActionProperty.set(null)
-        }
-    }
-
-    private fun initializeProgressDialog() {
-        progressDialog {
-            progressDialog = this
-            uploadTargetProperty.bind(viewModel.uploadTargetProperty)
-        }
-    }
-
-    private fun openProgressDialog(event: ProgressDialogEvent) {
-        progressDialog.apply {
-            titleTextProperty.set(event.title)
-            messageTextProperty.set(event.message)
-            if (event.show) open() else close()
-        }
     }
 }

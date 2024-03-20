@@ -155,5 +155,7 @@ class ConfirmDialogEvent(
     val type: DialogType,
     val title: String,
     val message: String,
-    val details: String? = null
+    val details: String? = null,
+    val primaryAction: () -> Unit = {},
+    val secondaryAction: () -> Unit = {}
 ) : FXEvent()

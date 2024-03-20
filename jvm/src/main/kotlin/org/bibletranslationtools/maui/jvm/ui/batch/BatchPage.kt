@@ -31,22 +31,8 @@ class BatchPage : View() {
     private lateinit var tableView: TableView<Batch>
     private lateinit var searchBar: SearchBar
 
-    private lateinit var confirmDialog: ConfirmDialog
-    private lateinit var progressDialog: ProgressDialog
-
     init {
         importStylesheet(AppResources.load("/css/batch-page.css"))
-
-        initializeConfirmDialog()
-        initializeProgressDialog()
-
-        subscribe<ConfirmDialogEvent> {
-            openConfirmDialog(it)
-        }
-
-        subscribe<ProgressDialogEvent> {
-            openProgressDialog(it)
-        }
 
         subscribe<OpenBatchEvent> {
             viewModel.openBatch(it.batch)
@@ -195,98 +181,16 @@ class BatchPage : View() {
         }
     }
 
-    private fun initializeConfirmDialog() {
-        confirmDialog {
-            confirmDialog = this
-            uploadTargetProperty.bind(viewModel.uploadTargetProperty)
-        }
-    }
-
-    private fun openConfirmDialog(event: ConfirmDialogEvent) {
-        resetConfirmDialog()
-        when (event.type) {
-            DialogType.INFO -> openSuccessDialog(event)
-            DialogType.ERROR -> openErrorDialog(event)
-            else -> {}
-        }
-    }
-
-    private fun openSuccessDialog(event: ConfirmDialogEvent) {
-        confirmDialog.apply {
-            alertProperty.set(false)
-            titleTextProperty.set(event.title)
-            messageTextProperty.set(event.message)
-            detailsTextProperty.set(event.details)
-            primaryButtonTextProperty.set(messages["ok"])
-            setOnPrimaryAction { close() }
-            open()
-        }
-    }
-
-    private fun openErrorDialog(event: ConfirmDialogEvent) {
-        confirmDialog.apply {
-            alertProperty.set(true)
-            titleTextProperty.set(event.title)
-            messageTextProperty.set(event.message)
-            detailsTextProperty.set(event.details)
-            primaryButtonTextProperty.set(messages["ok"])
-            setOnPrimaryAction { close() }
-            open()
-        }
-    }
-
-    private fun openDeleteDialog(batch: Batch) {
-        resetConfirmDialog()
-        confirmDialog.apply {
-            alertProperty.set(true)
-            titleTextProperty.set(messages["deleteBatch"])
-            messageTextProperty.set(messages["deleteBatchWarning"])
-            detailsTextProperty.set(messages["wishToContinue"])
-            primaryButtonTextProperty.set(messages["cancel"])
-            primaryButtonIconProperty.set(FontIcon(MaterialDesign.MDI_CLOSE_CIRCLE))
-            secondaryButtonTextProperty.set(messages["delete"])
-            secondaryButtonIconProperty.set(FontIcon(MaterialDesign.MDI_DELETE))
-
-            setOnPrimaryAction { close() }
-            setOnSecondaryAction {
-                close()
+    private fun deleteBatch(batch: Batch) {
+        val event = ConfirmDialogEvent(
+            DialogType.DELETE,
+            messages["deleteBatch"],
+            messages["deleteBatchWarning"],
+            messages["wishToContinue"],
+            secondaryAction = {
                 viewModel.deleteBatch(batch)
             }
-            open()
-        }
-    }
-
-    private fun resetConfirmDialog() {
-        confirmDialog.apply {
-            alertProperty.set(false)
-            titleTextProperty.set(null)
-            messageTextProperty.set(null)
-            detailsTextProperty.set(null)
-            primaryButtonTextProperty.set(null)
-            primaryButtonIconProperty.set(null)
-            onPrimaryActionProperty.set(null)
-            secondaryButtonTextProperty.set(null)
-            secondaryButtonIconProperty.set(null)
-            onSecondaryActionProperty.set(null)
-        }
-    }
-
-    private fun initializeProgressDialog() {
-        progressDialog {
-            progressDialog = this
-            uploadTargetProperty.bind(viewModel.uploadTargetProperty)
-        }
-    }
-
-    private fun openProgressDialog(event: ProgressDialogEvent) {
-        progressDialog.apply {
-            titleTextProperty.set(event.title)
-            messageTextProperty.set(event.message)
-            if (event.show) open() else close()
-        }
-    }
-
-    private fun deleteBatch(batch: Batch) {
-        openDeleteDialog(batch)
+        )
+        fire(event)
     }
 }
