@@ -1,6 +1,7 @@
 package org.bibletranslationtools.maui.jvm.controls.mediatableview
 
 import javafx.beans.property.SimpleListProperty
+import javafx.beans.property.SimpleObjectProperty
 import javafx.collections.ObservableList
 import javafx.event.EventTarget
 import javafx.scene.Node
@@ -23,6 +24,7 @@ import org.kordamp.ikonli.javafx.FontIcon
 import org.kordamp.ikonli.materialdesign.MaterialDesign
 import tornadofx.*
 import tornadofx.FX.Companion.messages
+import java.util.function.Predicate
 
 class MediaTableView(
     val media: ObservableList<MediaItem>
@@ -35,6 +37,8 @@ class MediaTableView(
     val mediaQualitiesProperty = SimpleListProperty<MediaQuality>()
     val groupingsProperty = SimpleListProperty<Grouping>()
     val statusFilterProperty = SimpleListProperty<FileStatusFilter>()
+
+    val defaultPredicateProperty = SimpleObjectProperty<Predicate<MediaItem>>()
 
     init {
         addClass("media-table-view")
@@ -357,34 +361,36 @@ class MediaTableView(
             isReorderable = false
         }
     }
-}
 
-internal fun <S, T> TableColumn<S, T>.bindColumnWidth(percent: Double) {
-    isResizable = false
-    prefWidthProperty().bind(tableView.widthProperty().multiply(percent / 100.0))
-}
-
-internal fun TableView<MediaItem>.filterProcessed() {
-    (items as SortedFilteredList).predicate = { mediaItem ->
-        mediaItem.status == FileStatus.PROCESSED
+    private fun <S, T> TableColumn<S, T>.bindColumnWidth(percent: Double) {
+        isResizable = false
+        prefWidthProperty().bind(tableView.widthProperty().multiply(percent / 100.0))
     }
-}
 
-internal fun TableView<MediaItem>.filterRejected() {
-    (items as SortedFilteredList).predicate = { mediaItem ->
-        mediaItem.status == FileStatus.REJECTED
+    private fun filterProcessed() {
+        val predicate = Predicate<MediaItem> { it.status == FileStatus.PROCESSED }
+        (items as SortedFilteredList).filteredItems.predicate =
+            defaultPredicateProperty.value?.and(predicate) ?: predicate
+
     }
-}
 
-internal fun TableView<MediaItem>.sortByStatus() {
-    resetStatusFilter()
-    (items as SortedFilteredList).sortedItems.comparator = compareBy { it.status }
-}
+    private fun filterRejected() {
+        val predicate = Predicate<MediaItem> { it.status == FileStatus.REJECTED }
+        (items as SortedFilteredList).filteredItems.predicate =
+            defaultPredicateProperty.value?.and(predicate) ?: predicate
+    }
 
-internal fun TableView<MediaItem>.resetStatusFilter() {
-    (items as SortedFilteredList<MediaItem>).sortedItems.comparator =
-        compareBy(String.CASE_INSENSITIVE_ORDER) { it.file.name }
-    (items as SortedFilteredList<MediaItem>).predicate = { true }
+    private fun sortByStatus() {
+        resetStatusFilter()
+        (items as SortedFilteredList).sortedItems.comparator = compareBy { it.status }
+    }
+
+    private fun resetStatusFilter() {
+        (items as SortedFilteredList<MediaItem>).sortedItems.comparator =
+            compareBy(String.CASE_INSENSITIVE_ORDER) { it.file.name }
+        (items as SortedFilteredList<MediaItem>).filteredItems.predicate =
+            defaultPredicateProperty.value ?: Predicate { true }
+    }
 }
 
 fun EventTarget.mediaTableView(

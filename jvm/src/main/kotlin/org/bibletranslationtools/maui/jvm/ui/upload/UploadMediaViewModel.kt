@@ -27,6 +27,7 @@ import org.bibletranslationtools.maui.jvm.ui.UploadTarget
 import org.bibletranslationtools.maui.jvm.ui.events.AppSaveDoneEvent
 import org.slf4j.LoggerFactory
 import tornadofx.*
+import java.util.function.Predicate
 import javax.inject.Inject
 
 
@@ -70,9 +71,11 @@ class UploadMediaViewModel : ViewModel() {
     val statusFilter = FileStatusFilter.values().toList().toObservable()
 
     val shouldSaveProperty = SimpleBooleanProperty()
+    val defaultPredicate = Predicate<MediaItem> { !it.removed }
 
     private val listeners = mutableListOf<ListenerDisposer>()
     private var batchFileAccessor: BatchFileAccessor? = null
+
 
     init {
         (app as IDependencyGraphProvider).dependencyGraph.inject(this)
@@ -144,8 +147,13 @@ class UploadMediaViewModel : ViewModel() {
     }
 
     fun removeSelected() {
-        val toRemove = mediaItems.filter { it.selected }
-        mediaItems.removeAll(toRemove)
+        mediaItems
+            .filter { it.selected }
+            .forEach { it.removed = true }
+
+        tableMediaItems.filteredItems.apply {
+            predicate = defaultPredicate.and(predicate)
+        }
     }
 
     fun verify() {
@@ -166,6 +174,8 @@ class UploadMediaViewModel : ViewModel() {
         tableMediaItems.sortedItems.setComparator { o1, o2 ->
             o1.file.name.compareTo(o2.file.name, ignoreCase = true)
         }
+
+        tableMediaItems.filteredItems.predicate = defaultPredicate
 
         mediaItems.onChangeWithDisposer {
             shouldSaveProperty.set(true)

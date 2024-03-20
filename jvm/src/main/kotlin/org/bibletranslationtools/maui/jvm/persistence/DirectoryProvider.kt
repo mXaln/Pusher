@@ -73,7 +73,7 @@ class DirectoryProvider(private val appName: String) : IDirectoryProvider {
 
     override fun deleteCachedFiles(files: List<File>) {
         files.forEach { file ->
-            // delete only files that are in cache directory
+            // delete only files that reside in cache directory
             val parentDir = file.parentFile
             val isCached = file.absolutePath.startsWith(
                 cacheDirectory.absolutePath

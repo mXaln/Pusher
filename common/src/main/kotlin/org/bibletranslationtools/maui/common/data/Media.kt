@@ -18,7 +18,8 @@ data class Media(
     val status: FileStatus? = null,
     val statusMessage: String? = null,
     val parentFile: File? = null,
-    val selected: Boolean = false
+    val selected: Boolean = false,
+    val removed: Boolean = false
 ) {
     @JsonIgnore
     val extension = MediaExtensions.of(file.extension)

@@ -46,6 +46,9 @@ data class MediaItem(private val data: Media) : Comparable<MediaItem> {
     val selectedProperty = SimpleBooleanProperty(data.selected)
     var selected by selectedProperty
 
+    val removedProperty = SimpleBooleanProperty(data.removed)
+    var removed by removedProperty
+
     val isContainerProperty = SimpleBooleanProperty(data.isContainer)
     val isContainer by isContainerProperty
 

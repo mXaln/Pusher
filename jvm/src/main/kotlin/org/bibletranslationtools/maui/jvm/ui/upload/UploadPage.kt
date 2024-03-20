@@ -195,6 +195,7 @@ class UploadPage : View() {
                     mediaQualitiesProperty.set(viewModel.mediaQualities)
                     groupingsProperty.set(viewModel.groupings)
                     statusFilterProperty.set(viewModel.statusFilter)
+                    defaultPredicateProperty.set(viewModel.defaultPredicate)
                 }
             }
         }
