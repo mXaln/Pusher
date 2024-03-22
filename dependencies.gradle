@@ -7,9 +7,6 @@ ext {
     ktlintPluginVer = '8.2.0'
     shadowPluginVer = '5.2.0'
 
-    thymeleafVer = '3.1.1.RELEASE'
-    thymeleafDialectVer = '3.3.0'
-
     // Libraries
     kotlinVer = '1.8.0'
     javafxVer = '19'
@@ -28,11 +25,12 @@ ext {
     ikonliVer = '11.3.4'
     aohVer = '1.3'
     otterAudioVer = '0.4.1'
-    tikaVer = '2.9.0'
+    tikaVer = '2.9.1'
     commonsnetVer = '3.9.0'
     launch4j = '2.4.6'
     kotlinRC = '0.12.0'
     daggerVer = '2.47'
     ikonliVer = '12.2.0'
     controlsfxVer = '11.0.1'
+    cuelibVer = '2.0.0'
 }

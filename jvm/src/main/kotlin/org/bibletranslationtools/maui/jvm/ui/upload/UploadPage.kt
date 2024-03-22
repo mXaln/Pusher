@@ -40,7 +40,12 @@ class UploadPage : View() {
         }
 
         subscribe<ShowInfoEvent> {
-            val event = ConfirmDialogEvent(DialogType.INFO, messages["information"], it.message)
+            val event = ConfirmDialogEvent(
+                DialogType.ERROR,
+                messages["needsReview"],
+                messages["needsReviewMessage"],
+                it.message
+            )
             fire(event)
         }
     }

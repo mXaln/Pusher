@@ -6,27 +6,15 @@ import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleListProperty
-import javafx.beans.property.SimpleObjectProperty
-import javafx.stage.DirectoryChooser
 import org.bibletranslationtools.maui.common.audio.BttrChunk
 import org.bibletranslationtools.maui.common.data.MediaExtension
 import org.bibletranslationtools.maui.common.data.MediaQuality
 import org.bibletranslationtools.maui.common.data.Grouping
-import org.bibletranslationtools.maui.common.io.Versification
-import org.bibletranslationtools.maui.common.usecases.FileVerifier
 import org.bibletranslationtools.maui.common.usecases.MakePath
 import org.bibletranslationtools.maui.common.usecases.TransferFile
 import org.bibletranslationtools.maui.jvm.client.FtpTransferClient
-import org.bibletranslationtools.maui.jvm.io.BooksReader
-import org.bibletranslationtools.maui.jvm.io.HtmlWriter
-import org.bibletranslationtools.maui.jvm.io.LanguagesReader
-import org.bibletranslationtools.maui.jvm.io.VersificationReader
 import org.bibletranslationtools.maui.jvm.data.MediaItem
 import org.bibletranslationtools.maui.jvm.mappers.MediaMapper
-import org.bibletranslationtools.maui.jvm.mappers.VerifiedResultMapper
-import org.thymeleaf.TemplateEngine
-import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver
-import org.bibletranslationtools.maui.jvm.io.ResourceTypesReader
 import org.bibletranslationtools.maui.jvm.ui.events.ErrorOccurredEvent
 import org.wycliffeassociates.otter.common.audio.wav.WavFile
 import org.wycliffeassociates.otter.common.audio.wav.WavMetadata
@@ -47,25 +35,17 @@ class MainViewModel : ViewModel() {
     val mediaExtensions = MediaExtension.values().toList().toObservable()
     val mediaQualities = MediaQuality.values().toList().toObservable()
     val groupings = Grouping.values().toList().toObservable()
-    private val versification = SimpleObjectProperty<Versification>()
 
     val isProcessing = SimpleBooleanProperty(false)
     val snackBarObservable: PublishSubject<String> = PublishSubject.create()
     val updatedObservable: PublishSubject<Boolean> = PublishSubject.create()
 
-    //private val fileProcessRouter = FileProcessingRouter.build()
-    private lateinit var fileVerifier: FileVerifier
-    private val verifiedResultMapper = VerifiedResultMapper()
     private val mediaMapper = MediaMapper()
-    private val thymeleafEngine = TemplateEngine()
-    private val htmlWriter = HtmlWriter()
 
     init {
-        initThymeleafEngine()
         loadLanguages()
         loadResourceTypes()
         loadBooks()
-        loadVersification()
 
         subscribe<ErrorOccurredEvent> {
             snackBarObservable.onNext(it.message)
@@ -79,7 +59,7 @@ class MainViewModel : ViewModel() {
     }
 
     fun verify() {
-        val directoryChooser = DirectoryChooser()
+        /*val directoryChooser = DirectoryChooser()
         val file = directoryChooser.showDialog(primaryStage)
         val filename = "${file.absolutePath}/report.html"
 
@@ -100,7 +80,7 @@ class MainViewModel : ViewModel() {
             .subscribe { html ->
                 htmlWriter.write(filename, html)
                 snackBarObservable.onNext("Finished verifying files. Reported into file $filename")
-            }
+            }*/
     }
 
     fun upload() {
@@ -189,53 +169,35 @@ class MainViewModel : ViewModel() {
             }*/
     }
 
-    private fun initThymeleafEngine() {
-        thymeleafEngine.setTemplateResolver(ClassLoaderTemplateResolver().apply {
-            prefix = "templates/"
-            suffix = ".html"
-            characterEncoding = "utf-8"
-        })
-    }
-
     private fun loadLanguages() {
-        LanguagesReader().read()
+        /*LanguagesReader().read()
             .subscribeOn(Schedulers.io())
             .observeOnFx()
             .subscribe { _languages ->
                 languages.addAll(_languages)
-            }
+            }*/
     }
 
     private fun loadResourceTypes() {
-        ResourceTypesReader().read()
+        /*ResourceTypesReader().read()
             .subscribeOn(Schedulers.io())
             .observeOnFx()
             .subscribe { _types ->
                 resourceTypes.addAll(_types)
-            }
+            }*/
     }
 
     private fun loadBooks() {
-        BooksReader().read()
+        /*BooksReader().read()
             .subscribeOn(Schedulers.io())
             .observeOnFx()
             .subscribe { _books ->
                 books.addAll(_books)
-            }
-    }
-
-    private fun loadVersification() {
-        VersificationReader().read()
-            .subscribeOn(Schedulers.io())
-            .observeOnFx()
-            .subscribe { _versification ->
-                versification.set(_versification)
-                fileVerifier = FileVerifier(versification.value)
-            }
+            }*/
     }
 
     private fun isChunkOrVerseFile(file: File): Boolean {
-        val chunkPattern = "_v[\\d]{1,3}(?:-[\\d]{1,3})?"
+        val chunkPattern = "_v\\d{1,3}(?:-\\d{1,3})?"
         val pattern = Pattern.compile(chunkPattern, Pattern.CASE_INSENSITIVE)
         val matcher = pattern.matcher(file.nameWithoutExtension)
 
@@ -243,7 +205,7 @@ class MainViewModel : ViewModel() {
     }
 
     private fun isChapterFile(file: File): Boolean {
-        val chapterPattern = "_c([\\d]{1,3})"
+        val chapterPattern = "_c(\\d{1,3})"
         val pattern = Pattern.compile(chapterPattern, Pattern.CASE_INSENSITIVE)
         val matcher = pattern.matcher(file.nameWithoutExtension)
 

@@ -1,6 +1,7 @@
 package org.bibletranslationtools.maui.jvm.ui.upload
 
 import com.github.thomasnield.rxkotlinfx.observeOnFx
+import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleObjectProperty
@@ -10,17 +11,19 @@ import org.bibletranslationtools.maui.common.data.Batch
 import org.bibletranslationtools.maui.common.data.Grouping
 import org.bibletranslationtools.maui.common.data.MediaExtension
 import org.bibletranslationtools.maui.common.data.MediaQuality
+import org.bibletranslationtools.maui.common.io.IBooksReader
+import org.bibletranslationtools.maui.common.io.ILanguagesReader
+import org.bibletranslationtools.maui.common.io.IResourceTypesReader
 import org.bibletranslationtools.maui.common.persistence.IDirectoryProvider
+import org.bibletranslationtools.maui.common.usecases.FileVerifyingRouter
 import org.bibletranslationtools.maui.common.usecases.batch.UpdateBatch
 import org.bibletranslationtools.maui.jvm.ListenerDisposer
 import org.bibletranslationtools.maui.jvm.controls.dialog.ConfirmDialogEvent
 import org.bibletranslationtools.maui.jvm.controls.dialog.DialogType
+import org.bibletranslationtools.maui.jvm.controls.dialog.ProgressDialogEvent
 import org.bibletranslationtools.maui.jvm.data.FileStatusFilter
 import org.bibletranslationtools.maui.jvm.data.MediaItem
 import org.bibletranslationtools.maui.jvm.di.IDependencyGraphProvider
-import org.bibletranslationtools.maui.jvm.io.BooksReader
-import org.bibletranslationtools.maui.jvm.io.LanguagesReader
-import org.bibletranslationtools.maui.jvm.io.ResourceTypesReader
 import org.bibletranslationtools.maui.jvm.mappers.MediaMapper
 import org.bibletranslationtools.maui.jvm.onChangeAndDoNow
 import org.bibletranslationtools.maui.jvm.onChangeWithDisposer
@@ -31,6 +34,7 @@ import org.slf4j.LoggerFactory
 import tornadofx.*
 import java.util.function.Predicate
 import javax.inject.Inject
+import io.reactivex.rxkotlin.toObservable as toRxObservable
 
 
 class UploadMediaViewModel : ViewModel() {
@@ -39,6 +43,10 @@ class UploadMediaViewModel : ViewModel() {
     @Inject lateinit var directoryProvider: IDirectoryProvider
     @Inject lateinit var mediaMapper: MediaMapper
     @Inject lateinit var updateBatch: UpdateBatch
+    @Inject lateinit var fileVerifyingRouter: FileVerifyingRouter
+    @Inject lateinit var languagesReader: ILanguagesReader
+    @Inject lateinit var booksReader: IBooksReader
+    @Inject lateinit var resourceTypesReader: IResourceTypesReader
 
     private val batchDataStore: BatchDataStore by inject()
 
@@ -151,8 +159,8 @@ class UploadMediaViewModel : ViewModel() {
     fun removeSelected() {
         val event = ConfirmDialogEvent(
             DialogType.DELETE,
-            messages["removeFilesTitle"],
-            messages["removeFilesMessage"],
+            messages["removingFiles"],
+            messages["removingFilesMessage"],
             messages["wishToContinue"],
             secondaryAction = {
                 mediaItems
@@ -168,7 +176,46 @@ class UploadMediaViewModel : ViewModel() {
     }
 
     fun verify() {
-        println("*** verify triggered ***")
+        val progress = ProgressDialogEvent(
+            true,
+            messages["verifyingFiles"],
+            messages["verifyingFilesMessage"]
+        )
+        fire(progress)
+
+        mediaItems
+            .filter { it.selected }
+            .toRxObservable()
+            .subscribeOn(Schedulers.io())
+            .map { item ->
+                Pair(item, fileVerifyingRouter.handleItem(mediaMapper.toEntity(item)))
+            }
+            .observeOnFx()
+            .doOnError {
+                fire(ProgressDialogEvent(false))
+
+                val error = ConfirmDialogEvent(
+                    DialogType.ERROR,
+                    messages["filesVerified"],
+                    messages["filesVerifiedErrorMessage"],
+                    it.message
+                )
+                fire(error)
+            }
+            .doFinally {
+                fire(ProgressDialogEvent(false))
+
+                val success = ConfirmDialogEvent(
+                    DialogType.INFO,
+                    messages["filesVerified"],
+                    messages["filesVerifiedMessage"]
+                )
+                fire(success)
+            }
+            .subscribe { (item, result) ->
+                item.status = result.status
+                item.statusMessage = result.message
+            }
     }
 
     fun upload() {
@@ -194,7 +241,9 @@ class UploadMediaViewModel : ViewModel() {
     }
 
     private fun loadLanguages() {
-        LanguagesReader().read()
+        Single.fromCallable {
+            languagesReader.read()
+        }
             .subscribeOn(Schedulers.io())
             .observeOnFx()
             .subscribe { list ->
@@ -203,7 +252,9 @@ class UploadMediaViewModel : ViewModel() {
     }
 
     private fun loadResourceTypes() {
-        ResourceTypesReader().read()
+        Single.fromCallable {
+            resourceTypesReader.read()
+        }
             .subscribeOn(Schedulers.io())
             .observeOnFx()
             .subscribe { list ->
@@ -212,7 +263,9 @@ class UploadMediaViewModel : ViewModel() {
     }
 
     private fun loadBooks() {
-        BooksReader().read()
+        Single.fromCallable {
+            booksReader.read()
+        }
             .subscribeOn(Schedulers.io())
             .observeOnFx()
             .subscribe { list ->

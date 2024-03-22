@@ -229,7 +229,13 @@ class BatchViewModel : ViewModel() {
     }
 
     private fun createBatch(resultList: List<FileResult>) {
-        val media = resultList.mapNotNull { it.data }
+        val media = resultList.mapNotNull { it.data }.map {
+            if (it.status == FileStatus.PROCESSED) {
+                // Remove status for successfully processed files
+                // In order to re-verify them later
+                it.copy(status = null)
+            } else it
+        }
         createBatch.create(media)
             .observeOn(Schedulers.io())
             .doOnError {

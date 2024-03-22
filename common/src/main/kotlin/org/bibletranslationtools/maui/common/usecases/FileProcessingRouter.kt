@@ -14,7 +14,7 @@ class FileProcessingRouter @Inject constructor(private val directoryProvider: ID
     /**
      * Queue of pairs where first item is the processed file and second item is its parent file
      * For example .orature file contains wav or mp3 files and all its files will have it as parent
-     * If a single .wav file is being processed, then it doesn't have a parent
+     * If a single .wav file is being processed, then the parent will be null
      */
     private val fileQueue: Queue<Pair<File, File?>> = LinkedList()
 
