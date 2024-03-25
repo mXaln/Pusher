@@ -6,7 +6,7 @@ import org.bibletranslationtools.maui.common.persistence.IBatchRepository
 import javax.inject.Inject
 
 class UpdateBatch @Inject constructor(private val batchRepository: IBatchRepository) {
-    fun edit(batch: Batch): Completable {
+    fun update(batch: Batch): Completable {
         return Completable.fromCallable {
             batchRepository.saveBatch(batch)
         }

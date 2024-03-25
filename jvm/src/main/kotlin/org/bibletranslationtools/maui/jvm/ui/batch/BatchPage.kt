@@ -85,7 +85,7 @@ class BatchPage : View() {
 
                         action {
                             chooseFile(
-                                messages["importResourceFromZip"],
+                                messages["importFiles"],
                                 arrayOf(),
                                 mode = FileChooserMode.Multi,
                                 owner = currentWindow

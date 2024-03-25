@@ -119,6 +119,19 @@
     -fx-prompt-text-fill: transparent;
 }
 
+.media-table-view .combo-box-popup .list-cell:hover,
+.media-table-view .combo-box-popup .list-cell:selected {
+    -fx-background-color: -wa-primary;
+}
+
+.media-table-view .combo-box-popup .list-cell {
+    -fx-border-color: transparent transparent -wa-gray-light transparent;
+}
+
+.media-table-view .combo-box-popup .list-cell:selected .label {
+    -fx-text-fill: -wa-white;
+}
+
 .media-table-view .status {
     -fx-alignment: center-left;
     -fx-spacing: 5px;

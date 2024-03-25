@@ -48,6 +48,10 @@ class UploadPage : View() {
             )
             fire(event)
         }
+
+        subscribe<BatchMediaUpdatedEvent> {
+            viewModel.onNewMedia(it.media)
+        }
     }
 
     override val root = borderpane {
@@ -163,6 +167,20 @@ class UploadPage : View() {
                         }
 
                         enableWhen(viewModel.shouldSaveProperty)
+                    }
+
+                    button(messages["importFiles"]) {
+                        addClass("btn", "btn--secondary")
+                        graphic = FontIcon(MaterialDesign.MDI_DOWNLOAD)
+
+                        action {
+                            chooseFile(
+                                messages["importFiles"],
+                                arrayOf(),
+                                mode = FileChooserMode.Multi,
+                                owner = currentWindow
+                            ).also { viewModel.onDropFiles(it) }
+                        }
                     }
 
                     button(messages["viewUploadedFiles"]) {

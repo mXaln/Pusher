@@ -6,5 +6,5 @@ class FileResult(
     val status: FileStatus,
     val statusMessage: String? = null,
     val data: Media? = null,
-    val parentFile: File? = null
+    val file: File? = null
 )

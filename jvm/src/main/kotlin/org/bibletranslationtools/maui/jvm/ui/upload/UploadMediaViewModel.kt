@@ -6,11 +6,7 @@ import io.reactivex.schedulers.Schedulers
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
-import org.bibletranslationtools.maui.common.BatchFileAccessor
-import org.bibletranslationtools.maui.common.data.Batch
-import org.bibletranslationtools.maui.common.data.Grouping
-import org.bibletranslationtools.maui.common.data.MediaExtension
-import org.bibletranslationtools.maui.common.data.MediaQuality
+import org.bibletranslationtools.maui.common.data.*
 import org.bibletranslationtools.maui.common.io.IBooksReader
 import org.bibletranslationtools.maui.common.io.ILanguagesReader
 import org.bibletranslationtools.maui.common.io.IResourceTypesReader
@@ -28,10 +24,13 @@ import org.bibletranslationtools.maui.jvm.mappers.MediaMapper
 import org.bibletranslationtools.maui.jvm.onChangeAndDoNow
 import org.bibletranslationtools.maui.jvm.onChangeWithDisposer
 import org.bibletranslationtools.maui.jvm.ui.BatchDataStore
+import org.bibletranslationtools.maui.jvm.ui.ImportFilesViewModel
+import org.bibletranslationtools.maui.jvm.ui.ImportType
 import org.bibletranslationtools.maui.jvm.ui.UploadTarget
 import org.bibletranslationtools.maui.jvm.ui.events.AppSaveDoneEvent
 import org.slf4j.LoggerFactory
 import tornadofx.*
+import java.io.File
 import java.util.function.Predicate
 import javax.inject.Inject
 import io.reactivex.rxkotlin.toObservable as toRxObservable
@@ -49,6 +48,7 @@ class UploadMediaViewModel : ViewModel() {
     @Inject lateinit var resourceTypesReader: IResourceTypesReader
 
     private val batchDataStore: BatchDataStore by inject()
+    private val importFilesViewModel: ImportFilesViewModel by inject()
 
     private val mediaItems = observableListOf<MediaItem> {
         arrayOf(
@@ -84,7 +84,6 @@ class UploadMediaViewModel : ViewModel() {
     val defaultPredicate = Predicate<MediaItem> { !it.removed }
 
     private val listeners = mutableListOf<ListenerDisposer>()
-    private var batchFileAccessor: BatchFileAccessor? = null
 
 
     init {
@@ -92,12 +91,11 @@ class UploadMediaViewModel : ViewModel() {
 
         batchDataStore.activeBatchProperty.onChangeAndDoNow {
             it?.let { batch ->
-                //batchFileAccessor = BatchFileAccessor(directoryProvider, batch)
                 batchNameProperty.set(batch.name)
             }
         }
 
-        uploadTargetProperty.bind(batchDataStore.uploadTargetProperty)
+        uploadTargetProperty.bindBidirectional(batchDataStore.uploadTargetProperty)
         activeBatchProperty.bind(batchDataStore.activeBatchProperty)
         appTitleProperty.bind(batchDataStore.appTitleProperty)
 
@@ -127,6 +125,18 @@ class UploadMediaViewModel : ViewModel() {
         listeners.clear()
     }
 
+    fun onDropFiles(files: List<File>) {
+        importFilesViewModel.onDropFiles(files, ImportType.UPDATE)
+    }
+
+    fun onNewMedia(media: List<Media>) {
+        mediaItems.addAll(
+            media.map(mediaMapper::fromEntity).filter {
+                !mediaItems.contains(it)
+            }
+        )
+    }
+
     fun saveBatch(clearMedia: Boolean = false) {
         val newBatch = activeBatchProperty.value.copy(
             name = batchNameProperty.value,
@@ -134,7 +144,7 @@ class UploadMediaViewModel : ViewModel() {
                 mediaItems.map(mediaMapper::toEntity)
             }
         )
-        updateBatch.edit(newBatch)
+        updateBatch.update(newBatch)
             .subscribeOn(Schedulers.io())
             .doOnError {
                 logger.error("Error in saveBatch", it)

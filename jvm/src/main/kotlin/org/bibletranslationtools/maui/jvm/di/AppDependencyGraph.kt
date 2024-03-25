@@ -6,6 +6,7 @@ import org.bibletranslationtools.maui.jvm.MainApp
 import org.bibletranslationtools.maui.jvm.di.modules.BatchRepositoryModule
 import org.bibletranslationtools.maui.jvm.di.modules.DirectoryProviderModule
 import org.bibletranslationtools.maui.jvm.di.modules.ReadersModule
+import org.bibletranslationtools.maui.jvm.ui.ImportFilesViewModel
 import org.bibletranslationtools.maui.jvm.ui.batch.BatchViewModel
 import org.bibletranslationtools.maui.jvm.ui.upload.UploadMediaViewModel
 import javax.inject.Singleton
@@ -24,4 +25,5 @@ interface AppDependencyGraph {
     fun injectDirectoryProvider(): IDirectoryProvider
     fun inject(viewModel: BatchViewModel)
     fun inject(viewModel: UploadMediaViewModel)
+    fun inject(viewModel: ImportFilesViewModel)
 }
