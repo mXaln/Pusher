@@ -10,10 +10,10 @@ import javafx.scene.layout.VBox
 import org.bibletranslationtools.maui.common.data.Batch
 import org.bibletranslationtools.maui.jvm.ListenerDisposer
 import org.bibletranslationtools.maui.jvm.assets.AppResources
-import org.bibletranslationtools.maui.jvm.controls.SearchBar
+import org.bibletranslationtools.maui.jvm.controls.textfield.SearchBar
 import org.bibletranslationtools.maui.jvm.controls.batchtableview.batchTableView
 import org.bibletranslationtools.maui.jvm.controls.dialog.*
-import org.bibletranslationtools.maui.jvm.controls.searchBar
+import org.bibletranslationtools.maui.jvm.controls.textfield.searchBar
 import org.bibletranslationtools.maui.jvm.ui.UploadTarget
 import org.bibletranslationtools.maui.jvm.ui.components.mainHeader
 import org.bibletranslationtools.maui.jvm.ui.components.uploadTargetHeader

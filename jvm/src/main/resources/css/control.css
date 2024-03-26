@@ -53,7 +53,7 @@
 
 .search-bar {
     -fx-pref-width: 314px;
-    -fx-pref-height: 36px;
+    -fx-pref-height: 44px;
 }
 
 .search-bar .right-pane .ikonli-font-icon {
@@ -151,4 +151,39 @@
 .wa-checkbox:selected .box > .mark {
     -fx-background-color: -wa-primary-light;
     -fx-shape: "M1.73,12.91 8.1,19.28 22.79,4.59 22.79,1.59 8.1,16.28 1.73,9.91";
+}
+
+/* -------------- Text Input ---------------- */
+.wa-text-field {
+    -fx-border-width: 1px;
+    -fx-border-color: -wa-gray-lighter;
+    -fx-border-radius: 12px;
+    -fx-background-color: -wa-white;
+    -fx-background-radius: 14px;
+    -fx-text-fill: -wa-gray-darker;
+    -fx-font-size: 1.5em;
+}
+.wa-text-field:focused {
+    -fx-border-color: -wa-primary;
+    -fx-effect: dropshadow(gaussian, -wa-primary, 10, 0, 0, 0);;
+}
+.wa-text-field:disabled {
+    -fx-border-width: 0px;
+    -fx-background-color: -wa-gray-lighter;
+}
+
+.wa-icon-text-field {
+    -fx-padding: 6 11 6 5;
+}
+
+.wa-icon-text-field .left-pane {
+    -fx-padding: 0 3 0 10;
+}
+
+.wa-icon-text-field .left-pane .ikonli-font-icon {
+    -fx-icon-color: -wa-gray-light;
+}
+
+.wa-password-field .right-pane {
+    -fx-cursor: hand;
 }

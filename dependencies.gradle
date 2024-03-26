@@ -33,4 +33,6 @@ ext {
     ikonliVer = '12.2.0'
     controlsfxVer = '11.0.1'
     cuelibVer = '2.0.0'
+    commonsConfig2Ver = '2.9.0'
+    commonsBeanUtilsVer = '1.9.4'
 }

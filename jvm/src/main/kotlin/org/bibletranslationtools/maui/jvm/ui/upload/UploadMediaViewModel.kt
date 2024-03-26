@@ -10,12 +10,13 @@ import org.bibletranslationtools.maui.common.data.*
 import org.bibletranslationtools.maui.common.io.IBooksReader
 import org.bibletranslationtools.maui.common.io.ILanguagesReader
 import org.bibletranslationtools.maui.common.io.IResourceTypesReader
-import org.bibletranslationtools.maui.common.persistence.IDirectoryProvider
+import org.bibletranslationtools.maui.common.persistence.*
 import org.bibletranslationtools.maui.common.usecases.FileVerifyingRouter
 import org.bibletranslationtools.maui.common.usecases.batch.UpdateBatch
 import org.bibletranslationtools.maui.jvm.ListenerDisposer
 import org.bibletranslationtools.maui.jvm.controls.dialog.ConfirmDialogEvent
 import org.bibletranslationtools.maui.jvm.controls.dialog.DialogType
+import org.bibletranslationtools.maui.jvm.controls.dialog.LoginDialogEvent
 import org.bibletranslationtools.maui.jvm.controls.dialog.ProgressDialogEvent
 import org.bibletranslationtools.maui.jvm.data.FileStatusFilter
 import org.bibletranslationtools.maui.jvm.data.MediaItem
@@ -46,6 +47,7 @@ class UploadMediaViewModel : ViewModel() {
     @Inject lateinit var languagesReader: ILanguagesReader
     @Inject lateinit var booksReader: IBooksReader
     @Inject lateinit var resourceTypesReader: IResourceTypesReader
+    @Inject lateinit var prefRepository: IPrefRepository
 
     private val batchDataStore: BatchDataStore by inject()
     private val importFilesViewModel: ImportFilesViewModel by inject()
@@ -85,7 +87,6 @@ class UploadMediaViewModel : ViewModel() {
 
     private val listeners = mutableListOf<ListenerDisposer>()
 
-
     init {
         (app as IDependencyGraphProvider).dependencyGraph.inject(this)
 
@@ -98,7 +99,6 @@ class UploadMediaViewModel : ViewModel() {
         uploadTargetProperty.bindBidirectional(batchDataStore.uploadTargetProperty)
         activeBatchProperty.bind(batchDataStore.activeBatchProperty)
         appTitleProperty.bind(batchDataStore.appTitleProperty)
-
         uploadTargets.bind(batchDataStore.uploadTargets) { it }
 
         batchNameProperty.onChange {
@@ -229,7 +229,22 @@ class UploadMediaViewModel : ViewModel() {
     }
 
     fun upload() {
-        println("*** upload triggered ***")
+        val server = batchDataStore.serverProperty.value.trim()
+        val user = batchDataStore.userProperty.value.trim()
+        val password = batchDataStore.passwordProperty.value.trim()
+
+        if (server.isNotEmpty() && user.isNotEmpty() && password.isNotEmpty()) {
+            println("Uploading...")
+            println(server)
+            println(user)
+            println(password)
+        } else {
+            val loginEvent = LoginDialogEvent {
+                updateLoginCredentials()
+                runLater { upload() }
+            }
+            fire(loginEvent)
+        }
     }
 
     private fun loadMediaItems() {
@@ -281,5 +296,19 @@ class UploadMediaViewModel : ViewModel() {
             .subscribe { list ->
                 books.addAll(list)
             }
+    }
+
+    private fun updateLoginCredentials() {
+        when (uploadTargetProperty.value) {
+            UploadTarget.DEV -> {
+                prefRepository.put(DEV_SERVER_NAME_KEY, batchDataStore.serverProperty.value)
+                prefRepository.put(DEV_USER_NAME_KEY, batchDataStore.userProperty.value)
+            }
+            UploadTarget.PROD -> {
+                prefRepository.put(PROD_SERVER_NAME_KEY, batchDataStore.serverProperty.value)
+                prefRepository.put(PROD_USER_NAME_KEY, batchDataStore.userProperty.value)
+            }
+            else -> {}
+        }
     }
 }

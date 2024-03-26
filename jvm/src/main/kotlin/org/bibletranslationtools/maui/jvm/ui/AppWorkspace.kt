@@ -15,6 +15,7 @@ class AppWorkspace : Workspace() {
 
     private lateinit var confirmDialog: ConfirmDialog
     private lateinit var progressDialog: ProgressDialog
+    private lateinit var loginDialog: LoginDialog
 
     init {
         header.removeFromParent()
@@ -30,6 +31,7 @@ class AppWorkspace : Workspace() {
 
         initializeConfirmDialog()
         initializeProgressDialog()
+        initializeLoginDialog()
 
         subscribe<ConfirmDialogEvent> {
             openConfirmDialog(it)
@@ -37,6 +39,10 @@ class AppWorkspace : Workspace() {
 
         subscribe<ProgressDialogEvent> {
             openProgressDialog(it)
+        }
+
+        subscribe<LoginDialogEvent> {
+            openLoginDialog(it)
         }
     }
 
@@ -72,7 +78,6 @@ class AppWorkspace : Workspace() {
             DialogType.INFO -> openInfoDialog(event)
             DialogType.ERROR -> openErrorDialog(event)
             DialogType.DELETE -> openDeleteDialog(event)
-            else -> {}
         }
     }
 
@@ -151,6 +156,27 @@ class AppWorkspace : Workspace() {
             titleTextProperty.set(event.title)
             messageTextProperty.set(event.message)
             if (event.show) open() else close()
+        }
+    }
+
+    private fun initializeLoginDialog() {
+        loginDialog {
+            loginDialog = this
+            uploadTargetProperty.bind(batchDataStore.uploadTargetProperty)
+            serverProperty.bindBidirectional(batchDataStore.serverProperty)
+            userProperty.bindBidirectional(batchDataStore.userProperty)
+            passwordProperty.bindBidirectional(batchDataStore.passwordProperty)
+
+        }
+    }
+
+    private fun openLoginDialog(event: LoginDialogEvent) {
+        loginDialog.apply {
+            setOnAction {
+                event.action()
+                close()
+            }
+            open()
         }
     }
 }

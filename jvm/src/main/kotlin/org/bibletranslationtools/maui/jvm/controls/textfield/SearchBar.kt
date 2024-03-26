@@ -1,4 +1,4 @@
-package org.bibletranslationtools.maui.jvm.controls
+package org.bibletranslationtools.maui.jvm.controls.textfield
 
 import javafx.beans.binding.Bindings
 import javafx.beans.binding.ObjectBinding
@@ -20,7 +20,7 @@ class SearchBar : CustomTextField() {
     }
 
     init {
-        addClass("search-bar")
+        addClass("search-bar", "wa-text-field")
 
         clearBtn.setOnAction {
             text = ""

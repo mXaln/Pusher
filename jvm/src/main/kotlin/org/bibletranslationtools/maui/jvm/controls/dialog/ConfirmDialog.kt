@@ -9,6 +9,7 @@ import javafx.event.EventHandler
 import javafx.scene.Parent
 import javafx.scene.control.ScrollPane
 import javafx.scene.layout.Priority
+import org.bibletranslationtools.maui.jvm.assets.AppResources
 import org.bibletranslationtools.maui.jvm.customizeScrollbarSkin
 import org.bibletranslationtools.maui.jvm.onChangeAndDoNow
 import org.kordamp.ikonli.javafx.FontIcon
@@ -18,8 +19,7 @@ import tornadofx.*
 enum class DialogType {
     INFO,
     DELETE,
-    ERROR,
-    CONFIRM
+    ERROR
 }
 
 class ConfirmDialog : MauiDialog() {
@@ -94,7 +94,7 @@ class ConfirmDialog : MauiDialog() {
                 tooltip { textProperty().bind(this@button.textProperty()) }
                 graphicProperty().bind(secondaryButtonIconProperty)
 
-                onActionProperty().bind(onSecondaryActionProperty())
+                onActionProperty().bind(onSecondaryActionProperty)
                 visibleProperty().bind(onSecondaryActionProperty.isNotNull)
                 managedProperty().bind(visibleProperty())
             }
@@ -106,7 +106,7 @@ class ConfirmDialog : MauiDialog() {
                 tooltip { textProperty().bind(this@button.textProperty()) }
                 graphicProperty().bind(primaryButtonIconProperty)
 
-                onActionProperty().bind(onPrimaryActionProperty())
+                onActionProperty().bind(onPrimaryActionProperty)
                 visibleProperty().bind(onPrimaryActionProperty.isNotNull)
                 managedProperty().bind(visibleProperty())
             }
@@ -119,6 +119,8 @@ class ConfirmDialog : MauiDialog() {
     }
 
     init {
+        importStylesheet(AppResources.load("/css/confirm-dialog.css"))
+
         setContent(content)
     }
 
@@ -132,16 +134,8 @@ class ConfirmDialog : MauiDialog() {
         onSecondaryActionProperty.set(EventHandler { op.invoke() })
     }
 
-    private fun onSecondaryActionProperty(): ObjectProperty<EventHandler<ActionEvent>> {
-        return onSecondaryActionProperty
-    }
-
     fun setOnPrimaryAction(op: () -> Unit) {
         onPrimaryActionProperty.set(EventHandler { op.invoke() })
-    }
-
-    private fun onPrimaryActionProperty(): ObjectProperty<EventHandler<ActionEvent>> {
-        return onPrimaryActionProperty
     }
 }
 

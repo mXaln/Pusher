@@ -1,5 +1,6 @@
 package org.bibletranslationtools.maui.jvm.persistence
 
+import org.bibletranslationtools.maui.common.MauiInfo
 import org.bibletranslationtools.maui.common.persistence.IDirectoryProvider
 import java.io.File
 import java.nio.file.FileSystems
@@ -21,6 +22,9 @@ class DirectoryProvider(private val appName: String) : IDirectoryProvider {
 
     override val cacheDirectory: File
         get() = getAppDataDirectory("cache")
+
+    override val prefFile: File
+        get() = getAppDataDirectory().resolve("${MauiInfo.APP_NAME.lowercase()}.properties")
 
     override fun getAppDataDirectory(appendedPath: String): File {
         val pathComponents = mutableListOf<String>()

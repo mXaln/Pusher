@@ -31,8 +31,6 @@ abstract class MauiDialog : Fragment() {
 
     init {
         importStylesheet(AppResources.load("/css/maui-dialog.css"))
-        importStylesheet(AppResources.load("/css/confirm-dialog.css"))
-        importStylesheet(AppResources.load("/css/progress-dialog.css"))
 
         bindUploadTargetClassToRoot()
     }

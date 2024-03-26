@@ -7,6 +7,7 @@ import javafx.beans.property.SimpleStringProperty
 import javafx.scene.layout.Priority
 import javafx.scene.transform.Rotate
 import javafx.util.Duration
+import org.bibletranslationtools.maui.jvm.assets.AppResources
 import org.kordamp.ikonli.javafx.FontIcon
 import org.kordamp.ikonli.materialdesign.MaterialDesign
 import tornadofx.*
@@ -48,6 +49,8 @@ class ProgressDialog : MauiDialog() {
     }
 
     init {
+        importStylesheet(AppResources.load("/css/progress-dialog.css"))
+
         setContent(content)
     }
 

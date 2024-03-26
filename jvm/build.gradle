@@ -62,6 +62,10 @@ dependencies {
     // ControldsFX
     implementation "org.controlsfx:controlsfx:$controlsfxVer"
 
+    // Properties
+    implementation "org.apache.commons:commons-configuration2:$commonsConfig2Ver"
+    implementation "commons-beanutils:commons-beanutils:$commonsBeanUtilsVer"
+
     // Log4j
     implementation "org.slf4j:slf4j-api:$slf4jApiVer"
     implementation "org.apache.logging.log4j:log4j-core:$log4j2Ver"
