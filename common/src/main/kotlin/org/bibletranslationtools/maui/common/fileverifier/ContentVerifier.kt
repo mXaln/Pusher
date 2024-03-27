@@ -23,6 +23,7 @@ class ContentVerifier(private val versification: Versification) : FileVerifier()
         val verses = getVerses(media.file)
 
         return when {
+            media.chapter == null -> processed()
             verses.first == null && verses.second == null -> {
                 verifyChapter(media)
             }
@@ -117,8 +118,9 @@ class ContentVerifier(private val versification: Versification) : FileVerifier()
             chapter?.let {
                 val expectedVerses = chapterVerses[chapter - 1]
                 when {
-                    cues.size != expectedVerses ->
+                    cues.size != expectedVerses -> {
                         rejected("$book $chapter expected $expectedVerses verses, but got ${cues.size}.")
+                    }
                     else -> processed()
                 }
             }

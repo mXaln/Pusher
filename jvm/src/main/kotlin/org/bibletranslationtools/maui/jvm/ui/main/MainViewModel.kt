@@ -84,7 +84,7 @@ class MainViewModel : ViewModel() {
     }
 
     fun upload() {
-        isProcessing.set(true)
+        /*isProcessing.set(true)
         mediaItems.toRxObservable()
             .concatMap { mediaItem ->
                 val media = mediaMapper.toEntity(mediaItem)
@@ -105,7 +105,7 @@ class MainViewModel : ViewModel() {
                 mediaItems.removeAll(it)
                 updatedObservable.onNext(true)
                 successfulUploadProperty.set(true)
-            }
+            }*/
     }
 
     fun clearList() {

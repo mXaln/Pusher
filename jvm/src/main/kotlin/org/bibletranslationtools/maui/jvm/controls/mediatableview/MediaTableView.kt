@@ -13,11 +13,8 @@ import org.bibletranslationtools.maui.common.data.FileStatus
 import org.bibletranslationtools.maui.common.data.Grouping
 import org.bibletranslationtools.maui.common.data.MediaExtension
 import org.bibletranslationtools.maui.common.data.MediaQuality
+import org.bibletranslationtools.maui.jvm.*
 import org.bibletranslationtools.maui.jvm.assets.AppResources
-import org.bibletranslationtools.maui.jvm.bindColumnSortComparator
-import org.bibletranslationtools.maui.jvm.bindSortPolicy
-import org.bibletranslationtools.maui.jvm.bindTableSortComparator
-import org.bibletranslationtools.maui.jvm.customizeScrollbarSkin
 import org.bibletranslationtools.maui.jvm.data.FileStatusFilter
 import org.bibletranslationtools.maui.jvm.data.MediaItem
 import org.kordamp.ikonli.javafx.FontIcon
@@ -80,9 +77,9 @@ class MediaTableView(
             graphic = checkbox {
                 addClass("wa-checkbox")
 
-                items.onChange {
-                    val selected = it.list.filter { item -> item.selected }
-                    isSelected = it.list.all { item -> item.selected }
+                items.onChangeAndDoNow {
+                    val selected = it.filter { item -> item.selected }
+                    isSelected = it.all { item -> item.selected }
                     isIndeterminate = items.size != selected.size && selected.isNotEmpty()
                 }
 

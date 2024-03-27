@@ -187,3 +187,25 @@
 .wa-password-field .right-pane {
     -fx-cursor: hand;
 }
+
+/* Progress bar */
+.wa-progress-bar {
+    -fx-pref-height: 30px;
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+}
+
+.wa-progress-bar .track {
+    -fx-background-insets: 0;
+    -fx-background-radius: 5px;
+    -fx-arc-height: 5;
+    -fx-arc-width: 5;
+}
+
+.wa-progress-bar .bar {
+    -fx-background-color: -wa-primary;
+    -fx-background-insets: 0;
+    -fx-background-radius: 8px 0 0 8px;
+    -fx-arc-height: 5;
+    -fx-arc-width: 5;
+}

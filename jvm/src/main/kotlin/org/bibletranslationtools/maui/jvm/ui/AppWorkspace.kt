@@ -153,8 +153,14 @@ class AppWorkspace : Workspace() {
 
     private fun openProgressDialog(event: ProgressDialogEvent) {
         progressDialog.apply {
+            progressProperty.unbind()
+
             titleTextProperty.set(event.title)
             messageTextProperty.set(event.message)
+            showProgressProperty.set(event.showProgress)
+
+            progressProperty.bind(event.progressProperty)
+
             if (event.show) open() else close()
         }
     }

@@ -3,6 +3,9 @@ package org.bibletranslationtools.maui.jvm.controls.dialog
 import javafx.animation.Interpolator
 import javafx.animation.RotateTransition
 import javafx.animation.Timeline
+import javafx.beans.property.DoubleProperty
+import javafx.beans.property.SimpleBooleanProperty
+import javafx.beans.property.SimpleDoubleProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.scene.layout.Priority
 import javafx.scene.transform.Rotate
@@ -16,6 +19,8 @@ class ProgressDialog : MauiDialog() {
     
     val titleTextProperty = SimpleStringProperty()
     val messageTextProperty = SimpleStringProperty()
+    val showProgressProperty = SimpleBooleanProperty()
+    val progressProperty = SimpleDoubleProperty()
 
     private lateinit var rotateAnimation: RotateTransition
 
@@ -46,6 +51,18 @@ class ProgressDialog : MauiDialog() {
                 textProperty().bind(messageTextProperty)
             }
         }
+        hbox {
+            addClass("progress")
+
+            progressbar {
+                addClass("wa-progress-bar")
+
+                fitToParentWidth()
+                progressProperty().bind(progressProperty)
+                visibleProperty().bind(showProgressProperty)
+                managedProperty().bind(visibleProperty())
+            }
+        }
     }
 
     init {
@@ -72,5 +89,7 @@ fun progressDialog(op: ProgressDialog.() -> Unit) = ProgressDialog().apply(op)
 class ProgressDialogEvent(
     val show: Boolean,
     val title: String? = null,
-    val message: String? = null
+    val message: String? = null,
+    val showProgress: Boolean = false,
+    val progressProperty: DoubleProperty = SimpleDoubleProperty()
 ) : FXEvent()

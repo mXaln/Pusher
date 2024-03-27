@@ -203,14 +203,14 @@ class UploadPage : View() {
                         }
 
                         enableWhen {
-                            viewModel.tableMediaItems.booleanBinding {
+                            viewModel.filteredMediaItems.booleanBinding {
                                 it.isNotEmpty()
                             }
                         }
                     }
                 }
 
-                mediaTableView(viewModel.tableMediaItems) {
+                mediaTableView(viewModel.filteredMediaItems) {
                     languagesProperty.set(viewModel.languages)
                     resourceTypesProperty.set(viewModel.resourceTypes)
                     booksProperty.set(viewModel.books)
@@ -235,7 +235,7 @@ class UploadPage : View() {
                 }
 
                 enableWhen {
-                    viewModel.tableMediaItems.booleanBinding {
+                    viewModel.filteredMediaItems.booleanBinding {
                         it.any { item -> item.selected }
                     }
                 }
@@ -254,7 +254,7 @@ class UploadPage : View() {
                 }
 
                 enableWhen {
-                    viewModel.tableMediaItems.booleanBinding {
+                    viewModel.filteredMediaItems.booleanBinding {
                         it.any { item -> item.selected }
                     }
                 }
@@ -265,11 +265,11 @@ class UploadPage : View() {
                 graphic = FontIcon(MaterialDesign.MDI_ARROW_UP)
 
                 action {
-                    viewModel.upload()
+                    viewModel.tryUpload()
                 }
 
                 enableWhen {
-                    viewModel.tableMediaItems.booleanBinding {
+                    viewModel.filteredMediaItems.booleanBinding {
                         it.any { item -> item.selected }
                     }
                 }

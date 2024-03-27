@@ -12,8 +12,11 @@ import org.bibletranslationtools.maui.common.io.ILanguagesReader
 import org.bibletranslationtools.maui.common.io.IResourceTypesReader
 import org.bibletranslationtools.maui.common.persistence.*
 import org.bibletranslationtools.maui.common.usecases.FileVerifyingRouter
+import org.bibletranslationtools.maui.common.usecases.MakePath
+import org.bibletranslationtools.maui.common.usecases.TransferFile
 import org.bibletranslationtools.maui.common.usecases.batch.UpdateBatch
 import org.bibletranslationtools.maui.jvm.ListenerDisposer
+import org.bibletranslationtools.maui.jvm.client.FtpTransferClient
 import org.bibletranslationtools.maui.jvm.controls.dialog.ConfirmDialogEvent
 import org.bibletranslationtools.maui.jvm.controls.dialog.DialogType
 import org.bibletranslationtools.maui.jvm.controls.dialog.LoginDialogEvent
@@ -66,7 +69,7 @@ class UploadMediaViewModel : ViewModel() {
             it.statusMessageProperty
         )
     }
-    val tableMediaItems = SortedFilteredList(mediaItems)
+    val filteredMediaItems = SortedFilteredList(mediaItems)
 
     val uploadTargetProperty = SimpleObjectProperty<UploadTarget>()
     val activeBatchProperty = SimpleObjectProperty<Batch>()
@@ -173,11 +176,11 @@ class UploadMediaViewModel : ViewModel() {
             messages["removingFilesMessage"],
             messages["wishToContinue"],
             secondaryAction = {
-                mediaItems
+                filteredMediaItems
                     .filter { it.selected }
                     .forEach { it.removed = true }
 
-                tableMediaItems.filteredItems.apply {
+                filteredMediaItems.filteredItems.apply {
                     predicate = defaultPredicate.and(predicate)
                 }
             }
@@ -193,27 +196,23 @@ class UploadMediaViewModel : ViewModel() {
         )
         fire(progress)
 
-        mediaItems
-            .filter { it.selected }
-            .toRxObservable()
+        Single.fromCallable {
+            filteredMediaItems
+                .filter { it.selected }
+                .map { item ->
+                    Pair(item, fileVerifyingRouter.handleItem(mediaMapper.toEntity(item)))
+                }
+        }
             .subscribeOn(Schedulers.io())
-            .map { item ->
-                Pair(item, fileVerifyingRouter.handleItem(mediaMapper.toEntity(item)))
-            }
             .observeOnFx()
-            .doOnError {
-                fire(ProgressDialogEvent(false))
-
-                val error = ConfirmDialogEvent(
-                    DialogType.ERROR,
-                    messages["filesVerified"],
-                    messages["filesVerifiedErrorMessage"],
-                    it.message
-                )
-                fire(error)
-            }
             .doFinally {
                 fire(ProgressDialogEvent(false))
+            }
+            .subscribe({ items ->
+                items.forEach { (item, result) ->
+                    item.status = result.status
+                    item.statusMessage = result.message
+                }
 
                 val success = ConfirmDialogEvent(
                     DialogType.INFO,
@@ -221,30 +220,113 @@ class UploadMediaViewModel : ViewModel() {
                     messages["filesVerifiedMessage"]
                 )
                 fire(success)
-            }
-            .subscribe { (item, result) ->
-                item.status = result.status
-                item.statusMessage = result.message
-            }
+            }, {
+                val error = ConfirmDialogEvent(
+                    DialogType.ERROR,
+                    messages["filesVerified"],
+                    messages["filesVerifiedErrorMessage"],
+                    it.message
+                )
+                fire(error)
+            })
     }
 
-    fun upload() {
+    fun tryUpload() {
         val server = batchDataStore.serverProperty.value.trim()
         val user = batchDataStore.userProperty.value.trim()
         val password = batchDataStore.passwordProperty.value.trim()
 
         if (server.isNotEmpty() && user.isNotEmpty() && password.isNotEmpty()) {
-            println("Uploading...")
-            println(server)
-            println(user)
-            println(password)
+            val hasUnverified = filteredMediaItems
+                .filter { it.selected }
+                .any {
+                    it.status == null || it.status == FileStatus.REJECTED
+                }
+            val hasSelected = mediaItems.any { it.selected }
+
+            when {
+                hasUnverified -> {
+                    val error = ConfirmDialogEvent(
+                        DialogType.ERROR,
+                        messages["errorOccurred"],
+                        messages["hasUnverifiedFilesError"]
+                    )
+                    fire(error)
+                }
+                !hasSelected -> {
+                    val error = ConfirmDialogEvent(
+                        DialogType.ERROR,
+                        messages["errorOccurred"],
+                        messages["noSelectedFilesError"]
+                    )
+                    fire(error)
+                }
+                else -> doUpload()
+            }
         } else {
             val loginEvent = LoginDialogEvent {
                 updateLoginCredentials()
-                runLater { upload() }
+                runLater { tryUpload() }
             }
             fire(loginEvent)
         }
+    }
+
+    private fun doUpload() {
+        val progress = ProgressDialogEvent(
+            true,
+            messages["processingUpload"],
+            messages["processingUploadMessage"],
+            showProgress = true
+        )
+        fire(progress)
+
+        var current = 1.0
+        val total = filteredMediaItems.filter { it.selected }.size
+
+        filteredMediaItems.filter { it.selected }
+            .toRxObservable()
+            .map(mediaMapper::toEntity)
+            .flatMapCompletable { media ->
+                MakePath(media).build()
+                    .flatMapCompletable { targetPath ->
+                        val transferClient = FtpTransferClient(
+                            media.file,
+                            targetPath,
+                            batchDataStore.serverProperty.value,
+                            batchDataStore.userProperty.value,
+                            batchDataStore.passwordProperty.value
+                        )
+                        TransferFile(transferClient).transfer().doFinally {
+                            progress.progressProperty.set(current / total)
+                            current++
+                        }
+                    }
+            }
+            .subscribeOn(Schedulers.io())
+            .observeOnFx()
+            .doFinally {
+                fire(ProgressDialogEvent(false))
+            }
+            .subscribe({
+                val success = ConfirmDialogEvent(
+                    DialogType.INFO,
+                    messages["filesUploaded"],
+                    messages["filesUploadedMessage"]
+                )
+                fire(success)
+            },{
+                val error = ConfirmDialogEvent(
+                    DialogType.ERROR,
+                    messages["errorOccurred"],
+                    messages["uploadFailed"],
+                    it.message
+                )
+                fire(error)
+
+                // Clear password on transfer error to allow user to update credentials
+                batchDataStore.passwordProperty.set("")
+            })
     }
 
     private fun loadMediaItems() {
@@ -254,11 +336,11 @@ class UploadMediaViewModel : ViewModel() {
             ?.map(mediaMapper::fromEntity)
             ?.forEach(mediaItems::add)
 
-        tableMediaItems.sortedItems.setComparator { o1, o2 ->
+        filteredMediaItems.sortedItems.setComparator { o1, o2 ->
             o1.file.name.compareTo(o2.file.name, ignoreCase = true)
         }
 
-        tableMediaItems.filteredItems.predicate = defaultPredicate
+        filteredMediaItems.filteredItems.predicate = defaultPredicate
 
         mediaItems.onChangeWithDisposer {
             shouldSaveProperty.set(true)
