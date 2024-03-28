@@ -1,6 +1,5 @@
 package org.bibletranslationtools.maui.jvm.controls.dialog
 
-import javafx.beans.property.ObjectProperty
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
@@ -18,8 +17,9 @@ import tornadofx.*
 
 enum class DialogType {
     INFO,
+    ERROR,
     DELETE,
-    ERROR
+    CONFIRM
 }
 
 class ConfirmDialog : MauiDialog() {

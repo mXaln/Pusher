@@ -6,8 +6,9 @@ import javafx.beans.property.SimpleStringProperty
 import javafx.event.ActionEvent
 import javafx.event.EventHandler
 import javafx.scene.control.Tooltip
-import org.bibletranslationtools.maui.jvm.controls.mediafilter.MAX_CHAPTER_LENGTH
 import tornadofx.*
+
+private const val MAX_CHAPTER_LENGTH = 3
 
 class MediaTextField : JFXTextField() {
 

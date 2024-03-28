@@ -78,6 +78,7 @@ class AppWorkspace : Workspace() {
             DialogType.INFO -> openInfoDialog(event)
             DialogType.ERROR -> openErrorDialog(event)
             DialogType.DELETE -> openDeleteDialog(event)
+            DialogType.CONFIRM -> openOptionsDialog(event)
         }
     }
 
@@ -116,6 +117,29 @@ class AppWorkspace : Workspace() {
             primaryButtonIconProperty.set(FontIcon(MaterialDesign.MDI_CLOSE_CIRCLE))
             secondaryButtonTextProperty.set(messages["delete"])
             secondaryButtonIconProperty.set(FontIcon(MaterialDesign.MDI_DELETE))
+
+            setOnPrimaryAction {
+                event.primaryAction()
+                close()
+            }
+            setOnSecondaryAction {
+                event.secondaryAction()
+                close()
+            }
+            open()
+        }
+    }
+
+    private fun openOptionsDialog(event: ConfirmDialogEvent) {
+        resetConfirmDialog()
+        confirmDialog.apply {
+            titleTextProperty.set(event.title)
+            messageTextProperty.set(event.message)
+            detailsTextProperty.set(event.details)
+            primaryButtonTextProperty.set(messages["yes"])
+            primaryButtonIconProperty.set(FontIcon(MaterialDesign.MDI_CLOSE_CIRCLE))
+            secondaryButtonTextProperty.set(messages["no"])
+            secondaryButtonIconProperty.set(FontIcon(MaterialDesign.MDI_CHECK))
 
             setOnPrimaryAction {
                 event.primaryAction()

@@ -17,6 +17,7 @@ import org.bibletranslationtools.maui.jvm.*
 import org.bibletranslationtools.maui.jvm.assets.AppResources
 import org.bibletranslationtools.maui.jvm.data.FileStatusFilter
 import org.bibletranslationtools.maui.jvm.data.MediaItem
+import org.bibletranslationtools.maui.jvm.ui.events.SomeEvent
 import org.kordamp.ikonli.javafx.FontIcon
 import org.kordamp.ikonli.materialdesign.MaterialDesign
 import tornadofx.*
@@ -115,9 +116,12 @@ class MediaTableView(
                 titleProperty.set(messages["language"])
                 setOnOptionChanged { newValue ->
                     runLater { value = null }
-                    this@MediaTableView.items.forEach {
-                        it.language = newValue
-                    }
+                    tableView.requestFocus()
+                    FX.eventbus.fire(SomeEvent {
+                        this@MediaTableView.items.forEach {
+                            it.language = newValue
+                        }
+                    })
                 }
             }
 
@@ -144,9 +148,12 @@ class MediaTableView(
                 titleProperty.set(messages["resourceType"])
                 setOnOptionChanged { newValue ->
                     runLater { value = null }
-                    this@MediaTableView.items.forEach {
-                        it.resourceType = newValue
-                    }
+                    tableView.requestFocus()
+                    FX.eventbus.fire(SomeEvent {
+                        this@MediaTableView.items.forEach {
+                            it.resourceType = newValue
+                        }
+                    })
                 }
             }
 
@@ -173,9 +180,12 @@ class MediaTableView(
                 titleProperty.set(messages["book"])
                 setOnOptionChanged { newValue ->
                     runLater { value = null }
-                    this@MediaTableView.items.forEach {
-                        it.book = newValue
-                    }
+                    tableView.requestFocus()
+                    FX.eventbus.fire(SomeEvent {
+                        this@MediaTableView.items.forEach {
+                            it.book = newValue
+                        }
+                    })
                 }
             }
 
@@ -202,8 +212,12 @@ class MediaTableView(
             graphic = MediaTextField().apply {
                 titleProperty.set(messages["chapter"])
                 setOnAction {
-                    items.forEach { it.chapter = text }
-                    text = null
+                    val newValue = text
+                    tableView.requestFocus()
+                    FX.eventbus.fire(SomeEvent {
+                        items.forEach { it.chapter = newValue }
+                    })
+                    text = ""
                 }
             }
 
@@ -229,11 +243,14 @@ class MediaTableView(
                 titleProperty.set(messages["mediaExtension"])
                 setOnOptionChanged { newValue ->
                     runLater { value = null }
-                    this@MediaTableView.items
-                        .filter { it.mediaExtensionAvailable }
-                        .forEach {
-                            it.mediaExtension = newValue
-                        }
+                    tableView.requestFocus()
+                    FX.eventbus.fire(SomeEvent {
+                        this@MediaTableView.items
+                            .filter { it.mediaExtensionAvailable }
+                            .forEach {
+                                it.mediaExtension = newValue
+                            }
+                    })
                 }
             }
 
@@ -267,11 +284,14 @@ class MediaTableView(
                 titleProperty.set(messages["mediaQuality"])
                 setOnOptionChanged { newValue ->
                     runLater { value = null }
-                    this@MediaTableView.items
-                        .filter { it.mediaQualityAvailable }
-                        .forEach {
-                            it.mediaQuality = newValue
-                        }
+                    tableView.requestFocus()
+                    FX.eventbus.fire(SomeEvent {
+                        this@MediaTableView.items
+                            .filter { it.mediaQualityAvailable }
+                            .forEach {
+                                it.mediaQuality = newValue
+                            }
+                    })
                 }
             }
 
@@ -301,9 +321,12 @@ class MediaTableView(
                 titleProperty.set(messages["grouping"])
                 setOnOptionChanged { newValue ->
                     runLater { value = null }
-                    this@MediaTableView.items.forEach {
-                        it.grouping = newValue
-                    }
+                    tableView.requestFocus()
+                    FX.eventbus.fire(SomeEvent {
+                        this@MediaTableView.items.forEach {
+                            it.grouping = newValue
+                        }
+                    })
                 }
             }
 

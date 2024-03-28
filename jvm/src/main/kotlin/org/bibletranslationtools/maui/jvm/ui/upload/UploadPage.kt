@@ -52,6 +52,16 @@ class UploadPage : View() {
         subscribe<BatchMediaUpdatedEvent> {
             viewModel.onNewMedia(it.media)
         }
+
+        subscribe<SomeEvent> {
+            val event = ConfirmDialogEvent(
+                DialogType.CONFIRM,
+                messages["confirmSelection"],
+                messages["confirmSelectionQuestion"],
+                primaryAction = { it.onConfirm() }
+            )
+            fire(event)
+        }
     }
 
     override val root = borderpane {
