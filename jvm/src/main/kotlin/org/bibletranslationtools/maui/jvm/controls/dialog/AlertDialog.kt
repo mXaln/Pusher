@@ -5,6 +5,7 @@ import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.event.ActionEvent
 import javafx.event.EventHandler
+import javafx.scene.Node
 import javafx.scene.Parent
 import javafx.scene.control.ScrollPane
 import javafx.scene.layout.Priority
@@ -14,45 +15,41 @@ import org.bibletranslationtools.maui.jvm.onChangeAndDoNow
 import org.kordamp.ikonli.javafx.FontIcon
 import org.kordamp.ikonli.materialdesign.MaterialDesign
 import tornadofx.*
+import tornadofx.FX.Companion.messages
 
-enum class DialogType {
+enum class AlertType {
     INFO,
-    ERROR,
-    DELETE,
     CONFIRM
 }
 
-class ConfirmDialog : MauiDialog() {
-    val titleTextProperty = SimpleStringProperty()
-    val messageTextProperty = SimpleStringProperty()
-    val detailsTextProperty = SimpleStringProperty()
+class AlertDialog : MauiDialog() {
     val primaryButtonTextProperty = SimpleStringProperty()
-    val primaryButtonIconProperty = SimpleObjectProperty<FontIcon>()
+    val primaryButtonIconProperty = SimpleObjectProperty<Node>()
     val secondaryButtonTextProperty = SimpleStringProperty()
-    val secondaryButtonIconProperty = SimpleObjectProperty<FontIcon>()
-    val alertProperty = SimpleBooleanProperty()
+    val secondaryButtonIconProperty = SimpleObjectProperty<Node>()
 
     val onPrimaryActionProperty = SimpleObjectProperty<EventHandler<ActionEvent>>()
     val onSecondaryActionProperty = SimpleObjectProperty<EventHandler<ActionEvent>>()
 
+    val isWarningProperty = SimpleBooleanProperty()
     private val normalIcon = FontIcon(MaterialDesign.MDI_CHECK_CIRCLE)
-    private val alertIcon = FontIcon(MaterialDesign.MDI_ALERT)
+    private val warningIcon = FontIcon(MaterialDesign.MDI_ALERT)
 
     private lateinit var scroll: Parent
 
     private val content = vbox {
-        addClass("confirm-dialog")
+        addClass("alert-dialog")
 
-        alertProperty.onChangeAndDoNow {
-            togglePseudoClass("alert", it == true)
+        isWarningProperty.onChangeAndDoNow {
+            togglePseudoClass("warning", it == true)
         }
 
         hbox {
             addClass("header")
 
             label {
-                graphicProperty().bind(alertProperty.objectBinding {
-                    if (it == true) alertIcon else normalIcon
+                graphicProperty().bind(isWarningProperty.objectBinding {
+                    if (it == true) warningIcon else normalIcon
                 })
             }
 
@@ -119,7 +116,7 @@ class ConfirmDialog : MauiDialog() {
     }
 
     init {
-        importStylesheet(AppResources.load("/css/confirm-dialog.css"))
+        importStylesheet(AppResources.load("/css/alert-dialog.css"))
 
         setContent(content)
     }
@@ -139,17 +136,22 @@ class ConfirmDialog : MauiDialog() {
     }
 }
 
-fun confirmDialog(setup: ConfirmDialog.() -> Unit = {}): ConfirmDialog {
-    val confirmDialog = ConfirmDialog()
-    confirmDialog.setup()
-    return confirmDialog
+fun alertDialog(setup: AlertDialog.() -> Unit = {}): AlertDialog {
+    val alertDialog = AlertDialog()
+    alertDialog.setup()
+    return alertDialog
 }
 
-class ConfirmDialogEvent(
-    val type: DialogType,
+class AlertDialogEvent(
+    val type: AlertType,
     val title: String,
     val message: String,
     val details: String? = null,
+    val isWarning: Boolean = false,
+    val primaryText: String = messages["ok"],
+    val primaryIcon: FontIcon = FontIcon(MaterialDesign.MDI_CHECK),
     val primaryAction: () -> Unit = {},
-    val secondaryAction: () -> Unit = {}
+    val secondaryText: String = messages["cancel"],
+    val secondaryIcon: FontIcon = FontIcon(MaterialDesign.MDI_CLOSE_CIRCLE),
+    val secondaryAction: () -> Unit = {},
 ) : FXEvent()

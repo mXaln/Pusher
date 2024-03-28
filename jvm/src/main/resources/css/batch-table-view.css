@@ -22,11 +22,11 @@
     -fx-alignment: center-left;
     -fx-font-size: 1.1em;
     -fx-font-weight: 600;
-    -fx-text-fill: -wa-gray-light;
+    -fx-text-fill: -wa-gray;
 }
 
 .batch-table-view .column-header .arrow {
-    -fx-background-color: -wa-gray-light;
+    -fx-background-color: -wa-gray;
 }
 
 .batch-table-view .column-header-background {
@@ -74,12 +74,12 @@
 
 .batch-table-view .placeholder-icon .ikonli-font-icon {
     -fx-icon-size: 60px;
-    -fx-icon-color: -wa-gray-light;
+    -fx-icon-color: -wa-gray;
 }
 
 .batch-table-view .placeholder-text {
     -fx-font-size: 1.5em;
-    -fx-text-fill: -wa-gray-light;
+    -fx-text-fill: -wa-gray;
 }
 
 .batch-table-view .name-cell-view {
@@ -109,5 +109,5 @@
 }
 
 .batch-table-view .btn--delete .ikonli-font-icon {
-    -fx-icon-color: #C3362D;
+    -fx-icon-color: -wa-red;
 }

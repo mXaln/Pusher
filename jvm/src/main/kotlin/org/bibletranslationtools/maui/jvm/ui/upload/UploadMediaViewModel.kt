@@ -17,8 +17,8 @@ import org.bibletranslationtools.maui.common.usecases.TransferFile
 import org.bibletranslationtools.maui.common.usecases.batch.UpdateBatch
 import org.bibletranslationtools.maui.jvm.ListenerDisposer
 import org.bibletranslationtools.maui.jvm.client.FtpTransferClient
-import org.bibletranslationtools.maui.jvm.controls.dialog.ConfirmDialogEvent
-import org.bibletranslationtools.maui.jvm.controls.dialog.DialogType
+import org.bibletranslationtools.maui.jvm.controls.dialog.AlertDialogEvent
+import org.bibletranslationtools.maui.jvm.controls.dialog.AlertType
 import org.bibletranslationtools.maui.jvm.controls.dialog.LoginDialogEvent
 import org.bibletranslationtools.maui.jvm.controls.dialog.ProgressDialogEvent
 import org.bibletranslationtools.maui.jvm.data.FileStatusFilter
@@ -32,6 +32,9 @@ import org.bibletranslationtools.maui.jvm.ui.ImportFilesViewModel
 import org.bibletranslationtools.maui.jvm.ui.ImportType
 import org.bibletranslationtools.maui.jvm.ui.UploadTarget
 import org.bibletranslationtools.maui.jvm.ui.events.AppSaveDoneEvent
+import org.kordamp.ikonli.javafx.FontIcon
+import org.kordamp.ikonli.material.Material
+import org.kordamp.ikonli.materialdesign.MaterialDesign
 import org.slf4j.LoggerFactory
 import tornadofx.*
 import java.io.File
@@ -170,11 +173,16 @@ class UploadMediaViewModel : ViewModel() {
     }
 
     fun removeSelected() {
-        val event = ConfirmDialogEvent(
-            DialogType.DELETE,
-            messages["removingFiles"],
-            messages["removingFilesMessage"],
-            messages["wishToContinue"],
+        val event = AlertDialogEvent(
+            type = AlertType.CONFIRM,
+            title = messages["removingFiles"],
+            message = messages["removingFilesMessage"],
+            details = messages["wishToContinue"],
+            isWarning = true,
+            primaryText = messages["cancel"],
+            primaryIcon = FontIcon(MaterialDesign.MDI_CLOSE_CIRCLE),
+            secondaryText = messages["remove"],
+            secondaryIcon = FontIcon(Material.DELETE_OUTLINE),
             secondaryAction = {
                 filteredMediaItems
                     .filter { it.selected }
@@ -214,61 +222,64 @@ class UploadMediaViewModel : ViewModel() {
                     item.statusMessage = result.message
                 }
 
-                val success = ConfirmDialogEvent(
-                    DialogType.INFO,
+                val success = AlertDialogEvent(
+                    AlertType.INFO,
                     messages["filesVerified"],
                     messages["filesVerifiedMessage"]
                 )
                 fire(success)
             }, {
-                val error = ConfirmDialogEvent(
-                    DialogType.ERROR,
-                    messages["filesVerified"],
-                    messages["filesVerifiedErrorMessage"],
-                    it.message
+                val error = AlertDialogEvent(
+                    type = AlertType.INFO,
+                    title = messages["filesVerified"],
+                    message = messages["filesVerifiedErrorMessage"],
+                    details = it.message,
+                    isWarning = true
                 )
                 fire(error)
             })
     }
 
     fun tryUpload() {
+        val hasUnverified = filteredMediaItems
+            .filter { it.selected }
+            .any {
+                it.status == null || it.status == FileStatus.REJECTED
+            }
+
+        val hasSelected = mediaItems.any { it.selected }
+
         val server = batchDataStore.serverProperty.value.trim()
         val user = batchDataStore.userProperty.value.trim()
         val password = batchDataStore.passwordProperty.value.trim()
 
-        if (server.isNotEmpty() && user.isNotEmpty() && password.isNotEmpty()) {
-            val hasUnverified = filteredMediaItems
-                .filter { it.selected }
-                .any {
-                    it.status == null || it.status == FileStatus.REJECTED
-                }
-            val hasSelected = mediaItems.any { it.selected }
-
-            when {
-                hasUnverified -> {
-                    val error = ConfirmDialogEvent(
-                        DialogType.ERROR,
-                        messages["errorOccurred"],
-                        messages["hasUnverifiedFilesError"]
-                    )
-                    fire(error)
-                }
-                !hasSelected -> {
-                    val error = ConfirmDialogEvent(
-                        DialogType.ERROR,
-                        messages["errorOccurred"],
-                        messages["noSelectedFilesError"]
-                    )
-                    fire(error)
-                }
-                else -> doUpload()
+        when {
+            hasUnverified -> {
+                val error = AlertDialogEvent(
+                    type = AlertType.INFO,
+                    title = messages["errorOccurred"],
+                    message = messages["hasUnverifiedFilesError"],
+                    isWarning = true
+                )
+                fire(error)
             }
-        } else {
-            val loginEvent = LoginDialogEvent {
-                updateLoginCredentials()
-                runLater { tryUpload() }
+            !hasSelected -> {
+                val error = AlertDialogEvent(
+                    type = AlertType.INFO,
+                    title = messages["errorOccurred"],
+                    message = messages["noSelectedFilesError"],
+                    isWarning = true
+                )
+                fire(error)
             }
-            fire(loginEvent)
+            server.isEmpty() || user.isEmpty() || password.isEmpty() -> {
+                val loginEvent = LoginDialogEvent {
+                    updateLoginCredentials()
+                    runLater { tryUpload() }
+                }
+                fire(loginEvent)
+            }
+            else -> doUpload()
         }
     }
 
@@ -309,18 +320,19 @@ class UploadMediaViewModel : ViewModel() {
                 fire(ProgressDialogEvent(false))
             }
             .subscribe({
-                val success = ConfirmDialogEvent(
-                    DialogType.INFO,
+                val success = AlertDialogEvent(
+                    AlertType.INFO,
                     messages["filesUploaded"],
                     messages["filesUploadedMessage"]
                 )
                 fire(success)
             },{
-                val error = ConfirmDialogEvent(
-                    DialogType.ERROR,
-                    messages["errorOccurred"],
-                    messages["uploadFailed"],
-                    it.message
+                val error = AlertDialogEvent(
+                    type = AlertType.INFO,
+                    title = messages["errorOccurred"],
+                    message = messages["uploadFailed"],
+                    details = it.message,
+                    isWarning = true
                 )
                 fire(error)
 

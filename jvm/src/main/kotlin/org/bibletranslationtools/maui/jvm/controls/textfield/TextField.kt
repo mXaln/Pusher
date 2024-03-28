@@ -5,11 +5,11 @@ import org.controlsfx.control.textfield.CustomTextField
 import tornadofx.addClass
 import tornadofx.attachTo
 
-class IconTextField : CustomTextField() {
+class TextField : CustomTextField() {
     init {
-        addClass("wa-text-field", "wa-icon-text-field")
+        addClass("wa-text-field")
     }
 }
 
-fun EventTarget.iconTextField(op: IconTextField.() -> Unit = {}) =
-    IconTextField().attachTo(this, op)
+fun EventTarget.textField(op: TextField.() -> Unit = {}) =
+    TextField().attachTo(this, op)

@@ -15,6 +15,10 @@
     -fx-text-fill: -wa-white;
 }
 
+.wa-combobox:pressed .list-cell {
+    -fx-text-fill: -wa-gray-darker;
+}
+
 .wa-combobox .arrow {
     -fx-background-color: -wa-white;
 }
@@ -28,10 +32,6 @@
     -fx-background-color: -wa-gray-dark;
 }
 
-.wa-combobox .list-cell:pressed {
-    -fx-background-color: blue;
-}
-
 .wa-combobox .combo-box-popup {
     -fx-pref-height: 200px;
 }
@@ -43,21 +43,7 @@
 
 .wa-combobox .combo-box-popup .list-cell:selected {
     -fx-background-color: -wa-primary;
-}
-
-.wa-combobox .combo-box-popup .list-cell:selected .label {
     -fx-text-fill: -wa-white;
-}
-
-/* Search Bar */
-
-.search-bar {
-    -fx-pref-width: 314px;
-    -fx-pref-height: 44px;
-}
-
-.search-bar .right-pane .ikonli-font-icon {
-    -fx-icon-size: 24px;
 }
 
 /* Common scrollbar styles */
@@ -156,32 +142,47 @@
 /* -------------- Text Input ---------------- */
 .wa-text-field {
     -fx-border-width: 1px;
-    -fx-border-color: -wa-gray-lighter;
+    -fx-border-color: -wa-gray;
     -fx-border-radius: 12px;
     -fx-background-color: -wa-white;
     -fx-background-radius: 14px;
-    -fx-text-fill: -wa-gray-darker;
+    -fx-text-fill: -wa-gray;
     -fx-font-size: 1.5em;
 }
+
 .wa-text-field:focused {
     -fx-border-color: -wa-primary;
-    -fx-effect: dropshadow(gaussian, -wa-primary, 10, 0, 0, 0);;
-}
-.wa-text-field:disabled {
-    -fx-border-width: 0px;
-    -fx-background-color: -wa-gray-lighter;
+    -fx-border-width: 2px;
+    -fx-text-fill: -wa-gray-darker;
 }
 
-.wa-icon-text-field {
+.wa-text-field:disabled {
+    -fx-border-width: 0px;
+    -fx-background-color: -wa-gray-light;
+}
+
+.wa-text-field {
     -fx-padding: 6 11 6 5;
 }
 
-.wa-icon-text-field .left-pane {
+.wa-text-field .left-pane {
     -fx-padding: 0 3 0 10;
 }
 
-.wa-icon-text-field .left-pane .ikonli-font-icon {
-    -fx-icon-color: -wa-gray-light;
+.wa-text-field .left-pane .button,
+.wa-text-field .left-pane .ikonli-font-icon,
+.wa-text-field .right-pane .button,
+.wa-text-field .right-pane .ikonli-font-icon {
+    -fx-icon-color: -wa-gray;
+    -fx-text-fill: -wa-gray;
+}
+
+.wa-text-field:focused .left-pane .button,
+.wa-text-field:focused .left-pane .ikonli-font-icon,
+.wa-text-field:focused .right-pane .button,
+.wa-text-field:focused .right-pane .ikonli-font-icon {
+    -fx-icon-color: -wa-gray-dark;
+    -fx-text-fill: -wa-gray-dark;
 }
 
 .wa-password-field .right-pane {

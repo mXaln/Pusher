@@ -7,13 +7,15 @@ import javafx.event.ActionEvent
 import javafx.event.EventHandler
 import javafx.event.EventTarget
 import javafx.scene.layout.StackPane
+import org.kordamp.ikonli.Ikon
 import org.kordamp.ikonli.javafx.FontIcon
 import org.kordamp.ikonli.materialdesign.MaterialDesign
 import tornadofx.addClass
 import tornadofx.attachTo
+import tornadofx.objectBinding
 
 class UnmaskPasswordField : StackPane() {
-    val iconProperty = SimpleObjectProperty<FontIcon>()
+    val iconProperty = SimpleObjectProperty<Ikon>()
     val promptTextProperty = SimpleStringProperty("")
     val textProperty = SimpleStringProperty()
     val onActionProperty = SimpleObjectProperty<EventHandler<ActionEvent>>()
@@ -22,11 +24,18 @@ class UnmaskPasswordField : StackPane() {
     private val hideIcon = FontIcon(MaterialDesign.MDI_EYE_OFF)
     private val showPasswordProperty = SimpleBooleanProperty()
 
+    private lateinit var textField: TextField
+    private lateinit var passwordField: PasswordField
+
     init {
         addClass("wa-password-field")
 
-        iconTextField {
-            leftProperty().bind(iconProperty)
+        textField {
+            textField = this
+
+            leftProperty().bind(iconProperty.objectBinding {
+                it?.let { FontIcon(it) }
+            })
             visibleProperty().bind(showPasswordProperty)
             promptTextProperty().bind(promptTextProperty)
             textProperty().bindBidirectional(textProperty)
@@ -35,12 +44,17 @@ class UnmaskPasswordField : StackPane() {
             right = hideIcon.apply {
                 setOnMouseClicked {
                     toggleShowIcon()
+                    passwordField.requestFocus()
                 }
             }
         }
 
-        iconPasswordField {
-            leftProperty().bind(iconProperty)
+        passwordField {
+            passwordField = this
+
+            leftProperty().bind(iconProperty.objectBinding {
+                it?.let { FontIcon(it) }
+            })
             visibleProperty().bind(showPasswordProperty.not())
             promptTextProperty().bind(promptTextProperty)
             textProperty().bindBidirectional(textProperty)
@@ -49,6 +63,7 @@ class UnmaskPasswordField : StackPane() {
             right = showIcon.apply {
                 setOnMouseClicked {
                     toggleShowIcon()
+                    textField.requestFocus()
                 }
             }
         }

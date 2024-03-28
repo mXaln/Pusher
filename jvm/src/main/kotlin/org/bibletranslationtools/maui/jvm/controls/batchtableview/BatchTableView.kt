@@ -17,6 +17,7 @@ import org.bibletranslationtools.maui.jvm.customizeScrollbarSkin
 import org.bibletranslationtools.maui.jvm.ui.events.DeleteBatchEvent
 import org.bibletranslationtools.maui.jvm.ui.events.OpenBatchEvent
 import org.kordamp.ikonli.javafx.FontIcon
+import org.kordamp.ikonli.material.Material
 import org.kordamp.ikonli.materialdesign.MaterialDesign
 import tornadofx.*
 import tornadofx.FX.Companion.messages
@@ -94,7 +95,7 @@ class BatchTableView(
                 button {
                     addClass("btn", "btn--icon", "btn--delete")
 
-                    graphic = FontIcon(MaterialDesign.MDI_DELETE)
+                    graphic = FontIcon(Material.DELETE_OUTLINE)
                     tooltip(messages["deleteBatch"])
 
                     action {

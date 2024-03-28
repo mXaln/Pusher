@@ -6,6 +6,7 @@ import javafx.collections.ObservableList
 import javafx.event.EventTarget
 import javafx.scene.Node
 import javafx.scene.control.TableColumn
+import javafx.scene.control.TableRow
 import javafx.scene.control.TableView
 import javafx.scene.layout.Priority
 import javafx.util.StringConverter
@@ -17,7 +18,7 @@ import org.bibletranslationtools.maui.jvm.*
 import org.bibletranslationtools.maui.jvm.assets.AppResources
 import org.bibletranslationtools.maui.jvm.data.FileStatusFilter
 import org.bibletranslationtools.maui.jvm.data.MediaItem
-import org.bibletranslationtools.maui.jvm.ui.events.SomeEvent
+import org.bibletranslationtools.maui.jvm.ui.events.ChangeMediaValueEvent
 import org.kordamp.ikonli.javafx.FontIcon
 import org.kordamp.ikonli.materialdesign.MaterialDesign
 import tornadofx.*
@@ -65,6 +66,17 @@ class MediaTableView(
 
         bindSortPolicy()
         bindTableSortComparator()
+
+        setRowFactory {
+            TableRow<MediaItem>().apply {
+                itemProperty().select { it.statusProperty }.onChange {
+                    togglePseudoClass("error", it == FileStatus.REJECTED)
+                }
+                itemProperty().select { it.selectedProperty }.onChange {
+                    togglePseudoClass("checked", it == true)
+                }
+            }
+        }
 
         column("", Node::class) {
             addClass("checkbox-column")
@@ -117,7 +129,7 @@ class MediaTableView(
                 setOnOptionChanged { newValue ->
                     runLater { value = null }
                     tableView.requestFocus()
-                    FX.eventbus.fire(SomeEvent {
+                    FX.eventbus.fire(ChangeMediaValueEvent {
                         this@MediaTableView.items.forEach {
                             it.language = newValue
                         }
@@ -149,7 +161,7 @@ class MediaTableView(
                 setOnOptionChanged { newValue ->
                     runLater { value = null }
                     tableView.requestFocus()
-                    FX.eventbus.fire(SomeEvent {
+                    FX.eventbus.fire(ChangeMediaValueEvent {
                         this@MediaTableView.items.forEach {
                             it.resourceType = newValue
                         }
@@ -181,7 +193,7 @@ class MediaTableView(
                 setOnOptionChanged { newValue ->
                     runLater { value = null }
                     tableView.requestFocus()
-                    FX.eventbus.fire(SomeEvent {
+                    FX.eventbus.fire(ChangeMediaValueEvent {
                         this@MediaTableView.items.forEach {
                             it.book = newValue
                         }
@@ -214,7 +226,7 @@ class MediaTableView(
                 setOnAction {
                     val newValue = text
                     tableView.requestFocus()
-                    FX.eventbus.fire(SomeEvent {
+                    FX.eventbus.fire(ChangeMediaValueEvent {
                         items.forEach { it.chapter = newValue }
                     })
                     text = ""
@@ -244,7 +256,7 @@ class MediaTableView(
                 setOnOptionChanged { newValue ->
                     runLater { value = null }
                     tableView.requestFocus()
-                    FX.eventbus.fire(SomeEvent {
+                    FX.eventbus.fire(ChangeMediaValueEvent {
                         this@MediaTableView.items
                             .filter { it.mediaExtensionAvailable }
                             .forEach {
@@ -285,7 +297,7 @@ class MediaTableView(
                 setOnOptionChanged { newValue ->
                     runLater { value = null }
                     tableView.requestFocus()
-                    FX.eventbus.fire(SomeEvent {
+                    FX.eventbus.fire(ChangeMediaValueEvent {
                         this@MediaTableView.items
                             .filter { it.mediaQualityAvailable }
                             .forEach {
@@ -322,7 +334,7 @@ class MediaTableView(
                 setOnOptionChanged { newValue ->
                     runLater { value = null }
                     tableView.requestFocus()
-                    FX.eventbus.fire(SomeEvent {
+                    FX.eventbus.fire(ChangeMediaValueEvent {
                         this@MediaTableView.items.forEach {
                             it.grouping = newValue
                         }

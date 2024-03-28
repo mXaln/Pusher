@@ -17,8 +17,6 @@ import tornadofx.*
 
 class ProgressDialog : MauiDialog() {
     
-    val titleTextProperty = SimpleStringProperty()
-    val messageTextProperty = SimpleStringProperty()
     val showProgressProperty = SimpleBooleanProperty()
     val progressProperty = SimpleDoubleProperty()
 
@@ -51,7 +49,7 @@ class ProgressDialog : MauiDialog() {
                 textProperty().bind(messageTextProperty)
             }
         }
-        hbox {
+        vbox {
             addClass("progress")
 
             progressbar {

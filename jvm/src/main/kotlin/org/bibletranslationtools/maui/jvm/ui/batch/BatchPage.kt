@@ -19,6 +19,7 @@ import org.bibletranslationtools.maui.jvm.ui.components.mainHeader
 import org.bibletranslationtools.maui.jvm.ui.components.uploadTargetHeader
 import org.bibletranslationtools.maui.jvm.ui.events.*
 import org.kordamp.ikonli.javafx.FontIcon
+import org.kordamp.ikonli.material.Material
 import org.kordamp.ikonli.materialdesign.MaterialDesign
 import tornadofx.*
 
@@ -72,12 +73,12 @@ class BatchPage : View() {
             }
 
             vbox {
-                addClass("batch-page__contents")
+                addClass("contents")
 
                 vgrow = Priority.ALWAYS
 
                 hbox {
-                    addClass("batch-page__controls")
+                    addClass("controls")
 
                     button(messages["importFiles"]) {
                         addClass("btn", "btn--primary")
@@ -95,19 +96,19 @@ class BatchPage : View() {
                 }
 
                 vbox {
-                    addClass("batch__import")
+                    addClass("import")
 
                     label {
-                        addClass("batch__import__icon")
+                        addClass("import-icon")
                         graphic = FontIcon(MaterialDesign.MDI_DOWNLOAD)
                     }
 
                     label(messages["importFilesStartProject"]) {
-                        addClass("batch__import__title")
+                        addClass("import-title")
                     }
 
                     label(messages["dropFiles"]) {
-                        addClass("batch__import__subtitle")
+                        addClass("import-subtitle")
                     }
 
                     setOnDragExited {
@@ -124,10 +125,10 @@ class BatchPage : View() {
                 }
 
                 hbox {
-                    addClass("batch__search")
+                    addClass("search")
 
                     label(messages["batches"]) {
-                        addClass("batch__search__title")
+                        addClass("search-title")
                     }
 
                     region {
@@ -182,11 +183,16 @@ class BatchPage : View() {
     }
 
     private fun deleteBatch(batch: Batch) {
-        val event = ConfirmDialogEvent(
-            DialogType.DELETE,
+        val event = AlertDialogEvent(
+            AlertType.CONFIRM,
             messages["deleteBatch"],
             messages["deleteBatchWarning"],
             messages["wishToContinue"],
+            isWarning = true,
+            primaryText = messages["cancel"],
+            primaryIcon = FontIcon(MaterialDesign.MDI_CLOSE_CIRCLE),
+            secondaryText = messages["delete"],
+            secondaryIcon = FontIcon(Material.DELETE_OUTLINE),
             secondaryAction = {
                 viewModel.deleteBatch(batch)
             }

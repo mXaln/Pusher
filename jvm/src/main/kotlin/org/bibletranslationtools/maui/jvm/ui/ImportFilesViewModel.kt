@@ -14,8 +14,8 @@ import org.bibletranslationtools.maui.common.persistence.IDirectoryProvider
 import org.bibletranslationtools.maui.common.usecases.FileProcessingRouter
 import org.bibletranslationtools.maui.common.usecases.batch.CreateBatch
 import org.bibletranslationtools.maui.common.usecases.batch.UpdateBatch
-import org.bibletranslationtools.maui.jvm.controls.dialog.ConfirmDialogEvent
-import org.bibletranslationtools.maui.jvm.controls.dialog.DialogType
+import org.bibletranslationtools.maui.jvm.controls.dialog.AlertDialogEvent
+import org.bibletranslationtools.maui.jvm.controls.dialog.AlertType
 import org.bibletranslationtools.maui.jvm.controls.dialog.ProgressDialogEvent
 import org.bibletranslationtools.maui.jvm.di.IDependencyGraphProvider
 import org.bibletranslationtools.maui.jvm.mappers.MediaMapper
@@ -89,11 +89,12 @@ class ImportFilesViewModel : ViewModel() {
             }
             .subscribe { resultList ->
                 if (resultList.any { it.status == FileStatus.REJECTED }) {
-                    val event = ConfirmDialogEvent(
-                        type = DialogType.ERROR,
+                    val event = AlertDialogEvent(
+                        type = AlertType.INFO,
                         title = messages["errorOccurred"],
                         message = messages["importFailed"],
-                        details = createErrorReport(resultList)
+                        details = createErrorReport(resultList),
+                        isWarning = true
                     )
                     fire(event)
 
@@ -169,10 +170,11 @@ class ImportFilesViewModel : ViewModel() {
                     navigator.dock<UploadPage>()
                 }
             }, {
-                val event = ConfirmDialogEvent(
-                    type = DialogType.ERROR,
+                val event = AlertDialogEvent(
+                    type = AlertType.INFO,
                     title = messages["errorOccurred"],
-                    message = it.message!!
+                    message = it.message!!,
+                    isWarning = true
                 )
                 fire(event)
             })

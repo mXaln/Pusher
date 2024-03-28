@@ -13,7 +13,7 @@ class AppWorkspace : Workspace() {
     private val navigator: NavigationMediator by inject()
     private val batchDataStore: BatchDataStore by inject()
 
-    private lateinit var confirmDialog: ConfirmDialog
+    private lateinit var alertDialog: AlertDialog
     private lateinit var progressDialog: ProgressDialog
     private lateinit var loginDialog: LoginDialog
 
@@ -29,12 +29,12 @@ class AppWorkspace : Workspace() {
 
         bindUploadTargetClassToRoot()
 
-        initializeConfirmDialog()
+        initializeAlertDialog()
         initializeProgressDialog()
         initializeLoginDialog()
 
-        subscribe<ConfirmDialogEvent> {
-            openConfirmDialog(it)
+        subscribe<AlertDialogEvent> {
+            openAlertDialog(it)
         }
 
         subscribe<ProgressDialogEvent> {
@@ -65,81 +65,44 @@ class AppWorkspace : Workspace() {
         }
     }
 
-    private fun initializeConfirmDialog() {
-        confirmDialog {
-            confirmDialog = this
+    private fun initializeAlertDialog() {
+        alertDialog {
+            alertDialog = this
             uploadTargetProperty.bind(batchDataStore.uploadTargetProperty)
         }
     }
 
-    private fun openConfirmDialog(event: ConfirmDialogEvent) {
+    private fun openAlertDialog(event: AlertDialogEvent) {
         resetConfirmDialog()
         when (event.type) {
-            DialogType.INFO -> openInfoDialog(event)
-            DialogType.ERROR -> openErrorDialog(event)
-            DialogType.DELETE -> openDeleteDialog(event)
-            DialogType.CONFIRM -> openOptionsDialog(event)
+            AlertType.INFO -> openInfoDialog(event)
+            AlertType.CONFIRM -> openConfirmDialog(event)
         }
     }
 
-    private fun openInfoDialog(event: ConfirmDialogEvent) {
-        confirmDialog.apply {
-            alertProperty.set(false)
+    private fun openInfoDialog(event: AlertDialogEvent) {
+        alertDialog.apply {
+            isWarningProperty.set(event.isWarning)
             titleTextProperty.set(event.title)
             messageTextProperty.set(event.message)
             detailsTextProperty.set(event.details)
-            primaryButtonTextProperty.set(messages["ok"])
+            primaryButtonTextProperty.set(event.primaryText)
             setOnPrimaryAction { close() }
             open()
         }
     }
 
-    private fun openErrorDialog(event: ConfirmDialogEvent) {
-        confirmDialog.apply {
-            alertProperty.set(true)
-            titleTextProperty.set(event.title)
-            messageTextProperty.set(event.message)
-            detailsTextProperty.set(event.details)
-            primaryButtonTextProperty.set(messages["ok"])
-            setOnPrimaryAction { close() }
-            open()
-        }
-    }
-
-    private fun openDeleteDialog(event: ConfirmDialogEvent) {
+    private fun openConfirmDialog(event: AlertDialogEvent) {
         resetConfirmDialog()
-        confirmDialog.apply {
-            alertProperty.set(true)
+        alertDialog.apply {
+            isWarningProperty.set(event.isWarning)
             titleTextProperty.set(event.title)
             messageTextProperty.set(event.message)
             detailsTextProperty.set(event.details)
-            primaryButtonTextProperty.set(messages["cancel"])
-            primaryButtonIconProperty.set(FontIcon(MaterialDesign.MDI_CLOSE_CIRCLE))
-            secondaryButtonTextProperty.set(messages["delete"])
-            secondaryButtonIconProperty.set(FontIcon(MaterialDesign.MDI_DELETE))
-
-            setOnPrimaryAction {
-                event.primaryAction()
-                close()
-            }
-            setOnSecondaryAction {
-                event.secondaryAction()
-                close()
-            }
-            open()
-        }
-    }
-
-    private fun openOptionsDialog(event: ConfirmDialogEvent) {
-        resetConfirmDialog()
-        confirmDialog.apply {
-            titleTextProperty.set(event.title)
-            messageTextProperty.set(event.message)
-            detailsTextProperty.set(event.details)
-            primaryButtonTextProperty.set(messages["yes"])
-            primaryButtonIconProperty.set(FontIcon(MaterialDesign.MDI_CLOSE_CIRCLE))
-            secondaryButtonTextProperty.set(messages["no"])
-            secondaryButtonIconProperty.set(FontIcon(MaterialDesign.MDI_CHECK))
+            primaryButtonTextProperty.set(event.primaryText)
+            primaryButtonIconProperty.set(event.primaryIcon)
+            secondaryButtonTextProperty.set(event.secondaryText)
+            secondaryButtonIconProperty.set(event.secondaryIcon)
 
             setOnPrimaryAction {
                 event.primaryAction()
@@ -154,8 +117,8 @@ class AppWorkspace : Workspace() {
     }
 
     private fun resetConfirmDialog() {
-        confirmDialog.apply {
-            alertProperty.set(false)
+        alertDialog.apply {
+            isWarningProperty.set(false)
             titleTextProperty.set(null)
             messageTextProperty.set(null)
             detailsTextProperty.set(null)
@@ -202,6 +165,8 @@ class AppWorkspace : Workspace() {
 
     private fun openLoginDialog(event: LoginDialogEvent) {
         loginDialog.apply {
+            titleTextProperty.set(messages["login"])
+            messageTextProperty.set(messages["enterCredentials"])
             setOnAction {
                 event.action()
                 close()

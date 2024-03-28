@@ -6,7 +6,7 @@ import javafx.event.ActionEvent
 import javafx.event.EventHandler
 import javafx.scene.layout.Priority
 import org.bibletranslationtools.maui.jvm.assets.AppResources
-import org.bibletranslationtools.maui.jvm.controls.textfield.iconTextField
+import org.bibletranslationtools.maui.jvm.controls.textfield.textField
 import org.bibletranslationtools.maui.jvm.controls.textfield.unmaskPasswordField
 import org.kordamp.ikonli.javafx.FontIcon
 import org.kordamp.ikonli.materialdesign.MaterialDesign
@@ -24,23 +24,22 @@ class LoginDialog : MauiDialog() {
 
         vbox {
             addClass("header")
-            label(messages["login"]) {
+            label(titleTextProperty) {
                 addClass("title")
             }
-            label(messages["enterCredentials"]) {
+            label(messageTextProperty) {
                 addClass("subtitle")
             }
         }
 
-        iconTextField {
+        textField {
             promptText = messages["serverName"]
             textProperty().bindBidirectional(serverProperty)
             onActionProperty().bind(onActionProperty)
             leftProperty().set(FontIcon(MaterialDesign.MDI_WIFI))
         }
 
-        iconTextField {
-            addClass("wa-text-field")
+        textField {
             promptText = messages["userName"]
             textProperty().bindBidirectional(userProperty)
             onActionProperty().bind(onActionProperty)
@@ -48,9 +47,8 @@ class LoginDialog : MauiDialog() {
         }
 
         unmaskPasswordField {
-            addClass("wa-text-field")
             promptTextProperty.set(messages["password"])
-            iconProperty.set(FontIcon(MaterialDesign.MDI_LOCK))
+            iconProperty.set(MaterialDesign.MDI_LOCK)
             textProperty.bindBidirectional(passwordProperty)
 
             onActionProperty.bind(this@LoginDialog.onActionProperty)

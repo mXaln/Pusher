@@ -14,6 +14,7 @@ import org.bibletranslationtools.maui.jvm.ui.components.mainHeader
 import org.bibletranslationtools.maui.jvm.ui.components.uploadTargetHeader
 import org.bibletranslationtools.maui.jvm.ui.events.*
 import org.kordamp.ikonli.javafx.FontIcon
+import org.kordamp.ikonli.material.Material
 import org.kordamp.ikonli.materialdesign.MaterialDesign
 import tornadofx.*
 import java.time.LocalDateTime
@@ -35,16 +36,22 @@ class UploadPage : View() {
         }
 
         subscribe<ErrorOccurredEvent> {
-            val event = ConfirmDialogEvent(DialogType.ERROR, messages["errorOccurred"], it.message)
+            val event = AlertDialogEvent(
+                type = AlertType.INFO,
+                title = messages["errorOccurred"],
+                message = it.message,
+                isWarning = true
+            )
             fire(event)
         }
 
         subscribe<ShowInfoEvent> {
-            val event = ConfirmDialogEvent(
-                DialogType.ERROR,
-                messages["needsReview"],
-                messages["needsReviewMessage"],
-                it.message
+            val event = AlertDialogEvent(
+                type = AlertType.INFO,
+                title = messages["needsReview"],
+                message = messages["needsReviewMessage"],
+                details = it.message,
+                isWarning = true
             )
             fire(event)
         }
@@ -53,12 +60,14 @@ class UploadPage : View() {
             viewModel.onNewMedia(it.media)
         }
 
-        subscribe<SomeEvent> {
-            val event = ConfirmDialogEvent(
-                DialogType.CONFIRM,
+        subscribe<ChangeMediaValueEvent> {
+            val event = AlertDialogEvent(
+                AlertType.CONFIRM,
                 messages["confirmSelection"],
                 messages["confirmSelectionQuestion"],
-                primaryAction = { it.onConfirm() }
+                primaryText = messages["yes"],
+                primaryAction = { it.onConfirm() },
+                secondaryText = messages["no"]
             )
             fire(event)
         }
@@ -238,7 +247,7 @@ class UploadPage : View() {
 
             button(messages["removeSelected"]) {
                 addClass("btn", "btn--secondary")
-                graphic = FontIcon(MaterialDesign.MDI_DELETE)
+                graphic = FontIcon(Material.DELETE_OUTLINE)
 
                 action {
                     viewModel.removeSelected()

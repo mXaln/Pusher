@@ -20,7 +20,7 @@
 
 .upload-page .controls .controls-subtitle {
     -fx-font-size: 1.25em;
-    -fx-text-fill: -wa-gray;
+    -fx-text-fill: -wa-gray-dark;
 }
 
 .upload-page .controls .btn .ikonli-font-icon,
@@ -52,7 +52,7 @@
 
 .upload-footer {
     -fx-pref-height: 74px;
-    -fx-background-color: #EFEFEF;
+    -fx-background-color: -wa-gray-lighter;
     -fx-padding: 10 20;
     -fx-alignment: center-left;
     -fx-spacing: 10px;
