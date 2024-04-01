@@ -6,6 +6,7 @@ import javafx.scene.control.ContentDisplay
 import javafx.scene.control.Label
 import javafx.scene.control.TextField
 import javafx.scene.layout.Priority
+import javafx.stage.FileChooser
 import org.bibletranslationtools.maui.jvm.assets.AppResources
 import org.bibletranslationtools.maui.jvm.controls.dialog.*
 import org.bibletranslationtools.maui.jvm.controls.mediatableview.mediaTableView
@@ -218,7 +219,20 @@ class UploadPage : View() {
                         graphic = FontIcon(MaterialDesign.MDI_FILE_EXPORT)
 
                         action {
-                            viewModel.exportCsv()
+                            chooseFile(
+                                messages["exportCsv"],
+                                arrayOf(
+                                    FileChooser.ExtensionFilter(
+                                        messages["csvFiles"],
+                                        "*.csv"
+                                    )
+                                ),
+                                mode = FileChooserMode.Save
+                            ).also {
+                                it.singleOrNull()?.let { file ->
+                                    viewModel.exportCsv(file)
+                                }
+                            }
                         }
 
                         enableWhen {

@@ -11,6 +11,7 @@ import org.bibletranslationtools.maui.common.io.IBooksReader
 import org.bibletranslationtools.maui.common.io.ILanguagesReader
 import org.bibletranslationtools.maui.common.io.IResourceTypesReader
 import org.bibletranslationtools.maui.common.persistence.*
+import org.bibletranslationtools.maui.common.usecases.ExportCsv
 import org.bibletranslationtools.maui.common.usecases.FileVerifyingRouter
 import org.bibletranslationtools.maui.common.usecases.MakePath
 import org.bibletranslationtools.maui.common.usecases.TransferFile
@@ -37,7 +38,9 @@ import org.kordamp.ikonli.material.Material
 import org.kordamp.ikonli.materialdesign.MaterialDesign
 import org.slf4j.LoggerFactory
 import tornadofx.*
+import java.awt.Desktop
 import java.io.File
+import java.text.MessageFormat
 import java.util.function.Predicate
 import javax.inject.Inject
 import io.reactivex.rxkotlin.toObservable as toRxObservable
@@ -54,6 +57,7 @@ class UploadMediaViewModel : ViewModel() {
     @Inject lateinit var booksReader: IBooksReader
     @Inject lateinit var resourceTypesReader: IResourceTypesReader
     @Inject lateinit var prefRepository: IPrefRepository
+    @Inject lateinit var exportCsv: ExportCsv
 
     private val batchDataStore: BatchDataStore by inject()
     private val importFilesViewModel: ImportFilesViewModel by inject()
@@ -168,8 +172,46 @@ class UploadMediaViewModel : ViewModel() {
         println("*** view uploaded files triggered ***")
     }
 
-    fun exportCsv() {
-        println("*** export CSV triggered ***")
+    fun exportCsv(output: File) {
+        val progress = ProgressDialogEvent(
+            true,
+            messages["exportingCsv"],
+            messages["exportingCsvMessage"]
+        )
+        fire(progress)
+
+        exportCsv.export(
+            filteredMediaItems.map(mediaMapper::toEntity),
+            output
+        )
+            .subscribeOn(Schedulers.io())
+            .observeOnFx()
+            .doFinally {
+                fire(ProgressDialogEvent(false))
+            }
+            .subscribe({
+                val success = AlertDialogEvent(
+                    type = AlertType.CONFIRM,
+                    title = messages["csvExported"],
+                    message = MessageFormat.format(messages["csvExportedMessage"], output),
+                    details = messages["openCsvMessage"],
+                    primaryText = messages["openCsv"],
+                    primaryIcon = FontIcon(MaterialDesign.MDI_OPEN_IN_NEW),
+                    primaryAction = {
+                        Desktop.getDesktop().open(output)
+                    }
+                )
+                fire(success)
+            }, {
+                val error = AlertDialogEvent(
+                    type = AlertType.INFO,
+                    title = messages["csvFailed"],
+                    message = messages["csvFailedErrorMessage"],
+                    details = it.message,
+                    isWarning = true
+                )
+                fire(error)
+            })
     }
 
     fun removeSelected() {
