@@ -78,6 +78,7 @@ class UploadMediaViewModel : ViewModel() {
     val appTitleProperty = SimpleStringProperty()
     val uploadTargets = observableListOf<UploadTarget>()
     val batchNameProperty = SimpleStringProperty()
+    val uploadedProperty = SimpleBooleanProperty()
 
     val languages = observableListOf<String>()
     val resourceTypes = observableListOf<String>()
@@ -117,6 +118,7 @@ class UploadMediaViewModel : ViewModel() {
 
     fun onDock() {
         shouldSaveProperty.set(false)
+        uploadedProperty.set(false)
         loadMediaItems()
     }
 
@@ -164,7 +166,8 @@ class UploadMediaViewModel : ViewModel() {
     }
 
     fun viewUploadedFiles() {
-        println("*** view uploaded files triggered ***")
+        val server = batchDataStore.serverProperty.value
+        hostServices.showDocument("http://$server")
     }
 
     fun exportCsv(output: File) {
@@ -318,6 +321,7 @@ class UploadMediaViewModel : ViewModel() {
                 dialogViewModel.hideProgress()
             }
             .subscribe({
+                uploadedProperty.set(true)
                 dialogViewModel.showSuccess(messages["filesUploaded"], messages["filesUploadedMessage"])
             },{
                 dialogViewModel.showError(

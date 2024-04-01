@@ -201,7 +201,7 @@ class UploadPage : View() {
                             viewModel.viewUploadedFiles()
                         }
 
-                        isDisable = true
+                        disableProperty().bind(viewModel.uploadedProperty.not())
                     }
 
                     button(messages["exportCsv"]) {
