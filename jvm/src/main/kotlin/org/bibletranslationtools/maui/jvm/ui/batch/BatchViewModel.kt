@@ -13,8 +13,6 @@ import org.bibletranslationtools.maui.common.persistence.IDirectoryProvider
 import org.bibletranslationtools.maui.common.usecases.FileProcessingRouter
 import org.bibletranslationtools.maui.common.usecases.batch.DeleteBatch
 import org.bibletranslationtools.maui.common.usecases.batch.UpdateBatch
-import org.bibletranslationtools.maui.jvm.controls.dialog.AlertDialogEvent
-import org.bibletranslationtools.maui.jvm.controls.dialog.AlertType
 import org.bibletranslationtools.maui.jvm.di.IDependencyGraphProvider
 import org.bibletranslationtools.maui.jvm.mappers.MediaMapper
 import org.bibletranslationtools.maui.jvm.ui.*
@@ -38,6 +36,7 @@ class BatchViewModel : ViewModel() {
     private val navigator: NavigationMediator by inject()
     private val batchDataStore: BatchDataStore by inject()
     private val importFilesViewModel: ImportFilesViewModel by inject()
+    private val dialogViewModel: DialogViewModel by inject()
 
     private val batches = observableListOf<Batch>()
     private val filteredBatches = FilteredList(batches)
@@ -82,13 +81,11 @@ class BatchViewModel : ViewModel() {
             }
             .subscribe {
                 batches.remove(batch)
-                val event = AlertDialogEvent(
-                    type = AlertType.INFO,
-                    title = messages["deleteSuccessful"],
-                    message = messages["batchDeleted"],
-                    details = batch.name
+                dialogViewModel.showSuccess(
+                    messages["deleteSuccessful"],
+                    messages["batchDeleted"],
+                    batch.name
                 )
-                fire(event)
             }
     }
 

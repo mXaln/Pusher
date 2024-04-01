@@ -8,8 +8,8 @@ import javafx.scene.control.TextField
 import javafx.scene.layout.Priority
 import javafx.stage.FileChooser
 import org.bibletranslationtools.maui.jvm.assets.AppResources
-import org.bibletranslationtools.maui.jvm.controls.dialog.*
 import org.bibletranslationtools.maui.jvm.controls.mediatableview.mediaTableView
+import org.bibletranslationtools.maui.jvm.ui.DialogViewModel
 import org.bibletranslationtools.maui.jvm.ui.UploadTarget
 import org.bibletranslationtools.maui.jvm.ui.components.mainHeader
 import org.bibletranslationtools.maui.jvm.ui.components.uploadTargetHeader
@@ -24,6 +24,7 @@ import java.time.format.DateTimeFormatter
 class UploadPage : View() {
 
     private val viewModel: UploadMediaViewModel by inject()
+    private val dialogViewModel: DialogViewModel by inject()
 
     private lateinit var nameLabel: Label
     private lateinit var nameTextEdit: TextField
@@ -37,24 +38,15 @@ class UploadPage : View() {
         }
 
         subscribe<ErrorOccurredEvent> {
-            val event = AlertDialogEvent(
-                type = AlertType.INFO,
-                title = messages["errorOccurred"],
-                message = it.message,
-                isWarning = true
-            )
-            fire(event)
+            dialogViewModel.showError(messages["errorOccurred"], it.message)
         }
 
         subscribe<ShowInfoEvent> {
-            val event = AlertDialogEvent(
-                type = AlertType.INFO,
-                title = messages["needsReview"],
-                message = messages["needsReviewMessage"],
-                details = it.message,
-                isWarning = true
+            dialogViewModel.showError(
+                messages["needsReview"],
+                messages["needsReviewMessage"],
+                it.message
             )
-            fire(event)
         }
 
         subscribe<BatchMediaUpdatedEvent> {
@@ -62,15 +54,13 @@ class UploadPage : View() {
         }
 
         subscribe<ChangeMediaValueEvent> {
-            val event = AlertDialogEvent(
-                AlertType.CONFIRM,
-                messages["confirmSelection"],
-                messages["confirmSelectionQuestion"],
+            dialogViewModel.showConfirm(
+                title = messages["confirmSelection"],
+                message = messages["confirmSelectionQuestion"],
                 primaryText = messages["yes"],
                 primaryAction = { it.onConfirm() },
                 secondaryText = messages["no"]
             )
-            fire(event)
         }
     }
 

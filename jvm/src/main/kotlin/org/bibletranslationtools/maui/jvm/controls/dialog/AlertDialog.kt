@@ -147,11 +147,11 @@ class AlertDialogEvent(
     val title: String,
     val message: String,
     val details: String? = null,
-    val isWarning: Boolean = false,
     val primaryText: String = messages["ok"],
     val primaryIcon: FontIcon = FontIcon(MaterialDesign.MDI_CHECK),
     val primaryAction: () -> Unit = {},
     val secondaryText: String = messages["cancel"],
     val secondaryIcon: FontIcon = FontIcon(MaterialDesign.MDI_CLOSE_CIRCLE),
     val secondaryAction: () -> Unit = {},
+    val isWarning: Boolean = false,
 ) : FXEvent()

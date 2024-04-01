@@ -4,8 +4,6 @@ import org.bibletranslationtools.maui.jvm.assets.AppResources
 import org.bibletranslationtools.maui.jvm.controls.dialog.*
 import org.bibletranslationtools.maui.jvm.onChangeAndDoNow
 import org.bibletranslationtools.maui.jvm.ui.startup.StartupPage
-import org.kordamp.ikonli.javafx.FontIcon
-import org.kordamp.ikonli.materialdesign.MaterialDesign
 import tornadofx.*
 
 class AppWorkspace : Workspace() {
@@ -144,7 +142,7 @@ class AppWorkspace : Workspace() {
 
             titleTextProperty.set(event.title)
             messageTextProperty.set(event.message)
-            showProgressProperty.set(event.showProgress)
+            showProgressBarProperty.set(event.showProgressBar)
 
             progressProperty.bind(event.progressProperty)
 

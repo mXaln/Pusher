@@ -12,8 +12,8 @@ import org.bibletranslationtools.maui.jvm.ListenerDisposer
 import org.bibletranslationtools.maui.jvm.assets.AppResources
 import org.bibletranslationtools.maui.jvm.controls.textfield.SearchBar
 import org.bibletranslationtools.maui.jvm.controls.batchtableview.batchTableView
-import org.bibletranslationtools.maui.jvm.controls.dialog.*
 import org.bibletranslationtools.maui.jvm.controls.textfield.searchBar
+import org.bibletranslationtools.maui.jvm.ui.DialogViewModel
 import org.bibletranslationtools.maui.jvm.ui.UploadTarget
 import org.bibletranslationtools.maui.jvm.ui.components.mainHeader
 import org.bibletranslationtools.maui.jvm.ui.components.uploadTargetHeader
@@ -25,6 +25,7 @@ import tornadofx.*
 
 class BatchPage : View() {
     private val viewModel: BatchViewModel by inject()
+    private val dialogViewModel: DialogViewModel by inject()
 
     private val listeners = mutableListOf<ListenerDisposer>()
 
@@ -183,20 +184,18 @@ class BatchPage : View() {
     }
 
     private fun deleteBatch(batch: Batch) {
-        val event = AlertDialogEvent(
-            AlertType.CONFIRM,
-            messages["deleteBatch"],
-            messages["deleteBatchWarning"],
-            messages["wishToContinue"],
-            isWarning = true,
+        dialogViewModel.showConfirm(
+            title = messages["deleteBatch"],
+            message = messages["deleteBatchWarning"],
+            details = messages["wishToContinue"],
             primaryText = messages["cancel"],
             primaryIcon = FontIcon(MaterialDesign.MDI_CLOSE_CIRCLE),
             secondaryText = messages["delete"],
             secondaryIcon = FontIcon(Material.DELETE_OUTLINE),
             secondaryAction = {
                 viewModel.deleteBatch(batch)
-            }
+            },
+            isWarning = true,
         )
-        fire(event)
     }
 }

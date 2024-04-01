@@ -14,9 +14,6 @@ import org.bibletranslationtools.maui.common.persistence.IDirectoryProvider
 import org.bibletranslationtools.maui.common.usecases.FileProcessingRouter
 import org.bibletranslationtools.maui.common.usecases.batch.CreateBatch
 import org.bibletranslationtools.maui.common.usecases.batch.UpdateBatch
-import org.bibletranslationtools.maui.jvm.controls.dialog.AlertDialogEvent
-import org.bibletranslationtools.maui.jvm.controls.dialog.AlertType
-import org.bibletranslationtools.maui.jvm.controls.dialog.ProgressDialogEvent
 import org.bibletranslationtools.maui.jvm.di.IDependencyGraphProvider
 import org.bibletranslationtools.maui.jvm.mappers.MediaMapper
 import org.bibletranslationtools.maui.jvm.ui.events.BatchMediaUpdatedEvent
@@ -45,6 +42,7 @@ class ImportFilesViewModel : ViewModel() {
 
     private val navigator: NavigationMediator by inject()
     private val batchDataStore: BatchDataStore by inject()
+    private val dialogViewModel: DialogViewModel by inject()
 
     private val activeBatchProperty = SimpleObjectProperty<Batch>()
 
@@ -57,12 +55,7 @@ class ImportFilesViewModel : ViewModel() {
     fun onDropFiles(files: List<File>, importType: ImportType) {
         if (files.isEmpty()) return
 
-        val event = ProgressDialogEvent(
-            true,
-            messages["importingFiles"],
-            messages["importingFilesMessage"]
-        )
-        fire(event)
+        dialogViewModel.showProgress(messages["importingFiles"], messages["importingFilesMessage"])
 
         val filesToImport = prepareFilesToImport(files)
         importFiles(filesToImport, importType)
@@ -85,18 +78,15 @@ class ImportFilesViewModel : ViewModel() {
             .subscribeOn(Schedulers.io())
             .observeOnFx()
             .doFinally {
-                fire(ProgressDialogEvent(false))
+                dialogViewModel.hideProgress()
             }
             .subscribe { resultList ->
                 if (resultList.any { it.status == FileStatus.REJECTED }) {
-                    val event = AlertDialogEvent(
-                        type = AlertType.INFO,
-                        title = messages["errorOccurred"],
-                        message = messages["importFailed"],
-                        details = createErrorReport(resultList),
-                        isWarning = true
+                    dialogViewModel.showError(
+                        messages["errorOccurred"],
+                        messages["importFailed"],
+                        createErrorReport(resultList),
                     )
-                    fire(event)
 
                     // Cleanup cached files if import was not successful
                     cleanupCache(resultList)
@@ -170,13 +160,7 @@ class ImportFilesViewModel : ViewModel() {
                     navigator.dock<UploadPage>()
                 }
             }, {
-                val event = AlertDialogEvent(
-                    type = AlertType.INFO,
-                    title = messages["errorOccurred"],
-                    message = it.message!!,
-                    isWarning = true
-                )
-                fire(event)
+                dialogViewModel.showError(messages["errorOccurred"], it.message!!)
             })
     }
 

@@ -6,7 +6,6 @@ import javafx.animation.Timeline
 import javafx.beans.property.DoubleProperty
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleDoubleProperty
-import javafx.beans.property.SimpleStringProperty
 import javafx.scene.layout.Priority
 import javafx.scene.transform.Rotate
 import javafx.util.Duration
@@ -17,7 +16,7 @@ import tornadofx.*
 
 class ProgressDialog : MauiDialog() {
     
-    val showProgressProperty = SimpleBooleanProperty()
+    val showProgressBarProperty = SimpleBooleanProperty()
     val progressProperty = SimpleDoubleProperty()
 
     private lateinit var rotateAnimation: RotateTransition
@@ -57,7 +56,7 @@ class ProgressDialog : MauiDialog() {
 
                 fitToParentWidth()
                 progressProperty().bind(progressProperty)
-                visibleProperty().bind(showProgressProperty)
+                visibleProperty().bind(showProgressBarProperty)
                 managedProperty().bind(visibleProperty())
             }
         }
@@ -88,6 +87,6 @@ class ProgressDialogEvent(
     val show: Boolean,
     val title: String? = null,
     val message: String? = null,
-    val showProgress: Boolean = false,
+    val showProgressBar: Boolean = false,
     val progressProperty: DoubleProperty = SimpleDoubleProperty()
 ) : FXEvent()

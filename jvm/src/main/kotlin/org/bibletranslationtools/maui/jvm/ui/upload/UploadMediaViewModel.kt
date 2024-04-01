@@ -4,6 +4,7 @@ import com.github.thomasnield.rxkotlinfx.observeOnFx
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import javafx.beans.property.SimpleBooleanProperty
+import javafx.beans.property.SimpleDoubleProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import org.bibletranslationtools.maui.common.data.*
@@ -18,20 +19,13 @@ import org.bibletranslationtools.maui.common.usecases.TransferFile
 import org.bibletranslationtools.maui.common.usecases.batch.UpdateBatch
 import org.bibletranslationtools.maui.jvm.ListenerDisposer
 import org.bibletranslationtools.maui.jvm.client.FtpTransferClient
-import org.bibletranslationtools.maui.jvm.controls.dialog.AlertDialogEvent
-import org.bibletranslationtools.maui.jvm.controls.dialog.AlertType
-import org.bibletranslationtools.maui.jvm.controls.dialog.LoginDialogEvent
-import org.bibletranslationtools.maui.jvm.controls.dialog.ProgressDialogEvent
 import org.bibletranslationtools.maui.jvm.data.FileStatusFilter
 import org.bibletranslationtools.maui.jvm.data.MediaItem
 import org.bibletranslationtools.maui.jvm.di.IDependencyGraphProvider
 import org.bibletranslationtools.maui.jvm.mappers.MediaMapper
 import org.bibletranslationtools.maui.jvm.onChangeAndDoNow
 import org.bibletranslationtools.maui.jvm.onChangeWithDisposer
-import org.bibletranslationtools.maui.jvm.ui.BatchDataStore
-import org.bibletranslationtools.maui.jvm.ui.ImportFilesViewModel
-import org.bibletranslationtools.maui.jvm.ui.ImportType
-import org.bibletranslationtools.maui.jvm.ui.UploadTarget
+import org.bibletranslationtools.maui.jvm.ui.*
 import org.bibletranslationtools.maui.jvm.ui.events.AppSaveDoneEvent
 import org.kordamp.ikonli.javafx.FontIcon
 import org.kordamp.ikonli.material.Material
@@ -61,6 +55,7 @@ class UploadMediaViewModel : ViewModel() {
 
     private val batchDataStore: BatchDataStore by inject()
     private val importFilesViewModel: ImportFilesViewModel by inject()
+    private val dialogViewModel: DialogViewModel by inject()
 
     private val mediaItems = observableListOf<MediaItem> {
         arrayOf(
@@ -173,12 +168,7 @@ class UploadMediaViewModel : ViewModel() {
     }
 
     fun exportCsv(output: File) {
-        val progress = ProgressDialogEvent(
-            true,
-            messages["exportingCsv"],
-            messages["exportingCsvMessage"]
-        )
-        fire(progress)
+        dialogViewModel.showProgress(messages["exportingCsv"], messages["exportingCsvMessage"])
 
         exportCsv.export(
             filteredMediaItems.map(mediaMapper::toEntity),
@@ -187,11 +177,10 @@ class UploadMediaViewModel : ViewModel() {
             .subscribeOn(Schedulers.io())
             .observeOnFx()
             .doFinally {
-                fire(ProgressDialogEvent(false))
+                dialogViewModel.hideProgress()
             }
             .subscribe({
-                val success = AlertDialogEvent(
-                    type = AlertType.CONFIRM,
+                dialogViewModel.showConfirm(
                     title = messages["csvExported"],
                     message = MessageFormat.format(messages["csvExportedMessage"], output),
                     details = messages["openCsvMessage"],
@@ -201,26 +190,20 @@ class UploadMediaViewModel : ViewModel() {
                         Desktop.getDesktop().open(output)
                     }
                 )
-                fire(success)
             }, {
-                val error = AlertDialogEvent(
-                    type = AlertType.INFO,
+                dialogViewModel.showError(
                     title = messages["csvFailed"],
-                    message = messages["csvFailedErrorMessage"],
-                    details = it.message,
-                    isWarning = true
+                    messages["csvFailedErrorMessage"],
+                    it.message
                 )
-                fire(error)
             })
     }
 
     fun removeSelected() {
-        val event = AlertDialogEvent(
-            type = AlertType.CONFIRM,
+        dialogViewModel.showConfirm(
             title = messages["removingFiles"],
             message = messages["removingFilesMessage"],
             details = messages["wishToContinue"],
-            isWarning = true,
             primaryText = messages["cancel"],
             primaryIcon = FontIcon(MaterialDesign.MDI_CLOSE_CIRCLE),
             secondaryText = messages["remove"],
@@ -233,18 +216,13 @@ class UploadMediaViewModel : ViewModel() {
                 filteredMediaItems.filteredItems.apply {
                     predicate = defaultPredicate.and(predicate)
                 }
-            }
+            },
+            isWarning = true,
         )
-        fire(event)
     }
 
     fun verify() {
-        val progress = ProgressDialogEvent(
-            true,
-            messages["verifyingFiles"],
-            messages["verifyingFilesMessage"]
-        )
-        fire(progress)
+        dialogViewModel.showProgress(messages["verifyingFiles"], messages["verifyingFilesMessage"])
 
         Single.fromCallable {
             filteredMediaItems
@@ -256,7 +234,7 @@ class UploadMediaViewModel : ViewModel() {
             .subscribeOn(Schedulers.io())
             .observeOnFx()
             .doFinally {
-                fire(ProgressDialogEvent(false))
+                dialogViewModel.hideProgress()
             }
             .subscribe({ items ->
                 items.forEach { (item, result) ->
@@ -264,21 +242,13 @@ class UploadMediaViewModel : ViewModel() {
                     item.statusMessage = result.message
                 }
 
-                val success = AlertDialogEvent(
-                    AlertType.INFO,
-                    messages["filesVerified"],
-                    messages["filesVerifiedMessage"]
-                )
-                fire(success)
+                dialogViewModel.showSuccess(messages["filesVerified"], messages["filesVerifiedMessage"])
             }, {
-                val error = AlertDialogEvent(
-                    type = AlertType.INFO,
-                    title = messages["filesVerified"],
-                    message = messages["filesVerifiedErrorMessage"],
-                    details = it.message,
-                    isWarning = true
+                dialogViewModel.showError(
+                    messages["filesVerified"],
+                    messages["filesVerifiedErrorMessage"],
+                    it.message
                 )
-                fire(error)
             })
     }
 
@@ -297,42 +267,28 @@ class UploadMediaViewModel : ViewModel() {
 
         when {
             hasUnverified -> {
-                val error = AlertDialogEvent(
-                    type = AlertType.INFO,
-                    title = messages["errorOccurred"],
-                    message = messages["hasUnverifiedFilesError"],
-                    isWarning = true
-                )
-                fire(error)
+                dialogViewModel.showError(messages["errorOccurred"], messages["hasUnverifiedFilesError"])
             }
             !hasSelected -> {
-                val error = AlertDialogEvent(
-                    type = AlertType.INFO,
-                    title = messages["errorOccurred"],
-                    message = messages["noSelectedFilesError"],
-                    isWarning = true
-                )
-                fire(error)
+                dialogViewModel.showError(messages["errorOccurred"], messages["noSelectedFilesError"])
             }
             server.isEmpty() || user.isEmpty() || password.isEmpty() -> {
-                val loginEvent = LoginDialogEvent {
+                dialogViewModel.showLogin {
                     updateLoginCredentials()
                     runLater { tryUpload() }
                 }
-                fire(loginEvent)
             }
             else -> doUpload()
         }
     }
 
     private fun doUpload() {
-        val progress = ProgressDialogEvent(
-            true,
+        val progressProperty = SimpleDoubleProperty()
+        dialogViewModel.showProgressWithBar(
             messages["processingUpload"],
             messages["processingUploadMessage"],
-            showProgress = true
+            progressProperty
         )
-        fire(progress)
 
         var current = 1.0
         val total = filteredMediaItems.filter { it.selected }.size
@@ -351,7 +307,7 @@ class UploadMediaViewModel : ViewModel() {
                             batchDataStore.passwordProperty.value
                         )
                         TransferFile(transferClient).transfer().doFinally {
-                            progress.progressProperty.set(current / total)
+                            progressProperty.set(current / total)
                             current++
                         }
                     }
@@ -359,24 +315,16 @@ class UploadMediaViewModel : ViewModel() {
             .subscribeOn(Schedulers.io())
             .observeOnFx()
             .doFinally {
-                fire(ProgressDialogEvent(false))
+                dialogViewModel.hideProgress()
             }
             .subscribe({
-                val success = AlertDialogEvent(
-                    AlertType.INFO,
-                    messages["filesUploaded"],
-                    messages["filesUploadedMessage"]
-                )
-                fire(success)
+                dialogViewModel.showSuccess(messages["filesUploaded"], messages["filesUploadedMessage"])
             },{
-                val error = AlertDialogEvent(
-                    type = AlertType.INFO,
-                    title = messages["errorOccurred"],
-                    message = messages["uploadFailed"],
-                    details = it.message,
-                    isWarning = true
+                dialogViewModel.showError(
+                    messages["errorOccurred"],
+                    messages["uploadFailed"],
+                    it.message,
                 )
-                fire(error)
 
                 // Clear password on transfer error to allow user to update credentials
                 batchDataStore.passwordProperty.set("")
