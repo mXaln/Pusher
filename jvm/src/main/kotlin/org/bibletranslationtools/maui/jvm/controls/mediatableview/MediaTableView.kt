@@ -109,11 +109,15 @@ class MediaTableView(
             isReorderable = true
         }
 
-        column(messages["fileName"], String::class) {
+        column(messages["fileName"], MediaItem::class) {
             addClass("file-column")
 
             setCellValueFactory {
-                it.value.file.name.toProperty()
+                it.value.toProperty()
+            }
+
+            setCellFactory {
+                FileNameCell()
             }
 
             bindColumnSortComparator()

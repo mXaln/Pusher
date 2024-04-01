@@ -3,6 +3,7 @@ package org.bibletranslationtools.maui.common.fileprocessor
 import org.bibletranslationtools.maui.common.data.FileResult
 import org.bibletranslationtools.maui.common.data.FileStatus
 import org.bibletranslationtools.maui.common.data.Media
+import org.bibletranslationtools.maui.common.data.ProcessFile
 import org.bibletranslationtools.maui.common.extensions.MediaExtensions
 import org.bibletranslationtools.maui.common.validators.JpgValidator
 import java.io.File
@@ -12,7 +13,7 @@ import java.util.Queue
 class JpgProcessor : FileProcessor() {
     override fun process(
         file: File,
-        fileQueue: Queue<Pair<File, File?>>,
+        fileQueue: Queue<ProcessFile>,
         parentFile: File?
     ): FileResult? {
         val ext = try {
@@ -37,6 +38,6 @@ class JpgProcessor : FileProcessor() {
             )
         }
 
-        return FileResult(media.status!!, media.statusMessage, media)
+        return FileResult(file, media.status!!, media.statusMessage, media)
     }
 }

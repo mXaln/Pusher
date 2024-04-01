@@ -3,6 +3,7 @@ package org.bibletranslationtools.maui.common.fileprocessor
 import org.bibletranslationtools.maui.common.data.FileResult
 import org.bibletranslationtools.maui.common.data.FileStatus
 import org.bibletranslationtools.maui.common.data.MediaExtension
+import org.bibletranslationtools.maui.common.data.ProcessFile
 import org.bibletranslationtools.maui.common.extensions.MediaExtensions
 import org.bibletranslationtools.maui.common.persistence.IDirectoryProvider
 import org.bibletranslationtools.maui.common.validators.OratureValidator
@@ -19,7 +20,7 @@ class OratureFileProcessor(private val directoryProvider: IDirectoryProvider) : 
 
     override fun process(
         file: File,
-        fileQueue: Queue<Pair<File, File?>>,
+        fileQueue: Queue<ProcessFile>,
         parentFile: File?
     ): FileResult? {
         val ext = try {
@@ -36,7 +37,7 @@ class OratureFileProcessor(private val directoryProvider: IDirectoryProvider) : 
             OratureValidator(file).validate()
             val extension = MediaExtension.WAV.toString()
             val extractedFiles = extractAudio(file, extension)
-            fileQueue.addAll(extractedFiles.map { it to file })
+            fileQueue.addAll(extractedFiles.map { ProcessFile(it, file) })
 
             // Return null on success here because
             // we don't want to add this orature file to the result list;
@@ -44,7 +45,7 @@ class OratureFileProcessor(private val directoryProvider: IDirectoryProvider) : 
             null
         } catch (ex: Exception) {
             logger.error("An error occurred in process", ex)
-            FileResult(FileStatus.REJECTED, ex.message, null, file)
+            FileResult(file, FileStatus.REJECTED, ex.message)
         }
     }
 

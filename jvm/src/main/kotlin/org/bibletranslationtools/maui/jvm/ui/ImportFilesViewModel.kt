@@ -10,6 +10,7 @@ import org.bibletranslationtools.maui.common.data.Batch
 import org.bibletranslationtools.maui.common.data.FileResult
 import org.bibletranslationtools.maui.common.data.FileStatus
 import org.bibletranslationtools.maui.common.data.Media
+import org.bibletranslationtools.maui.common.extensions.MediaExtensions
 import org.bibletranslationtools.maui.common.persistence.IDirectoryProvider
 import org.bibletranslationtools.maui.common.usecases.FileProcessingRouter
 import org.bibletranslationtools.maui.common.usecases.batch.CreateBatch
@@ -81,23 +82,37 @@ class ImportFilesViewModel : ViewModel() {
                 dialogViewModel.hideProgress()
             }
             .subscribe { resultList ->
-                if (resultList.any { it.status == FileStatus.REJECTED }) {
-                    dialogViewModel.showError(
+                val oratureErrors = resultList.filter {
+                    it.status == FileStatus.REJECTED &&
+                            MediaExtensions.of(it.file.extension) == MediaExtensions.ORATURE
+                }
+                val media = resultList.mapNotNull { it.data }.map {
+                    if (it.status == FileStatus.PROCESSED) {
+                        // Remove status for successfully processed files
+                        // In order to re-verify them later
+                        it.copy(status = null)
+                    } else it
+                }
+
+                if (oratureErrors.isNotEmpty()) {
+                    dialogViewModel.showConfirm(
                         messages["errorOccurred"],
                         messages["importFailed"],
-                        createErrorReport(resultList),
+                        createOratureErrorsReport(oratureErrors),
+                        isWarning = true,
+                        primaryText = messages["continue"],
+                        primaryAction = {
+                            cleanupCache(oratureErrors)
+                            when (importType) {
+                                ImportType.CREATE -> createBatch(media)
+                                ImportType.UPDATE -> updateBatch(media)
+                            }
+                        },
+                        secondaryAction = {
+                            cleanupCache(resultList)
+                        }
                     )
-
-                    // Cleanup cached files if import was not successful
-                    cleanupCache(resultList)
                 } else {
-                    val media = resultList.mapNotNull { it.data }.map {
-                        if (it.status == FileStatus.PROCESSED) {
-                            // Remove status for successfully processed files
-                            // In order to re-verify them later
-                            it.copy(status = null)
-                        } else it
-                    }
                     when (importType) {
                         ImportType.CREATE -> createBatch(media)
                         ImportType.UPDATE -> updateBatch(media)
@@ -106,29 +121,16 @@ class ImportFilesViewModel : ViewModel() {
             }
     }
 
-    private fun createErrorReport(resultList: List<FileResult>): String {
+    private fun createOratureErrorsReport(resultList: List<FileResult>): String {
         return resultList
-            .filter { it.status == FileStatus.REJECTED }
             .joinToString("") {
                 val builder = StringBuilder()
                 val separator = "\n\n"
-                it.data?.let { media ->
-                    builder.append(MessageFormat.format(messages["fileInfo"], media.file))
-                    builder.append("\n")
-                    builder.append(MessageFormat.format(messages["errorInfo"], media.statusMessage))
-                    builder.append("\n")
-                    builder.append(
-                        media.parentFile?.let { file ->
-                            MessageFormat.format(messages["parentFileInfo"], file) + "\n"
-                        } ?: "")
-                    builder.append(separator)
-                } ?: run {
-                    builder.append(MessageFormat.format(messages["fileInfo"], it.file))
-                    builder.append("\n")
-                    builder.append(MessageFormat.format(messages["errorInfo"], it.statusMessage))
-                    builder.append("\n")
-                    builder.append(separator)
-                }
+                builder.append(MessageFormat.format(messages["fileInfo"], it.file))
+                builder.append("\n")
+                builder.append(MessageFormat.format(messages["errorInfo"], it.statusMessage))
+                builder.append("\n")
+                builder.append(separator)
             }
     }
 
@@ -148,20 +150,22 @@ class ImportFilesViewModel : ViewModel() {
     }
 
     private fun createBatch(media: List<Media>) {
-        createBatch.create(media)
-            .observeOn(Schedulers.io())
-            .doOnError {
-                logger.error("Error in createBatch", it)
-            }
-            .subscribeOnFx()
-            .subscribe({ batch ->
-                runLater {
-                    batchDataStore.activeBatchProperty.set(batch)
-                    navigator.dock<UploadPage>()
+        if (media.isNotEmpty()) {
+            createBatch.create(media)
+                .observeOn(Schedulers.io())
+                .doOnError {
+                    logger.error("Error in createBatch", it)
                 }
-            }, {
-                dialogViewModel.showError(messages["errorOccurred"], it.message!!)
-            })
+                .subscribeOnFx()
+                .subscribe({ batch ->
+                    runLater {
+                        batchDataStore.activeBatchProperty.set(batch)
+                        navigator.dock<UploadPage>()
+                    }
+                }, {
+                    dialogViewModel.showError(messages["errorOccurred"], it.message!!)
+                })
+        }
     }
 
     private fun updateBatch(media: List<Media>) {

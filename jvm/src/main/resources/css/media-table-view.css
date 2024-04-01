@@ -107,7 +107,7 @@
     -fx-border-color: transparent;
 }
 
-.media-table-view .file-column {
+.media-table-view .file-column .label {
     -fx-text-fill: -wa-primary;
     -fx-font-size: 1.25em;
     -fx-font-weight: 700;
