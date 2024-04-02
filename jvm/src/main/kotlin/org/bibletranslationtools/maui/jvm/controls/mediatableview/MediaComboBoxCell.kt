@@ -48,11 +48,14 @@ class MediaComboBoxCell<T>(
         graphic = mediaComboBox.apply {
             titleProperty.set(this@MediaComboBoxCell.titleProperty.value)
 
-            selectedItemProperty.set(item)
-            selectionModel.select(item)
-            value = item
+            var selected = item
+            if (!items.contains(item)) {
+                selected = null
+            }
 
-            //isDisable = enableProperty.value.not()
+            selectedItemProperty.set(selected)
+            selectionModel.select(selected)
+            value = selected
         }
     }
 

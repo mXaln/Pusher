@@ -1,6 +1,7 @@
 package org.bibletranslationtools.maui.common.fileverifier
 
 import org.bibletranslationtools.maui.common.data.FileStatus
+import org.bibletranslationtools.maui.common.data.Grouping
 import org.bibletranslationtools.maui.common.data.Media
 import org.bibletranslationtools.maui.common.data.VerifiedResult
 import org.bibletranslationtools.maui.common.extensions.MediaExtensions
@@ -21,11 +22,16 @@ class ContentVerifier(private val versification: Versification) : FileVerifier()
     override fun verify(media: Media): VerifiedResult {
 
         val verses = getVerses(media.file)
+        val wrongGrouping = (verses.first != null || verses.second != null) &&
+                (media.grouping != Grouping.VERSE && media.grouping != Grouping.CHUNK)
 
         return when {
             media.chapter == null -> processed()
             verses.first == null && verses.second == null -> {
                 verifyChapter(media)
+            }
+            wrongGrouping -> {
+                rejected("File with verses should be ${Grouping.VERSE} or ${Grouping.CHUNK} grouping.")
             }
             else -> verifyChunk(media, verses.first, verses.second)
         }

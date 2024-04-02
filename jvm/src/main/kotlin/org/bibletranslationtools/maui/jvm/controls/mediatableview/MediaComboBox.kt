@@ -30,10 +30,15 @@ class MediaComboBox<T>(
             tooltip { textProperty().bind(titleProperty) }
         }
 
+        focusedProperty().onChange {
+            if (!it) onAction.handle(ActionEvent())
+        }
+
         setOnAction {
             when {
-                selectedItem in items ->
+                selectedItem in items -> {
                     onOptionChangedProperty.value?.handle(ActionEvent(selectedItem, this))
+                }
                 selectedItem != null && items.isNotEmpty() -> {
                     if (selectedItem.toString().isNotEmpty()) {
                         val message = MessageFormat.format(

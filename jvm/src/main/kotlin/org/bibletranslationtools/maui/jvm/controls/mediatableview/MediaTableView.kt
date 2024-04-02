@@ -139,6 +139,9 @@ class MediaTableView(
                         }
                     })
                 }
+                setOnError {
+                    runLater { value = null }
+                }
             }
 
             setCellValueFactory {
@@ -171,6 +174,9 @@ class MediaTableView(
                         }
                     })
                 }
+                setOnError {
+                    runLater { value = null }
+                }
             }
 
             setCellValueFactory {
@@ -202,6 +208,9 @@ class MediaTableView(
                             it.book = newValue
                         }
                     })
+                }
+                setOnError {
+                    runLater { value = null }
                 }
             }
 
