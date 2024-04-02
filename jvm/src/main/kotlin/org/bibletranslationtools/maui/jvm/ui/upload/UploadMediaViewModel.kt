@@ -231,7 +231,7 @@ class UploadMediaViewModel : ViewModel() {
             filteredMediaItems
                 .filter { it.selected }
                 .map { item ->
-                    Pair(item, fileVerifyingRouter.handleItem(mediaMapper.toEntity(item)))
+                    Pair(item, fileVerifyingRouter.handleMedia(mediaMapper.toEntity(item)))
                 }
         }
             .subscribeOn(Schedulers.io())

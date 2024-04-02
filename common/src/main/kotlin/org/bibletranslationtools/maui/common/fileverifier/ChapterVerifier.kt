@@ -24,17 +24,17 @@ class ChapterVerifier(private val versification: Versification) : FileVerifier()
     }
 
     private fun verifyChapter(book: String?, chapter: Int?): VerifiedResult {
-        return versification[book]?.let { chapterVerses ->
-            /** Check that chapter exists within book */
-            chapter?.let {
-                val range = 1..chapterVerses.size
+        val bookData = versification[book] ?: listOf()
+        val range = 1..bookData.size
 
-                if (!range.contains(chapter)) {
-                    rejected("$book only has ${chapterVerses.size} chapters, not $chapter")
-                } else {
-                    processed()
-                }
+        return when {
+            bookData.isEmpty() -> {
+                rejected("$chapter is not found in the book $book.")
             }
-        } ?: rejected("$chapter is not found in the book $book.")
+            !range.contains(chapter) -> {
+                rejected("$book only has ${bookData.size} chapters, not $chapter.")
+            }
+            else -> processed()
+        }
     }
 }

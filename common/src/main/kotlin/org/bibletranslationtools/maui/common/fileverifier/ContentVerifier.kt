@@ -113,24 +113,31 @@ class ContentVerifier(private val versification: Versification) : FileVerifier()
             duplicateVerses -> rejected("There are duplicate marker labels in the file.")
             // Check if locations are still sorted correctly
             !cueVerses.zipWithNext { a, b -> a.first <= b.first }.all { it } -> {
-                rejected("It looks like marker locations and/or labels are not in correct order.")
+                rejected("Marker locations and/or labels are not in correct order.")
             }
             else -> processed()
         }
     }
 
     private fun verifyChapterVerses(book: String?, chapter: Int?, cues: List<AudioCue>): VerifiedResult {
-        return versification[book]?.let { chapterVerses ->
+        val bookData = versification[book]
+        val chapterVerses = bookData?.let { chapters ->
             chapter?.let {
-                val expectedVerses = chapterVerses[chapter - 1]
-                when {
-                    cues.size != expectedVerses -> {
-                        rejected("$book $chapter expected $expectedVerses verses, but got ${cues.size}.")
-                    }
-                    else -> processed()
-                }
+                if (chapters.indices.contains(it - 1)) {
+                    chapters[it - 1]
+                } else null
             }
-        } ?: rejected("$chapter is not found in the book $book.")
+        } ?: 0
+
+        return when {
+            bookData == null || chapterVerses == 0 -> {
+                rejected("$chapter is not found in the book $book.")
+            }
+            cues.size != chapterVerses -> {
+                rejected("$book $chapter expected $chapterVerses verses, but got ${cues.size}.")
+            }
+            else -> processed()
+        }
     }
 
     private fun verifyChunkVerses(
@@ -140,41 +147,47 @@ class ContentVerifier(private val versification: Versification) : FileVerifier()
         lastVerse: Int?,
         cues: List<AudioCue>?
     ): VerifiedResult {
-        return versification[book]?.let { chapterVerses ->
+        val bookData = versification[book]
+        val chapterVerses = bookData?.let { chapters ->
             chapter?.let {
-                val totalVerses = chapterVerses[chapter - 1]
-                val range = 1..totalVerses
-
-                when {
-                    firstVerse == null && lastVerse == null -> {
-                        rejected("Chunk/Verse file should have at least one verse in its file name.")
-                    }
-                    firstVerse != null && !range.contains(firstVerse) -> {
-                        rejected("First verse expected to be in range from 1 to $totalVerses, but got $firstVerse.")
-                    }
-                    lastVerse != null && !range.contains(lastVerse) -> {
-                        rejected("Last verse expected to be in range from 1 to $totalVerses, but got $firstVerse.")
-                    }
-                    (firstVerse != null && lastVerse != null) && firstVerse >= lastVerse -> {
-                        rejected("First verse should not be greater than or equal to last verse.")
-                    }
-                    cues != null && cues.isEmpty() -> {
-                        rejected("Chunk/Verse file should have at least one verse marker.")
-                    }
-                    (cues != null && firstVerse != null && lastVerse != null) &&
-                            cues.size != (lastVerse - firstVerse + 1) -> {
-                        rejected("Verses in the file name differ from number of markers in metadata.")
-                    }
-                    (cues != null && firstVerse != null && lastVerse == null) && cues.size > 1 -> {
-                        rejected("There are ${cues.size} markers in metadata. Should be only 1.")
-                    }
-                    cues != null && !hasValidVerses(cues, firstVerse, lastVerse) -> {
-                        rejected("Verses in the file name differ from the verse markers in metadata.")
-                    }
-                    else -> processed()
-                }
+                if (chapters.indices.contains(it - 1)) {
+                    chapters[it - 1]
+                } else null
             }
-        } ?: rejected("$chapter is not found in the book $book.")
+        } ?: 0
+        val range = 1..chapterVerses
+
+        return when {
+            bookData == null || chapterVerses == 0 -> {
+                rejected("$chapter is not found in the book $book.")
+            }
+            firstVerse == null && lastVerse == null -> {
+                rejected("Chunk/Verse file should have at least one verse in its file name.")
+            }
+            firstVerse != null && !range.contains(firstVerse) -> {
+                rejected("First verse expected to be in range from 1 to $chapterVerses, but got $firstVerse.")
+            }
+            lastVerse != null && !range.contains(lastVerse) -> {
+                rejected("Last verse expected to be in range from 1 to $chapterVerses, but got $lastVerse.")
+            }
+            (firstVerse != null && lastVerse != null) && firstVerse >= lastVerse -> {
+                rejected("First verse should not be greater than or equal to last verse.")
+            }
+            cues != null && cues.isEmpty() -> {
+                rejected("Chunk/Verse file should have at least one verse marker.")
+            }
+            (cues != null && firstVerse != null && lastVerse != null) &&
+                    cues.size != (lastVerse - firstVerse + 1) -> {
+                rejected("Verses in the file name differ from number of markers in metadata.")
+            }
+            (cues != null && firstVerse != null && lastVerse == null) && cues.size > 1 -> {
+                rejected("There are ${cues.size} markers in metadata. Should be only 1.")
+            }
+            cues != null && !hasValidVerses(cues, firstVerse, lastVerse) -> {
+                rejected("Verses in the file name differ from the verse markers in metadata.")
+            }
+            else -> processed()
+        }
     }
 
     private fun hasValidVerses(cues: List<AudioCue>, firstVerse: Int?, lastVerse: Int?): Boolean {

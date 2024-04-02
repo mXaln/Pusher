@@ -18,7 +18,7 @@ class FileVerifyingRouter @Inject constructor(
     private val resourceTypes = resourceTypesReader.read()
     private val verifiers = getVerifiers()
 
-    fun handleItem(media: Media): VerifiedResult {
+    fun handleMedia(media: Media): VerifiedResult {
         return verifiers
             .map {
                 it.verify(media)

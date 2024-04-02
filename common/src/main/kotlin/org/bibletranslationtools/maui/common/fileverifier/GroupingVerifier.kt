@@ -8,7 +8,7 @@ class GroupingVerifier : FileVerifier() {
     override fun verify(media: Media): VerifiedResult {
         return when {
             media.grouping == null -> {
-                rejected("Grouping needs to be specified")
+                rejected("Grouping needs to be specified.")
             }
             !isSupported(media.grouping) -> {
                 rejected("Grouping ${media.grouping} is not supported.")
