@@ -16,7 +16,7 @@ class CreateBatch @Inject constructor(
 ) {
     fun create(media: List<Media>): Single<Batch> {
         return Single.fromCallable {
-            if (media.isEmpty()) throw Exception("No supported files to import.")
+            if (media.isEmpty()) throw IllegalArgumentException("No supported files to import.")
 
             val filename = "${UUID.randomUUID()}.${MauiInfo.EXTENSION}"
             val created = LocalDateTime.now().toString()

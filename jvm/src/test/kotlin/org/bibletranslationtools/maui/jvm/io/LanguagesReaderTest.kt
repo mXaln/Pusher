@@ -1,5 +1,6 @@
 package org.bibletranslationtools.maui.jvm.io
 
+import org.junit.Assert
 import org.junit.Test
 
 class LanguagesReaderTest {
@@ -7,9 +8,8 @@ class LanguagesReaderTest {
     @Test
     fun testReadLanguagesFile() {
 
-        val result = LanguagesReader().read().test()
+        val result = LanguagesReader().read()
 
-        result.assertComplete()
-        result.assertNoErrors()
+        Assert.assertTrue(result.isNotEmpty())
     }
 }
