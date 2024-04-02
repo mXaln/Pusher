@@ -1,9 +1,9 @@
 package org.bibletranslationtools.maui.common.usecases
 
+import io.mockk.every
+import io.mockk.mockk
 import org.bibletranslationtools.maui.common.data.FileStatus
-import org.bibletranslationtools.maui.common.fileprocessor.FileProcessor
-import org.bibletranslationtools.maui.common.fileprocessor.OratureFileProcessor
-import org.bibletranslationtools.maui.common.fileprocessor.WavProcessor
+import org.bibletranslationtools.maui.common.persistence.IDirectoryProvider
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.io.File
@@ -15,6 +15,10 @@ class FileProcessingRouterTest {
     private val badFile = "fake.jpg"
     private val expectedResultSize = 4
 
+    private val directoryProvider = mockk<IDirectoryProvider> {
+        every { createCacheDirectory(any()) } returns kotlin.io.path.createTempDirectory("cache").toFile()
+    }
+
     @Test
     fun testHandleFiles() {
         val files = listOf(
@@ -22,17 +26,12 @@ class FileProcessingRouterTest {
                 getTestFile(wavFile),
                 getTestFile(badFile)
         )
-        val processors: List<FileProcessor> = listOf(
-                OratureFileProcessor(),
-                WavProcessor()
-        )
-
-        val result = FileProcessingRouter(processors).handleFiles(files)
+        val result = FileProcessingRouter(directoryProvider).handleFiles(files)
         val errorFileCount = result.filter {
-            it.status == FileStatus.ERROR
+            it.status == FileStatus.REJECTED
         }.size
         val successFileCount = result.filter {
-            it.status == FileStatus.SUCCESS
+            it.status == FileStatus.PROCESSED
         }.size
 
         assertEquals(expectedResultSize, result.size)

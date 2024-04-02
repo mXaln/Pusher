@@ -8,7 +8,7 @@ import java.io.File
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
-class ParseFileName(private val file: File, private val parentFile: File?) {
+class ParseFileName(private val file: File) {
 
     private enum class Groups(val value: Int) {
         LANGUAGE(1),
@@ -69,8 +69,7 @@ class ParseFileName(private val file: File, private val parentFile: File?) {
                 null,
                 findQuality(),
                 findGrouping(),
-                FileStatus.PROCESSED,
-                parentFile = parentFile
+                FileStatus.PROCESSED
         )
     }
 

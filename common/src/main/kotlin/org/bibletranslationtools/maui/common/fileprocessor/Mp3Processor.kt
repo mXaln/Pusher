@@ -28,7 +28,7 @@ class Mp3Processor : FileProcessor() {
 
         val media = try {
             Mp3Validator(file).validate()
-            getMedia(file, parentFile)
+            getMedia(file).copy(parentFile = parentFile)
         } catch (ex: Exception) {
             Media(
                 file = file,
@@ -38,6 +38,6 @@ class Mp3Processor : FileProcessor() {
             )
         }
 
-        return FileResult(file, media.status!!, media.statusMessage, media)
+        return FileResult(file, media.status, media.statusMessage, media)
     }
 }

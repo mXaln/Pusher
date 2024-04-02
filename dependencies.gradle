@@ -35,4 +35,5 @@ ext {
     cuelibVer = '2.0.0'
     commonsConfig2Ver = '2.9.0'
     commonsBeanUtilsVer = '1.9.4'
+    mockkVer = '1.13.5'
 }

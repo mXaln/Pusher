@@ -1,7 +1,7 @@
 package org.bibletranslationtools.maui.common.fileprocessor
 
-import org.bibletranslationtools.maui.common.data.FileResult
 import org.bibletranslationtools.maui.common.data.FileStatus
+import org.bibletranslationtools.maui.common.data.ProcessFile
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -12,52 +12,46 @@ import java.util.Queue
 import java.util.LinkedList
 
 class WavProcessorTest {
-    lateinit var queue: Queue<File>
-    lateinit var resultList: MutableList<FileResult>
-    lateinit var tempDir: File
-    val wavFileName = "en_ulb_b41_mat_c01.wav"
+    private lateinit var queue: Queue<ProcessFile>
+    private lateinit var tempDir: File
+    private val wavFileName = "en_ulb_b41_mat_c01.wav"
 
     @Before
     fun setUp() {
         tempDir = kotlin.io.path.createTempDirectory().toFile()
-        queue = LinkedList<File>()
-        resultList = mutableListOf<FileResult>()
+        queue = LinkedList()
     }
 
     @After
     fun cleanUp() {
         tempDir.deleteRecursively()
         queue.clear()
-        resultList.clear()
     }
 
     @Test
     fun testProcessGoodFile() {
         val file = getTestFile(wavFileName)
-        val status = WavProcessor().process(file, queue, resultList)
+        val result = WavProcessor().process(file, queue)
 
-        assertEquals(FileStatus.PROCESSED, status)
-        assertEquals(1, resultList.size)
+        assertEquals(FileStatus.PROCESSED, result?.status)
         assertEquals(0, queue.size)
     }
 
     @Test
     fun testCustomResource() {
         val file = copyAndRename(wavFileName, "en_reg_b41_mat_c01.wav")
-        val status = WavProcessor().process(file, queue, resultList)
+        val result = WavProcessor().process(file, queue)
 
-        assertEquals(FileStatus.PROCESSED, status)
-        assertEquals(1, resultList.size)
+        assertEquals(FileStatus.PROCESSED, result?.status)
         assertEquals(0, queue.size)
     }
 
     @Test
     fun testProcessBadFile() {
         val file = getTestFile("fake.wav")
-        val status = WavProcessor().process(file, queue, resultList)
+        val result = WavProcessor().process(file, queue)
 
-        assertEquals(FileStatus.REJECTED, status)
-        assertEquals(0, resultList.size)
+        assertEquals(FileStatus.REJECTED, result?.status)
         assertEquals(0, queue.size)
     }
 

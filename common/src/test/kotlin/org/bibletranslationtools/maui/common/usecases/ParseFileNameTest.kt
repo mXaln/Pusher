@@ -1,5 +1,6 @@
 package org.bibletranslationtools.maui.common.usecases
 
+import org.bibletranslationtools.maui.common.data.FileStatus
 import org.junit.Assert.assertEquals
 import org.bibletranslationtools.maui.common.data.Media
 import org.bibletranslationtools.maui.common.data.Grouping
@@ -20,7 +21,8 @@ class ParseFileNameTest {
             1,
             null,
             null,
-            null
+            null,
+            FileStatus.PROCESSED
         )
         val result = ParseFileName(file).parse()
 
@@ -30,7 +32,7 @@ class ParseFileNameTest {
     @Test
     fun parseFileNameWithInvalidInfo() {
         val file = File("test.wav")
-        val expected = Media(file)
+        val expected = Media(file, status = FileStatus.PROCESSED)
         val result = ParseFileName(file).parse()
 
         assertEquals(expected, result)
@@ -47,7 +49,8 @@ class ParseFileNameTest {
             1,
             null,
             null,
-            null
+            null,
+            FileStatus.PROCESSED
         )
         val result = ParseFileName(file).parse()
 

@@ -28,7 +28,7 @@ class JpgProcessor : FileProcessor() {
 
         val media = try {
             JpgValidator(file).validate()
-            getMedia(file, parentFile)
+            getMedia(file).copy(parentFile = parentFile)
         } catch (ex: Exception) {
             Media(
                 file = file,
@@ -38,6 +38,6 @@ class JpgProcessor : FileProcessor() {
             )
         }
 
-        return FileResult(file, media.status!!, media.statusMessage, media)
+        return FileResult(file, media.status, media.statusMessage, media)
     }
 }

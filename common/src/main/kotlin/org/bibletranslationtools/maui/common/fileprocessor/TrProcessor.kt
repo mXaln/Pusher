@@ -29,7 +29,7 @@ class TrProcessor(private val directoryProvider: IDirectoryProvider) : FileProce
 
         val media = try {
             TrValidator(directoryProvider, file).validate()
-            getMedia(file, parentFile)
+            getMedia(file).copy(parentFile = parentFile)
         } catch (ex: Exception) {
             Media(
                 file = file,
@@ -39,6 +39,6 @@ class TrProcessor(private val directoryProvider: IDirectoryProvider) : FileProce
             )
         }
 
-        return FileResult(file, media.status!!, media.statusMessage, media)
+        return FileResult(file, media.status, media.statusMessage, media)
     }
 }

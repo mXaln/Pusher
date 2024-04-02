@@ -81,17 +81,29 @@ class MakePath(private val media: Media) {
         val str = StringBuilder()
         str.append("${media.language}_${media.resourceType}_${media.book}")
 
-        if (media.chapter != null) {
-            str.append("_c${media.chapter}")
-        }
+        media.chapter?.let { chapter ->
+            val verse = getVerse()
 
-        getVerse()?.let { verse ->
-            str.append("_$verse")
+            // Different chapter padding for verse files and chapter files
+            if (verse == null) {
+                str.append("_c$chapter")
+            } else {
+                str.append("_c${padChapter(media.book, chapter)}")
+                str.append("_$verse")
+            }
         }
 
         str.append(".${media.extension}")
 
         return str.toString()
+    }
+
+    private fun padChapter(book: String?, chapter: Int): String {
+        return if (book == "psa") {
+            chapter.toString().padStart(3, '0')
+        } else {
+            chapter.toString().padStart(2, '0')
+        }
     }
 
     private fun getVerse(): String? {
@@ -101,7 +113,7 @@ class MakePath(private val media: Media) {
 
         val found = matcher.find()
         return if (found) {
-            matcher.group(0)?.lowercase()
+            matcher.group(1)?.lowercase()
         } else null
     }
 }

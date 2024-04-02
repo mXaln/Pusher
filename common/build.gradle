@@ -19,4 +19,5 @@ dependencies {
     testImplementation "junit:junit:$junitVer"
     testImplementation "org.mockito:mockito-core:$mockitoVer"
     testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:$mockitoKotlinVer"
+    testImplementation "io.mockk:mockk:$mockkVer"
 }

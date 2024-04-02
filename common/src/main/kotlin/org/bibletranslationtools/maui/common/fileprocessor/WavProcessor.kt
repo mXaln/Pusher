@@ -28,7 +28,7 @@ class WavProcessor : FileProcessor() {
 
         val media = try {
             WavValidator(file).validate()
-            getMedia(file, parentFile)
+            getMedia(file).copy(parentFile = parentFile)
         } catch (ex: Exception) {
             Media(
                 file = file,
@@ -38,6 +38,6 @@ class WavProcessor : FileProcessor() {
             )
         }
 
-        return FileResult(file, media.status!!, media.statusMessage, media)
+        return FileResult(file, media.status, media.statusMessage, media)
     }
 }

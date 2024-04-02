@@ -28,7 +28,7 @@ class CueProcessor : FileProcessor() {
 
         val media = try {
             CueValidator(file).validate()
-            getMedia(file, parentFile)
+            getMedia(file).copy(parentFile = parentFile)
         } catch (ex: Exception) {
             Media(
                 file = file,
@@ -38,6 +38,6 @@ class CueProcessor : FileProcessor() {
             )
         }
 
-        return FileResult(file, media.status!!, media.statusMessage, media)
+        return FileResult(file, media.status, media.statusMessage, media)
     }
 }

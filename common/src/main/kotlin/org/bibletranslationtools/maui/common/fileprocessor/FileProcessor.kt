@@ -14,9 +14,9 @@ abstract class FileProcessor {
         parentFile: File? = null
     ): FileResult?
 
-    protected fun getMedia(file: File, parentFile: File?): Media {
+    protected fun getMedia(file: File): Media {
         return try {
-            ParseFileName(file, parentFile).parse()
+            ParseFileName(file).parse()
         } catch (e: Exception) {
             throw Exception("Error while parsing file name.")
         }
