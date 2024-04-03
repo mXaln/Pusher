@@ -30,6 +30,13 @@ class BatchRepository @Inject constructor(private val directoryProvider: IDirect
         }
     }
 
+    override fun deleteBatch(batch: Batch) {
+        directoryProvider.deleteCachedFiles(
+            batch.media.value.map { it.file }
+        )
+        batch.file.delete()
+    }
+
     override fun getAll(): List<Batch> {
         return directoryProvider.batchDirectory.listFiles()
             ?.filter { it.isFile && it.extension == MauiInfo.EXTENSION }
