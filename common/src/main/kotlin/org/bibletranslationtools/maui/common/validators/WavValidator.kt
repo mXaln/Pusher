@@ -25,7 +25,7 @@ class WavValidator(private val file: File) : IValidator {
                 wav = WavFile(file, wavMetadata)
 
                 if (!validateBttrMetadata(bttrChunk.metadata)) {
-                    throw InvalidWavFileException("Chunk has corrupt metadata: $file")
+                    throw InvalidWavFileException("Chunk has corrupt metadata")
                 }
             }
             isChapter() -> {

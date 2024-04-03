@@ -8,7 +8,7 @@ import java.io.File
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
-class ParseFileName(private val file: File, private val parentFile: File?) {
+class ParseFileName(private val file: File) {
 
     private enum class Groups(val value: Int) {
         LANGUAGE(1),
@@ -36,7 +36,7 @@ class ParseFileName(private val file: File, private val parentFile: File?) {
         private const val BOOK = "(?:_([1-3]{0,1}[a-zA-Z]{2,3}))??"
         private const val EXTRA_BOOK = "([1-3]?[a-zA-Z]{2,3})_"
         private const val CHAPTER = "(?:_c([\\d]{1,3}))?"
-        private const val EXTRA_CHAPTER = "_(\\d{1,3})"
+        private const val EXTRA_CHAPTER = "_c?(\\d{1,3})"
         private const val VERSE = "(?:_v([\\d]{1,3})(?:-([\\d]{1,3}))?)?"
         private const val TAKE = "(?:_t([\\d]{1,2}))?"
         private const val QUALITY = "(?:_(hi|low))?"
@@ -69,8 +69,7 @@ class ParseFileName(private val file: File, private val parentFile: File?) {
                 null,
                 findQuality(),
                 findGrouping(),
-                FileStatus.PROCESSED,
-                parentFile = parentFile
+                FileStatus.PROCESSED
         )
     }
 

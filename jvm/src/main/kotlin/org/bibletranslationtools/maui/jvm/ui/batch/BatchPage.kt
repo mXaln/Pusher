@@ -10,20 +10,22 @@ import javafx.scene.layout.VBox
 import org.bibletranslationtools.maui.common.data.Batch
 import org.bibletranslationtools.maui.jvm.ListenerDisposer
 import org.bibletranslationtools.maui.jvm.assets.AppResources
-import org.bibletranslationtools.maui.jvm.controls.SearchBar
+import org.bibletranslationtools.maui.jvm.controls.textfield.SearchBar
 import org.bibletranslationtools.maui.jvm.controls.batchtableview.batchTableView
-import org.bibletranslationtools.maui.jvm.controls.dialog.*
-import org.bibletranslationtools.maui.jvm.controls.searchBar
+import org.bibletranslationtools.maui.jvm.controls.textfield.searchBar
+import org.bibletranslationtools.maui.jvm.ui.DialogViewModel
 import org.bibletranslationtools.maui.jvm.ui.UploadTarget
 import org.bibletranslationtools.maui.jvm.ui.components.mainHeader
 import org.bibletranslationtools.maui.jvm.ui.components.uploadTargetHeader
 import org.bibletranslationtools.maui.jvm.ui.events.*
 import org.kordamp.ikonli.javafx.FontIcon
+import org.kordamp.ikonli.material.Material
 import org.kordamp.ikonli.materialdesign.MaterialDesign
 import tornadofx.*
 
 class BatchPage : View() {
     private val viewModel: BatchViewModel by inject()
+    private val dialogViewModel: DialogViewModel by inject()
 
     private val listeners = mutableListOf<ListenerDisposer>()
 
@@ -31,18 +33,8 @@ class BatchPage : View() {
     private lateinit var tableView: TableView<Batch>
     private lateinit var searchBar: SearchBar
 
-    private lateinit var confirmDialog: ConfirmDialog
-    private lateinit var progressDialog: ProgressDialog
-
     init {
         importStylesheet(AppResources.load("/css/batch-page.css"))
-
-        initializeConfirmDialog()
-        initializeProgressDialog()
-
-        subscribe<DialogEvent> {
-            openConfirmDialog(it)
-        }
 
         subscribe<OpenBatchEvent> {
             viewModel.openBatch(it.batch)
@@ -54,10 +46,6 @@ class BatchPage : View() {
 
         subscribe<EditBatchNameEvent> {
             viewModel.editBatchName(it.batch, it.name)
-        }
-
-        subscribe<ProgressDialogEvent> {
-            openProgressDialog(it)
         }
     }
 
@@ -83,16 +71,15 @@ class BatchPage : View() {
                         else -> ""
                     }
                 })
-                changeUploadTargetTextProperty.set(messages["changeUploadTarget"])
             }
 
             vbox {
-                addClass("batch-page__contents")
+                addClass("contents")
 
                 vgrow = Priority.ALWAYS
 
                 hbox {
-                    addClass("batch-page__controls")
+                    addClass("controls")
 
                     button(messages["importFiles"]) {
                         addClass("btn", "btn--primary")
@@ -100,7 +87,7 @@ class BatchPage : View() {
 
                         action {
                             chooseFile(
-                                FX.messages["importResourceFromZip"],
+                                messages["importFiles"],
                                 arrayOf(),
                                 mode = FileChooserMode.Multi,
                                 owner = currentWindow
@@ -110,19 +97,19 @@ class BatchPage : View() {
                 }
 
                 vbox {
-                    addClass("batch__import")
+                    addClass("import")
 
                     label {
-                        addClass("batch__import__icon")
+                        addClass("import-icon")
                         graphic = FontIcon(MaterialDesign.MDI_DOWNLOAD)
                     }
 
                     label(messages["importFilesStartProject"]) {
-                        addClass("batch__import__title")
+                        addClass("import-title")
                     }
 
                     label(messages["dropFiles"]) {
-                        addClass("batch__import__subtitle")
+                        addClass("import-subtitle")
                     }
 
                     setOnDragExited {
@@ -139,10 +126,10 @@ class BatchPage : View() {
                 }
 
                 hbox {
-                    addClass("batch__search")
+                    addClass("search")
 
                     label(messages["batches"]) {
-                        addClass("batch__search__title")
+                        addClass("search-title")
                     }
 
                     region {
@@ -158,14 +145,6 @@ class BatchPage : View() {
 
                 batchTableView(viewModel.sortedBatches) {
                     tableView = this
-
-                    emptyPromptProperty.set(messages["noBatchesPrompt"])
-                    nameColumnProperty.set(messages["batchName"])
-                    dateColumnProperty.set(messages["batchDate"])
-                    deleteTextProperty.set(messages["deleteBatch"])
-                    todayTextProperty.set(messages["today"])
-                    dayAgoTextProperty.set(messages["dayAgo"])
-                    daysAgoTextProperty.set(messages["daysAgo"])
                 }
             }
         }
@@ -204,98 +183,19 @@ class BatchPage : View() {
         }
     }
 
-    private fun initializeConfirmDialog() {
-        confirmDialog {
-            confirmDialog = this
-            uploadTargetProperty.bind(viewModel.uploadTargetProperty)
-        }
-    }
-
-    private fun openConfirmDialog(event: DialogEvent) {
-        resetConfirmDialog()
-        when (event.type) {
-            DialogType.SUCCESS -> openSuccessDialog(event)
-            DialogType.ERROR -> openErrorDialog(event)
-            else -> {}
-        }
-    }
-
-    private fun openSuccessDialog(event: DialogEvent) {
-        confirmDialog.apply {
-            alertProperty.set(false)
-            titleTextProperty.set(event.title)
-            messageTextProperty.set(event.message)
-            detailsTextProperty.set(event.details)
-            primaryButtonTextProperty.set(messages["ok"])
-            setOnPrimaryAction { close() }
-            open()
-        }
-    }
-
-    private fun openErrorDialog(event: DialogEvent) {
-        confirmDialog.apply {
-            alertProperty.set(true)
-            titleTextProperty.set(event.title)
-            messageTextProperty.set(event.message)
-            detailsTextProperty.set(event.details)
-            primaryButtonTextProperty.set(messages["ok"])
-            setOnPrimaryAction { close() }
-            open()
-        }
-    }
-
-    private fun openDeleteDialog(batch: Batch) {
-        resetConfirmDialog()
-        confirmDialog.apply {
-            alertProperty.set(true)
-            titleTextProperty.set(messages["deleteBatch"])
-            messageTextProperty.set(messages["deleteBatchWarning"])
-            detailsTextProperty.set(messages["wishToContinue"])
-            primaryButtonTextProperty.set(messages["cancel"])
-            primaryButtonIconProperty.set(FontIcon(MaterialDesign.MDI_CLOSE_CIRCLE))
-            secondaryButtonTextProperty.set(messages["delete"])
-            secondaryButtonIconProperty.set(FontIcon(MaterialDesign.MDI_DELETE))
-
-            setOnPrimaryAction { close() }
-            setOnSecondaryAction {
-                close()
-                viewModel.deleteBatch(batch)
-            }
-            open()
-        }
-    }
-
-    private fun resetConfirmDialog() {
-        confirmDialog.apply {
-            alertProperty.set(false)
-            titleTextProperty.set(null)
-            messageTextProperty.set(null)
-            detailsTextProperty.set(null)
-            primaryButtonTextProperty.set(null)
-            primaryButtonIconProperty.set(null)
-            onPrimaryActionProperty.set(null)
-            secondaryButtonTextProperty.set(null)
-            secondaryButtonIconProperty.set(null)
-            onSecondaryActionProperty.set(null)
-        }
-    }
-
-    private fun initializeProgressDialog() {
-        progressDialog {
-            progressDialog = this
-            uploadTargetProperty.bind(viewModel.uploadTargetProperty)
-        }
-    }
-
-    private fun openProgressDialog(event: ProgressDialogEvent) {
-        progressDialog.apply {
-            titleTextProperty.set(event.title)
-            messageTextProperty.set(event.message)
-            if (event.show) open() else close()
-        }
-    }
-
     private fun deleteBatch(batch: Batch) {
-        openDeleteDialog(batch)
+        dialogViewModel.showConfirm(
+            title = messages["deleteBatch"],
+            message = messages["deleteBatchWarning"],
+            details = messages["wishToContinue"],
+            primaryText = messages["cancel"],
+            primaryIcon = FontIcon(MaterialDesign.MDI_CLOSE_CIRCLE),
+            secondaryText = messages["delete"],
+            secondaryIcon = FontIcon(Material.DELETE_OUTLINE),
+            secondaryAction = {
+                viewModel.deleteBatch(batch)
+            },
+            isWarning = true,
+        )
     }
 }

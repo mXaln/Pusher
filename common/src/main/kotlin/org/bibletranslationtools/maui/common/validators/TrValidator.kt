@@ -16,14 +16,18 @@ class TrValidator(
      * @throws Exception Can throw an exception if extraction fails
      */
     override fun validate() {
-        file.inputStream().use { fis ->
-            fis.buffered().use { bis ->
-                val ll = LanguageLevel()
-                val aoh = ArchiveOfHolding(bis, ll)
-                val uuid = UUID.randomUUID()
-                val out = directoryProvider.createTempDirectory(uuid.toString())
-                aoh.extractArchive(file, out)
+        try {
+            file.inputStream().use { fis ->
+                fis.buffered().use { bis ->
+                    val ll = LanguageLevel()
+                    val aoh = ArchiveOfHolding(bis, ll)
+                    val uuid = UUID.randomUUID()
+                    val out = directoryProvider.createTempDirectory(uuid.toString())
+                    aoh.extractArchive(file, out)
+                }
             }
+        } catch (e: Exception) {
+            throw IllegalArgumentException("TR file is not valid.")
         }
     }
 }

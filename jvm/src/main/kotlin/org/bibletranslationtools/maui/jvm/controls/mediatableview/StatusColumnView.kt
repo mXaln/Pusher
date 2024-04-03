@@ -5,10 +5,12 @@ import javafx.scene.control.Tooltip
 import javafx.scene.layout.HBox
 import org.bibletranslationtools.maui.common.data.FileStatus
 import org.bibletranslationtools.maui.jvm.onChangeAndDoNow
-import org.bibletranslationtools.maui.jvm.ui.MediaItem
+import org.bibletranslationtools.maui.jvm.data.MediaItem
+import org.bibletranslationtools.maui.jvm.ui.events.ShowInfoEvent
 import org.kordamp.ikonli.javafx.FontIcon
 import org.kordamp.ikonli.materialdesign.MaterialDesign
 import tornadofx.*
+import tornadofx.FX.Companion.messages
 
 class StatusColumnView(mediaItem: MediaItem) : HBox() {
     init {
@@ -16,6 +18,14 @@ class StatusColumnView(mediaItem: MediaItem) : HBox() {
 
         mediaItem.statusProperty.onChangeAndDoNow {
             togglePseudoClass("error", it == FileStatus.REJECTED)
+        }
+
+        setOnMouseClicked {
+            if (mediaItem.status == FileStatus.REJECTED) {
+                mediaItem.statusMessage?.let {
+                    FX.eventbus.fire(ShowInfoEvent(it))
+                }
+            }
         }
 
         label {
@@ -36,7 +46,9 @@ class StatusColumnView(mediaItem: MediaItem) : HBox() {
 
         label {
             addClass("status-title")
-            textProperty().bind(mediaItem.statusProperty.stringBinding { it?.status ?: "" })
+            textProperty().bind(mediaItem.statusProperty.stringBinding {
+                it?.status?.let { status -> messages[status] }
+            })
             tooltipProperty().bind(mediaItem.statusProperty.objectBinding {
                 if (it == FileStatus.REJECTED) {
                     Tooltip().apply {

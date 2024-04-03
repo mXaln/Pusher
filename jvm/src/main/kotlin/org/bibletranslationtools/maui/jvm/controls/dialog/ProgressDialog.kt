@@ -3,18 +3,21 @@ package org.bibletranslationtools.maui.jvm.controls.dialog
 import javafx.animation.Interpolator
 import javafx.animation.RotateTransition
 import javafx.animation.Timeline
-import javafx.beans.property.SimpleStringProperty
+import javafx.beans.property.DoubleProperty
+import javafx.beans.property.SimpleBooleanProperty
+import javafx.beans.property.SimpleDoubleProperty
 import javafx.scene.layout.Priority
 import javafx.scene.transform.Rotate
 import javafx.util.Duration
+import org.bibletranslationtools.maui.jvm.assets.AppResources
 import org.kordamp.ikonli.javafx.FontIcon
 import org.kordamp.ikonli.materialdesign.MaterialDesign
 import tornadofx.*
 
 class ProgressDialog : MauiDialog() {
     
-    val titleTextProperty = SimpleStringProperty()
-    val messageTextProperty = SimpleStringProperty()
+    val showProgressBarProperty = SimpleBooleanProperty()
+    val progressProperty = SimpleDoubleProperty()
 
     private lateinit var rotateAnimation: RotateTransition
 
@@ -45,9 +48,23 @@ class ProgressDialog : MauiDialog() {
                 textProperty().bind(messageTextProperty)
             }
         }
+        vbox {
+            addClass("progress")
+
+            progressbar {
+                addClass("wa-progress-bar")
+
+                fitToParentWidth()
+                progressProperty().bind(progressProperty)
+                visibleProperty().bind(showProgressBarProperty)
+                managedProperty().bind(visibleProperty())
+            }
+        }
     }
 
     init {
+        importStylesheet(AppResources.load("/css/progress-dialog.css"))
+
         setContent(content)
     }
 
@@ -65,3 +82,11 @@ class ProgressDialog : MauiDialog() {
 }
 
 fun progressDialog(op: ProgressDialog.() -> Unit) = ProgressDialog().apply(op)
+
+class ProgressDialogEvent(
+    val show: Boolean,
+    val title: String? = null,
+    val message: String? = null,
+    val showProgressBar: Boolean = false,
+    val progressProperty: DoubleProperty = SimpleDoubleProperty()
+) : FXEvent()

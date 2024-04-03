@@ -1,7 +1,7 @@
 package org.bibletranslationtools.maui.jvm.mappers
 
 import org.bibletranslationtools.maui.common.data.Media
-import org.bibletranslationtools.maui.jvm.ui.MediaItem
+import org.bibletranslationtools.maui.jvm.data.MediaItem
 import javax.inject.Inject
 
 class MediaMapper @Inject constructor() : IMapper<Media, MediaItem> {
@@ -21,7 +21,9 @@ class MediaMapper @Inject constructor() : IMapper<Media, MediaItem> {
             type.grouping,
             type.status,
             type.statusMessage,
-            type.parentFile
+            type.parentFile,
+            type.selected,
+            type.removed
         )
     }
 }

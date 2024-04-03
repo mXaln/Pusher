@@ -33,14 +33,14 @@
 }
 
 .btn--primary:disabled {
-    -fx-background-color: -wa-gray-lighter;
+    -fx-background-color: -wa-gray-light;
     -fx-text-fill: -wa-gray-dark;
     -fx-effect: -wa-shadow0;
     -fx-cursor: disappear;
 }
 
 .btn--primary-inverted:disabled {
-    -fx-background-color: -wa-gray-lighter;
+    -fx-background-color: -wa-gray;
     -fx-text-fill: -wa-gray-dark;
     -fx-effect: -wa-shadow0;
     -fx-cursor: disappear;
@@ -49,6 +49,10 @@
 .btn--primary .ikonli-font-icon {
     -fx-icon-color: -wa-white;
     -fx-icon-size: 20px;
+}
+
+.btn--primary:disabled .ikonli-font-icon {
+    -fx-icon-color: -wa-gray-dark;
 }
 
 /* Secondary Button */
@@ -64,7 +68,7 @@
 }
 .btn--secondary:disabled {
     -fx-cursor: disappear;
-    -fx-text-fill: -wa-gray;
+    -fx-text-fill: -wa-gray-dark;
     -fx-border-color: -wa-gray-light;
     -fx-border-width: 2px;
 }
@@ -72,6 +76,10 @@
 .btn--secondary .ikonli-font-icon {
     -fx-icon-color: -wa-primary;
     -fx-icon-size: 20px;
+}
+
+.btn--secondary:disabled .ikonli-font-icon {
+    -fx-icon-color: -wa-gray-dark;
 }
 
 /* Button Icon */
@@ -89,14 +97,6 @@
 .btn--icon .ikonli-font-icon {
     -fx-icon-color: -wa-gray-darker;
     -fx-icon-size: 20px;
-}
-
-.btn--icon:hover {
-    /*-fx-background-color: -wa-accent;*/
-}
-
-.btn--icon:pressed {
-    /*-fx-background-color: blue;*/
 }
 
 .btn--icon:disabled {

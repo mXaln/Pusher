@@ -1,19 +1,26 @@
 package org.bibletranslationtools.maui.common.usecases
 
+import io.mockk.every
+import io.mockk.mockk
 import org.bibletranslationtools.maui.common.data.FileStatus
-import org.bibletranslationtools.maui.common.fileprocessor.FileProcessor
-import org.bibletranslationtools.maui.common.fileprocessor.OratureFileProcessor
-import org.bibletranslationtools.maui.common.fileprocessor.WavProcessor
+import org.bibletranslationtools.maui.common.persistence.IDirectoryProvider
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.io.File
 import java.io.FileNotFoundException
+import kotlin.io.path.createTempDirectory as createTempDir
 
 class FileProcessingRouterTest {
     private val oratureFile = "orature_file.zip" // orature file contains 2 bad wav files
     private val wavFile = "en_ulb_b41_mat_c01.wav"
     private val badFile = "fake.jpg"
     private val expectedResultSize = 4
+
+    private val directoryProvider = mockk<IDirectoryProvider> {
+        every { createCacheDirectory(any()) } returns createTempDir("cache").toFile().apply {
+            deleteOnExit()
+        }
+    }
 
     @Test
     fun testHandleFiles() {
@@ -22,17 +29,12 @@ class FileProcessingRouterTest {
                 getTestFile(wavFile),
                 getTestFile(badFile)
         )
-        val processors: List<FileProcessor> = listOf(
-                OratureFileProcessor(),
-                WavProcessor()
-        )
-
-        val result = FileProcessingRouter(processors).handleFiles(files)
+        val result = FileProcessingRouter(directoryProvider).handleFiles(files)
         val errorFileCount = result.filter {
-            it.status == FileStatus.ERROR
+            it.status == FileStatus.REJECTED
         }.size
         val successFileCount = result.filter {
-            it.status == FileStatus.SUCCESS
+            it.status == FileStatus.PROCESSED
         }.size
 
         assertEquals(expectedResultSize, result.size)

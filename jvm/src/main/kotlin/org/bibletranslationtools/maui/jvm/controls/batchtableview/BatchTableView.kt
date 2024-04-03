@@ -1,7 +1,6 @@
 package org.bibletranslationtools.maui.jvm.controls.batchtableview
 
 import javafx.beans.property.SimpleObjectProperty
-import javafx.beans.property.SimpleStringProperty
 import javafx.beans.value.ObservableValue
 import javafx.collections.ObservableList
 import javafx.event.EventTarget
@@ -18,22 +17,16 @@ import org.bibletranslationtools.maui.jvm.customizeScrollbarSkin
 import org.bibletranslationtools.maui.jvm.ui.events.DeleteBatchEvent
 import org.bibletranslationtools.maui.jvm.ui.events.OpenBatchEvent
 import org.kordamp.ikonli.javafx.FontIcon
+import org.kordamp.ikonli.material.Material
 import org.kordamp.ikonli.materialdesign.MaterialDesign
 import tornadofx.*
+import tornadofx.FX.Companion.messages
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 class BatchTableView(
     batches: ObservableList<Batch>
 ) : TableView<Batch>(batches) {
-
-    val emptyPromptProperty = SimpleStringProperty()
-    val nameColumnProperty = SimpleStringProperty()
-    val dateColumnProperty = SimpleStringProperty()
-    val deleteTextProperty = SimpleStringProperty()
-    val dayAgoTextProperty = SimpleStringProperty()
-    val daysAgoTextProperty = SimpleStringProperty()
-    val todayTextProperty = SimpleStringProperty()
 
     init {
         addClass("batch-table-view")
@@ -44,8 +37,6 @@ class BatchTableView(
         vgrow = Priority.ALWAYS
         columnResizePolicy = CONSTRAINED_RESIZE_POLICY
 
-        items = batches
-
         placeholder = borderpane {
             center = vbox {
                 addClass("placeholder")
@@ -54,7 +45,7 @@ class BatchTableView(
                     addClass("placeholder-icon")
                     graphic = FontIcon(MaterialDesign.MDI_FOLDER_OUTLINE)
                 }
-                label(emptyPromptProperty) {
+                label(messages["noBatchesPrompt"]) {
                     addClass("placeholder-text")
                 }
             }
@@ -73,8 +64,7 @@ class BatchTableView(
         bindSortPolicy()
         bindTableSortComparator()
 
-        column("", Batch::class) {
-            textProperty().bind(nameColumnProperty)
+        column(messages["batchName"], Batch::class) {
             setCellValueFactory {
                 SimpleObjectProperty(it.value)
             }
@@ -82,14 +72,13 @@ class BatchTableView(
                 EditableNameCell()
             }
             setComparator { o1, o2 ->
-                o1.name.compareTo(o2.name)
+                o1.name.compareTo(o2.name, ignoreCase = true)
             }
             bindColumnSortComparator()
             isReorderable = false
         }
 
-        column("", String::class) {
-            textProperty().bind(dateColumnProperty)
+        column(messages["batchDate"], String::class) {
             setCellValueFactory {
                 formatDateTime(it.value.created)
             }
@@ -106,10 +95,8 @@ class BatchTableView(
                 button {
                     addClass("btn", "btn--icon", "btn--delete")
 
-                    graphic = FontIcon(MaterialDesign.MDI_DELETE)
-                    tooltip {
-                        textProperty().bind(deleteTextProperty)
-                    }
+                    graphic = FontIcon(Material.DELETE_OUTLINE)
+                    tooltip(messages["deleteBatch"])
 
                     action {
                         FX.eventbus.fire(DeleteBatchEvent(it.value))

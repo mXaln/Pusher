@@ -10,6 +10,7 @@ import javafx.scene.layout.Priority
 import org.kordamp.ikonli.javafx.FontIcon
 import org.kordamp.ikonli.materialdesign.MaterialDesign
 import tornadofx.*
+import tornadofx.FX.Companion.messages
 
 class BatchNameView : HBox() {
 
@@ -61,10 +62,9 @@ class BatchNameView : HBox() {
             visibleProperty().bind(editingProperty.not())
             managedProperty().bind(visibleProperty())
         }
-        button("Save") {
+        button(messages["save"]) {
             addClass("btn", "btn--icon", "btn--edit")
             graphic = FontIcon(MaterialDesign.MDI_CHECK)
-            text = "Save"
 
             onActionProperty().bind(saveActionProperty)
 

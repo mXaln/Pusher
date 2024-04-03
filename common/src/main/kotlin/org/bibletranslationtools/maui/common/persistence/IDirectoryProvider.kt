@@ -3,14 +3,14 @@ package org.bibletranslationtools.maui.common.persistence
 import java.io.File
 
 interface IDirectoryProvider {
+    val logsDirectory: File
+    val tempDirectory: File
+    val batchDirectory: File
+    val cacheDirectory: File
+    val prefFile: File
+
     /** Directory to store the application's private data */
     fun getAppDataDirectory(appendedPath: String = ""): File
-
-    /** Create a new IFileWriter */
-    // fun newFileWriter(file: File): IFileWriter
-
-    /** Create a new IFileReader */
-    // fun newFileReader(file: File): IFileReader
 
     /** Create directory in cache directory */
     fun createCacheDirectory(dirName: String): File
@@ -26,9 +26,4 @@ interface IDirectoryProvider {
 
     /** Find and delete cached files in the provided list */
     fun deleteCachedFiles(files: List<File>)
-
-    val logsDirectory: File
-    val tempDirectory: File
-    val batchDirectory: File
-    val cacheDirectory: File
 }

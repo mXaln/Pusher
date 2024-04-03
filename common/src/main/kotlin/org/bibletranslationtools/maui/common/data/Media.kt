@@ -1,5 +1,6 @@
 package org.bibletranslationtools.maui.common.data
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import org.bibletranslationtools.maui.common.extensions.CompressedExtensions
 import org.bibletranslationtools.maui.common.extensions.ContainerExtensions
 import org.bibletranslationtools.maui.common.extensions.MediaExtensions
@@ -16,15 +17,18 @@ data class Media(
     val grouping: Grouping? = null,
     val status: FileStatus? = null,
     val statusMessage: String? = null,
-    val parentFile: File? = null
+    val parentFile: File? = null,
+    val selected: Boolean = false,
+    val removed: Boolean = false
 ) {
+    @JsonIgnore
     val extension = MediaExtensions.of(file.extension)
-
+    @JsonIgnore
     val isContainer = ContainerExtensions.isSupported(extension.norm)
-
+    @JsonIgnore
     val isCompressed =
         !isContainer && CompressedExtensions.isSupported(extension.norm)
-
+    @JsonIgnore
     val isContainerAndCompressed =
         isContainer && CompressedExtensions.isSupported(mediaExtension.toString())
 }

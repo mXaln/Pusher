@@ -10,12 +10,12 @@ import org.bibletranslationtools.maui.jvm.ui.UploadTarget
 import org.kordamp.ikonli.javafx.FontIcon
 import org.kordamp.ikonli.materialdesign.MaterialDesign
 import tornadofx.*
+import tornadofx.FX.Companion.messages
 
 class UploadTargetHeader : HBox() {
     val uploadTargetProperty = SimpleObjectProperty<UploadTarget>()
     val uploadTargets = observableListOf<UploadTarget>()
     val uploadTargetTextProperty = SimpleStringProperty()
-    val changeUploadTargetTextProperty = SimpleStringProperty()
 
     init {
         addClass("upload-target-header")
@@ -41,9 +41,8 @@ class UploadTargetHeader : HBox() {
 
         hbox {
             addClass("upload-target-header__select")
-            label {
+            label(messages["changeUploadTarget"]) {
                 addClass("upload-target-header__select-text")
-                textProperty().bind(changeUploadTargetTextProperty)
             }
             combobox(uploadTargetProperty, uploadTargets) {
                 addClass("wa-combobox", "upload-target-header__select-combo")

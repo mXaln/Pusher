@@ -1,6 +1,7 @@
 .progress-dialog {
     -fx-pref-width: 360px;
-    -fx-pref-height: 160px;
+    -fx-max-height: 120px;
+    -fx-max-height: 300px;
     -fx-background-color: -wa-white;
 }
 
@@ -34,4 +35,8 @@
     -fx-text-fill: -wa-gray-darker;
     -fx-font-size: 1.4em;
     -fx-wrap-text: true;
+}
+
+.progress-dialog .progress {
+    -fx-padding: 12px;
 }

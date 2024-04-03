@@ -1,6 +1,7 @@
 package org.bibletranslationtools.maui.jvm.controls.dialog
 
 import javafx.beans.property.SimpleObjectProperty
+import javafx.beans.property.SimpleStringProperty
 import javafx.geometry.Bounds
 import javafx.scene.layout.Priority
 import javafx.scene.layout.Region
@@ -17,6 +18,9 @@ import tornadofx.*
 
 abstract class MauiDialog : Fragment() {
     val uploadTargetProperty = SimpleObjectProperty<UploadTarget>()
+    val titleTextProperty = SimpleStringProperty()
+    val messageTextProperty = SimpleStringProperty()
+    val detailsTextProperty = SimpleStringProperty()
 
     private val roundRadius = 15.0
     private val mainContainer = VBox().apply {
@@ -31,8 +35,6 @@ abstract class MauiDialog : Fragment() {
 
     init {
         importStylesheet(AppResources.load("/css/maui-dialog.css"))
-        importStylesheet(AppResources.load("/css/confirm-dialog.css"))
-        importStylesheet(AppResources.load("/css/progress-dialog.css"))
 
         bindUploadTargetClassToRoot()
     }

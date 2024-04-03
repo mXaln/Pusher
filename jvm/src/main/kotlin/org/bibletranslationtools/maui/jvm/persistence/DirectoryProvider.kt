@@ -1,5 +1,6 @@
 package org.bibletranslationtools.maui.jvm.persistence
 
+import org.bibletranslationtools.maui.common.MauiInfo
 import org.bibletranslationtools.maui.common.persistence.IDirectoryProvider
 import java.io.File
 import java.nio.file.FileSystems
@@ -21,6 +22,9 @@ class DirectoryProvider(private val appName: String) : IDirectoryProvider {
 
     override val cacheDirectory: File
         get() = getAppDataDirectory("cache")
+
+    override val prefFile: File
+        get() = getAppDataDirectory().resolve("${MauiInfo.APP_NAME.lowercase()}.properties")
 
     override fun getAppDataDirectory(appendedPath: String): File {
         val pathComponents = mutableListOf<String>()
@@ -73,7 +77,7 @@ class DirectoryProvider(private val appName: String) : IDirectoryProvider {
 
     override fun deleteCachedFiles(files: List<File>) {
         files.forEach { file ->
-            // delete only files that are in cache directory
+            // delete only files that reside in cache directory
             val parentDir = file.parentFile
             val isCached = file.absolutePath.startsWith(
                 cacheDirectory.absolutePath

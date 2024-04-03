@@ -1,18 +1,18 @@
-.batch-page__contents {
+.batch-page .contents {
     -fx-padding: 0 20px 20px 20px;
     -fx-spacing: 20px;
 }
 
-.batch-page__controls {
+.batch-page .controls {
     -fx-alignment: center-right;
     -fx-padding: 20px 0;
 }
 
-.batch-page__controls .btn {
+.batch-page .controls .btn {
     -fx-pref-width: 175px;
 }
 
-.batch__import {
+.batch-page .import {
     -fx-border-color: -wa-gray-light;
     -fx-border-width: 1px;
     -fx-border-radius: 4px;
@@ -21,31 +21,41 @@
     -fx-spacing: 10px;
 }
 
-.batch__import:drag-over {
+.batch-page .import:drag-over {
     -fx-background-color: -wa-primary-light;
     -fx-border-color: -wa-primary;
     -fx-border-style: segments(15, 15);
 }
 
-.batch__import__icon .ikonli-font-icon {
+.batch-page .import-icon .ikonli-font-icon {
     -fx-icon-size: 40px;
 }
 
-.batch__import__title {
+.batch-page .import-title {
     -fx-font-size: 1.5em;
     -fx-font-weight: bold;
 }
 
-.batch__import__subtitle {
+.batch-page .import-subtitle {
     -fx-font-size: 1.25em;
 }
 
-.batch__search {
+.batch-page .search {
     -fx-alignment: center-left;
 }
 
-.batch__search__title {
+.batch-page .search-title {
     -fx-font-size: 1.5em;
     -fx-font-weight: bold;
     -fx-underline: true;
+}
+
+.batch-page .search-bar {
+    -fx-pref-width: 314px;
+    -fx-pref-height: 44px;
+    -fx-padding: 6 11;
+}
+
+.batch-page .search-bar .right-pane .ikonli-font-icon {
+    -fx-icon-size: 24px;
 }

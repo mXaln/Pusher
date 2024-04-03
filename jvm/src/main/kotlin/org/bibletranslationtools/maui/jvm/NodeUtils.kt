@@ -10,6 +10,7 @@ import javafx.scene.control.TableView
 import javafx.scene.layout.StackPane
 import org.kordamp.ikonli.javafx.FontIcon
 import org.kordamp.ikonli.material.Material
+import tornadofx.SortedFilteredList
 import tornadofx.add
 import tornadofx.addClass
 
@@ -36,7 +37,10 @@ fun <T> TableView<T>.bindSortPolicy() {
     setSortPolicy {
         try {
             val itemsList = items
-            if (itemsList is SortedList<*> || itemsList == null || itemsList.isEmpty()) {
+            if (itemsList is SortedList<*> ||
+                itemsList is SortedFilteredList<*> ||
+                itemsList == null ||
+                itemsList.isEmpty()) {
                 return@setSortPolicy true
             } else {
                 val comparator = comparator ?: return@setSortPolicy true
@@ -54,6 +58,8 @@ fun <S, T> TableColumn<S, T>.bindColumnSortComparator() {
     sortTypeProperty().onChangeAndDoNow {
         if (list is SortedList<S>) {
             list.comparator = tableView.comparator
+        } else if (list is SortedFilteredList<S>) {
+            list.sortedItems.comparator = tableView.comparator
         }
     }
 }
@@ -63,6 +69,10 @@ fun <S> TableView<S>.bindTableSortComparator() {
     if (list is SortedList<S>) {
         comparatorProperty().onChangeAndDoNow {
             list.comparator = it
+        }
+    } else if (list is SortedFilteredList<S>) {
+        comparatorProperty().onChangeAndDoNow {
+            list.sortedItems.comparator = it
         }
     }
 }

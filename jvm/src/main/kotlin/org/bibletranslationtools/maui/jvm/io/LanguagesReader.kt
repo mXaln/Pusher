@@ -5,10 +5,10 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.MappingIterator
 import com.fasterxml.jackson.dataformat.csv.CsvMapper
 import com.fasterxml.jackson.dataformat.csv.CsvSchema
-import io.reactivex.Single
-import org.bibletranslationtools.maui.common.io.IResourceReader
+import org.bibletranslationtools.maui.common.io.ILanguagesReader
+import javax.inject.Inject
 
-class LanguagesReader : IResourceReader {
+class LanguagesReader @Inject constructor() : ILanguagesReader {
 
     companion object {
         const val PORT_LANGUAGE_CODE_ID = "IETF Tag"
@@ -20,10 +20,8 @@ class LanguagesReader : IResourceReader {
         val code: String
     )
 
-    override fun read(): Single<List<String>> {
-        return Single.fromCallable {
-            parseLanguages()
-        }
+    override fun read(): List<String> {
+        return parseLanguages()
     }
 
     private fun parseLanguages(): List<String> {
