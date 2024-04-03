@@ -13,13 +13,16 @@ import org.junit.Test
 import java.io.File
 import java.io.FileNotFoundException
 import java.util.*
+import kotlin.io.path.createTempDirectory as createTempDir
 
 class OratureFileProcessorTest {
     private val oratureFileName = "orature_file.zip"
     private val expectedWavFiles = 2
 
     private val directoryProvider = mockk<IDirectoryProvider> {
-        every { createCacheDirectory(any()) } returns kotlin.io.path.createTempDirectory("cache").toFile()
+        every { createCacheDirectory(any()) } returns createTempDir("cache").toFile().apply {
+            deleteOnExit()
+        }
     }
 
     @Test

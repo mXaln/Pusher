@@ -10,6 +10,7 @@ import java.io.File
 import java.io.FileNotFoundException
 import java.util.Queue
 import java.util.LinkedList
+import kotlin.io.path.createTempDirectory as createTempDir
 
 class WavProcessorTest {
     private lateinit var queue: Queue<ProcessFile>
@@ -18,7 +19,7 @@ class WavProcessorTest {
 
     @Before
     fun setUp() {
-        tempDir = kotlin.io.path.createTempDirectory().toFile()
+        tempDir = createTempDir().toFile()
         queue = LinkedList()
     }
 

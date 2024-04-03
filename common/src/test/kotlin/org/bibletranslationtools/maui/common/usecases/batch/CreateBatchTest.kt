@@ -7,6 +7,7 @@ import org.bibletranslationtools.maui.common.persistence.IBatchRepository
 import org.bibletranslationtools.maui.common.persistence.IDirectoryProvider
 import org.junit.Test
 import java.io.File
+import kotlin.io.path.createTempDirectory as createTempDir
 
 class CreateBatchTest {
 
@@ -14,11 +15,13 @@ class CreateBatchTest {
         every { createBatch(any()) } returns Unit
     }
     private val directoryProvider = mockk<IDirectoryProvider> {
-        every { batchDirectory } returns kotlin.io.path.createTempDirectory("batches").toFile()
+        every { batchDirectory } returns createTempDir("batches").toFile().apply {
+            deleteOnExit()
+        }
     }
 
     @Test
-    fun createBatchSuccess() {
+    fun createBatchTest() {
         val mediaList = listOf(
             Media(File("test1.wav")),
             Media(File("test2.mp3"))

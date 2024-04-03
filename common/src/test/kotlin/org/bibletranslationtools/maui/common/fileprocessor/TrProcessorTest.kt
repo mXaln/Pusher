@@ -12,12 +12,15 @@ import org.junit.Test
 import java.io.File
 import java.io.FileNotFoundException
 import java.util.*
+import kotlin.io.path.createTempDirectory as createTempDir
 
 class TrProcessorTest {
     private lateinit var queue: Queue<ProcessFile>
 
     private val directoryProvider = mockk<IDirectoryProvider> {
-        every { createTempDirectory(any()) } returns kotlin.io.path.createTempDirectory("cache").toFile()
+        every { createTempDirectory(any()) } returns createTempDir("cache").toFile().apply {
+            deleteOnExit()
+        }
     }
 
     @Before

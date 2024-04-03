@@ -7,11 +7,14 @@ import org.junit.Assert
 import org.junit.Test
 import java.io.File
 import java.lang.Exception
+import kotlin.io.path.createTempDirectory as createTempDir
 
 class TrValidatorTest {
 
     private val directoryProvider = mockk<IDirectoryProvider> {
-        every { createTempDirectory(any()) } returns kotlin.io.path.createTempDirectory("cache").toFile()
+        every { createTempDirectory(any()) } returns createTempDir("cache").toFile().apply {
+            deleteOnExit()
+        }
     }
 
     @Test

@@ -8,16 +8,19 @@ import org.bibletranslationtools.maui.common.persistence.IDirectoryProvider
 import org.junit.Assert
 import org.junit.Test
 import java.io.File
+import kotlin.io.path.createTempDirectory as createTempDir
 
 class BatchRepositoryTest {
 
     private val directoryProvider = mockk<IDirectoryProvider> {
-        every { batchDirectory } returns kotlin.io.path.createTempDirectory("temp").toFile()
+        every { batchDirectory } returns createTempDir("temp").toFile().apply {
+            deleteOnExit()
+        }
         every { deleteCachedFiles(any()) } returns Unit
     }
 
     @Test
-    fun createBatchSuccess() {
+    fun createBatchTest() {
         val batchFile = directoryProvider.batchDirectory.resolve("batch.maui").apply {
             deleteOnExit()
         }
@@ -43,7 +46,7 @@ class BatchRepositoryTest {
     }
 
     @Test
-    fun saveBatchSuccess() {
+    fun saveBatchTest() {
         val repo = BatchRepository(directoryProvider)
         val batchFile = directoryProvider.batchDirectory.resolve("batch.maui").apply {
             deleteOnExit()
@@ -65,7 +68,7 @@ class BatchRepositoryTest {
     }
 
     @Test
-    fun getAllSuccess() {
+    fun getAllTest() {
         val repo = BatchRepository(directoryProvider)
         val batchFile = directoryProvider.batchDirectory.resolve("batch.maui").apply {
             deleteOnExit()
@@ -92,7 +95,7 @@ class BatchRepositoryTest {
     }
 
     @Test
-    fun deleteBatchSuccess() {
+    fun deleteBatchTest() {
         val repo = BatchRepository(directoryProvider)
         val batchFile = directoryProvider.batchDirectory.resolve("batch.maui")
         val batch = createBatch(batchFile)

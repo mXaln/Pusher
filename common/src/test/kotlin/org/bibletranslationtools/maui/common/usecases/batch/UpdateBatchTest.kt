@@ -5,6 +5,7 @@ import io.mockk.mockk
 import org.bibletranslationtools.maui.common.data.Batch
 import org.bibletranslationtools.maui.common.persistence.IBatchRepository
 import org.junit.Test
+import kotlin.io.path.createTempFile
 
 class UpdateBatchTest {
 
@@ -13,9 +14,10 @@ class UpdateBatchTest {
     }
 
     @Test
-    fun updateBatchSuccess() {
-        val batchFile = kotlin.io.path.createTempFile("batch", ".maui").toFile().apply {
+    fun updateBatchTest() {
+        val batchFile = createTempFile("batch", ".maui").toFile().apply {
             createNewFile()
+            deleteOnExit()
         }
         val batch = Batch(
             batchFile,

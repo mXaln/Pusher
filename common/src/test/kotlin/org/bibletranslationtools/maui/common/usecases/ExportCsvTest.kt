@@ -4,13 +4,14 @@ import org.bibletranslationtools.maui.common.data.Media
 import org.junit.Assert
 import org.junit.Test
 import java.io.File
+import kotlin.io.path.createTempFile
 
 class ExportCsvTest {
 
     @Test
-    fun exportSuccess() {
-        val output = kotlin.io.path.createTempFile("temp").toFile().apply {
-            this.deleteOnExit()
+    fun exportTest() {
+        val output = createTempFile("temp").toFile().apply {
+            deleteOnExit()
         }
         val preSize = output.length()
         val items = listOf(

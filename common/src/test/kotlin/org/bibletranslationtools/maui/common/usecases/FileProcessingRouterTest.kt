@@ -8,6 +8,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.io.File
 import java.io.FileNotFoundException
+import kotlin.io.path.createTempDirectory as createTempDir
 
 class FileProcessingRouterTest {
     private val oratureFile = "orature_file.zip" // orature file contains 2 bad wav files
@@ -16,7 +17,9 @@ class FileProcessingRouterTest {
     private val expectedResultSize = 4
 
     private val directoryProvider = mockk<IDirectoryProvider> {
-        every { createCacheDirectory(any()) } returns kotlin.io.path.createTempDirectory("cache").toFile()
+        every { createCacheDirectory(any()) } returns createTempDir("cache").toFile().apply {
+            deleteOnExit()
+        }
     }
 
     @Test

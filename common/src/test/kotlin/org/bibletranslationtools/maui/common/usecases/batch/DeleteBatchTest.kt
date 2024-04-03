@@ -7,18 +7,21 @@ import org.bibletranslationtools.maui.common.persistence.IBatchRepository
 import org.bibletranslationtools.maui.common.persistence.IDirectoryProvider
 import org.junit.Assert
 import org.junit.Test
+import kotlin.io.path.createTempDirectory as createTempDir
 
 class DeleteBatchTest {
     private val directoryProvider = mockk<IDirectoryProvider> {
         every { deleteCachedFiles(any()) } returns Unit
-        every { batchDirectory } returns kotlin.io.path.createTempDirectory("batches").toFile()
+        every { batchDirectory } returns createTempDir("batches").toFile().apply {
+            deleteOnExit()
+        }
     }
     private val batchRepository = mockk<IBatchRepository> {
         every { deleteBatch(any()) } returns Unit
     }
 
     @Test
-    fun deleteBatchSuccess() {
+    fun deleteBatchTest() {
         val batchFile = directoryProvider.batchDirectory.resolve("batch.maui").apply {
             createNewFile()
             deleteOnExit()
