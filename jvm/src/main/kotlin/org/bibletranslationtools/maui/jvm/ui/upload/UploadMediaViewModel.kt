@@ -167,7 +167,7 @@ class UploadMediaViewModel : ViewModel() {
 
     fun viewUploadedFiles() {
         val server = batchDataStore.serverProperty.value
-        hostServices.showDocument("http://$server")
+        hostServices.showDocument("https://$server/content")
     }
 
     fun exportCsv(output: File) {
