@@ -37,6 +37,12 @@ class LoginDialog : MauiDialog() {
             textProperty().bindBidirectional(serverProperty)
             onActionProperty().bind(onActionProperty)
             leftProperty().set(FontIcon(MaterialDesign.MDI_WIFI))
+
+            filterInput {
+                !it.controlNewText.contains("/") &&
+                        !it.controlNewText.contains(":") &&
+                        !it.controlNewText.contains("\\s".toRegex())
+            }
         }
 
         textField {
@@ -44,6 +50,10 @@ class LoginDialog : MauiDialog() {
             textProperty().bindBidirectional(userProperty)
             onActionProperty().bind(onActionProperty)
             leftProperty().set(FontIcon(MaterialDesign.MDI_ACCOUNT))
+
+            filterInput {
+                !it.controlNewText.contains("\\s".toRegex())
+            }
         }
 
         unmaskPasswordField {

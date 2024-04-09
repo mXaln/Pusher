@@ -12,6 +12,7 @@ import org.kordamp.ikonli.javafx.FontIcon
 import org.kordamp.ikonli.materialdesign.MaterialDesign
 import tornadofx.addClass
 import tornadofx.attachTo
+import tornadofx.filterInput
 import tornadofx.objectBinding
 
 class UnmaskPasswordField : StackPane() {
@@ -47,6 +48,10 @@ class UnmaskPasswordField : StackPane() {
                     passwordField.requestFocus()
                 }
             }
+
+            filterInput {
+                !it.controlNewText.contains("\\s".toRegex())
+            }
         }
 
         passwordField {
@@ -65,6 +70,10 @@ class UnmaskPasswordField : StackPane() {
                     toggleShowIcon()
                     textField.requestFocus()
                 }
+            }
+
+            filterInput {
+                !it.controlNewText.contains("\\s".toRegex())
             }
         }
     }

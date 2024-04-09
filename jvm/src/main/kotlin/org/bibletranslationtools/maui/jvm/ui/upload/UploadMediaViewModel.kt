@@ -167,7 +167,9 @@ class UploadMediaViewModel : ViewModel() {
 
     fun viewUploadedFiles() {
         val server = batchDataStore.serverProperty.value
-        hostServices.showDocument("https://$server/content")
+        // Add "-content" part to subdomain of the server for the content server
+        val url = server.replace("^([a-z0-9-]+)(\\.[a-z0-9-]+\\.[a-z0-9-]+)".toRegex(), "$1-content$2")
+        hostServices.showDocument("https://$url/content")
     }
 
     fun exportCsv(output: File) {
@@ -264,9 +266,9 @@ class UploadMediaViewModel : ViewModel() {
 
         val hasSelected = mediaItems.any { it.selected }
 
-        val server = batchDataStore.serverProperty.value.trim()
-        val user = batchDataStore.userProperty.value.trim()
-        val password = batchDataStore.passwordProperty.value.trim()
+        val server = batchDataStore.serverProperty.value
+        val user = batchDataStore.userProperty.value
+        val password = batchDataStore.passwordProperty.value
 
         when {
             hasUnverified -> {
@@ -387,14 +389,17 @@ class UploadMediaViewModel : ViewModel() {
     }
 
     private fun updateLoginCredentials() {
+        val server = batchDataStore.serverProperty.value
+        val user = batchDataStore.userProperty.value
+
         when (uploadTargetProperty.value) {
             UploadTarget.DEV -> {
-                prefRepository.put(DEV_SERVER_NAME_KEY, batchDataStore.serverProperty.value)
-                prefRepository.put(DEV_USER_NAME_KEY, batchDataStore.userProperty.value)
+                prefRepository.put(DEV_SERVER_NAME_KEY, server)
+                prefRepository.put(DEV_USER_NAME_KEY, user)
             }
             UploadTarget.PROD -> {
-                prefRepository.put(PROD_SERVER_NAME_KEY, batchDataStore.serverProperty.value)
-                prefRepository.put(PROD_USER_NAME_KEY, batchDataStore.userProperty.value)
+                prefRepository.put(PROD_SERVER_NAME_KEY, server)
+                prefRepository.put(PROD_USER_NAME_KEY, user)
             }
             else -> {}
         }
