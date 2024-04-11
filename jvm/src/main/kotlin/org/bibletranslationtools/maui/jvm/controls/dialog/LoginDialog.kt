@@ -38,10 +38,11 @@ class LoginDialog : MauiDialog() {
             onActionProperty().bind(onActionProperty)
             leftProperty().set(FontIcon(MaterialDesign.MDI_WIFI))
 
-            filterInput {
-                !it.controlNewText.contains("/") &&
-                        !it.controlNewText.contains(":") &&
-                        !it.controlNewText.contains("\\s".toRegex())
+            textProperty().onChange {
+                runLater {
+                    text = sanitizeServerName(it)
+                    positionCaret(text.length)
+                }
             }
         }
 
@@ -92,6 +93,19 @@ class LoginDialog : MauiDialog() {
         onActionProperty.set(EventHandler {
             op.invoke()
         })
+    }
+
+    private fun sanitizeServerName(server: String?): String? {
+        val scheme = "^.*?://".toRegex()
+        val port = ":\\d+.*".toRegex()
+        val path = "(\\..*?|\\d+)(/.*?)\$".toRegex()
+        val special = "[~!@#$%^&*()?+=\\s:]+".toRegex()
+
+        return server
+            ?.replace(scheme, "")
+            ?.replace(port, "")
+            ?.replace(path, "$1")
+            ?.replace(special, "")
     }
 }
 
