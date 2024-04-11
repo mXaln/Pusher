@@ -36,7 +36,7 @@ class ParseFileName(private val file: File) {
         private const val BOOK = "(?:_([1-3]{0,1}[a-zA-Z]{2,3}))??"
         private const val EXTRA_BOOK = "([1-3]?[a-zA-Z]{2,3})_"
         private const val CHAPTER = "(?:_c([\\d]{1,3}))?"
-        private const val EXTRA_CHAPTER = "(\\d{1,3})"
+        private const val EXTRA_CHAPTER = "(?<!^)(\\d{1,3})"
         private const val VERSE = "(?:_v([\\d]{1,3})(?:-([\\d]{1,3}))?)?"
         private const val TAKE = "(?:_t([\\d]{1,2}))?"
         private const val QUALITY = "(?:_(hi|low))?"
