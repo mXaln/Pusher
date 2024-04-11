@@ -28,8 +28,8 @@ class ExportCsvTest {
 
         val expectedHeader = "selected,file name,language,resource type,book,chapter,media extension," +
                 "media quality,grouping,status,status message"
-        val expectedFirstMedia = "*,example.wav,--,--,--,--,--,--,--,--,--"
-        val expectedSecondMedia = ",/home/user/test.mp3,en,ulb,gen,--,--,--,--,--,--"
+        val expectedFirstMedia = "*,\"example.wav\",--,--,--,--,--,--,--,--,--"
+        val expectedSecondMedia = ",\"/home/user/test.mp3\",en,ulb,gen,--,--,--,--,--,--"
 
         var line = 1
         output.forEachLine {
