@@ -93,6 +93,11 @@ class UploadMediaViewModel : ViewModel() {
 
     private val listeners = mutableListOf<ListenerDisposer>()
 
+    private val knownServers = mapOf(
+        "audiobieldev-ftp.walink.org" to "audiobieldev-content.walink.org/content",
+        "audiobiel-ftp.walink.org" to "audio-content.bibleineverylanguage.org/content"
+    )
+
     init {
         (app as IDependencyGraphProvider).dependencyGraph.inject(this)
 
@@ -167,9 +172,8 @@ class UploadMediaViewModel : ViewModel() {
 
     fun viewUploadedFiles() {
         val server = batchDataStore.serverProperty.value
-        // Add "-content" part to subdomain of the server for the content server
-        val url = server.replace("^([a-z0-9-]+)(\\.[a-z0-9-]+\\.[a-z0-9-]+)".toRegex(), "$1-content$2")
-        hostServices.showDocument("https://$url/content")
+        val url = knownServers[server] ?: server
+        hostServices.showDocument("https://$url")
     }
 
     fun exportCsv(output: File) {
