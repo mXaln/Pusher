@@ -2,6 +2,7 @@ package org.bibletranslationtools.maui.common.usecases
 
 import io.mockk.every
 import io.mockk.mockk
+import org.bibletranslationtools.maui.common.audio.ISoxBinaryProvider
 import org.bibletranslationtools.maui.common.data.FileStatus
 import org.bibletranslationtools.maui.common.persistence.IDirectoryProvider
 import org.junit.Assert.assertEquals
@@ -21,6 +22,7 @@ class FileProcessingRouterTest {
             deleteOnExit()
         }
     }
+    private val soxBinaryProvider = mockk<ISoxBinaryProvider>()
 
     @Test
     fun testHandleFiles() {
@@ -29,7 +31,7 @@ class FileProcessingRouterTest {
                 getTestFile(wavFile),
                 getTestFile(badFile)
         )
-        val result = FileProcessingRouter(directoryProvider).handleFiles(files)
+        val result = FileProcessingRouter(directoryProvider, soxBinaryProvider).handleFiles(files)
         val errorFileCount = result.filter {
             it.status == FileStatus.REJECTED
         }.size

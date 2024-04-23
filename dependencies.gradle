@@ -36,4 +36,5 @@ ext {
     commonsConfig2Ver = '2.9.0'
     commonsBeanUtilsVer = '1.9.4'
     mockkVer = '1.13.5'
+    sox = '1.0.3'
 }
