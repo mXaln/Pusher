@@ -33,7 +33,7 @@ import org.wycliffeassociates.otter.common.audio.DEFAULT_SAMPLE_RATE
 import org.wycliffeassociates.otter.common.audio.wav.WavFile
 import java.io.File
 import java.lang.IllegalArgumentException
-import java.util.Queue
+import java.util.*
 
 class WavProcessor(
     private val directoryProvider: IDirectoryProvider,
@@ -55,10 +55,11 @@ class WavProcessor(
         }
 
         val media = try {
-            normalizeFile(file)
+            val normalized = normalizedFile(file)
+            val normalizedParent = parentFile ?: normalized?.let { file }
 
-            WavValidator(file).validate()
-            getMedia(file).copy(parentFile = parentFile)
+            WavValidator(normalized ?: file).validate()
+            getMedia(normalized ?: file).copy(parentFile = normalizedParent)
         } catch (ex: Exception) {
             Media(
                 file = file,
@@ -73,15 +74,17 @@ class WavProcessor(
 
     /**
      * Convert wav file so that sample rate, bit-depth and number of channels
-     * be the default values
+     * be the default values. The original file will be untouched. Converted file will be saved in cache folder.
      */
-    private fun normalizeFile(file: File) {
+    private fun normalizedFile(file: File): File? {
         val wavFile = WavFile(file)
-        if (wavFile.sampleRate != DEFAULT_SAMPLE_RATE ||
+        return if (wavFile.sampleRate != DEFAULT_SAMPLE_RATE ||
             wavFile.channels != DEFAULT_CHANNELS ||
             wavFile.bitsPerSample != DEFAULT_BITS_PER_SAMPLE
         ) {
-            val newFile = directoryProvider.createTempFile("normalized", ".wav")
+            val uuid = UUID.randomUUID()
+            val cacheDir = directoryProvider.createCacheDirectory(uuid.toString())
+            val newFile = cacheDir.resolve(file.name)
             val sox = Sox(soxBinaryProvider.getPath())
             sox
                 .inputFile(file.absolutePath)
@@ -91,7 +94,7 @@ class WavProcessor(
                 .outputFile(newFile.absolutePath)
                 .execute()
 
-            newFile.renameTo(file)
-        }
+            newFile
+        } else null
     }
 }
