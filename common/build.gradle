@@ -10,6 +10,7 @@ dependencies {
     implementation "org.apache.tika:tika-core:$tikaVer"
     implementation "org.wycliffeassociates:kotlin-resource-container:$kotlinRC"
     implementation "org.digitalmediaserver:cuelib-core:$cuelibVer"
+    implementation "ie.corballis:sox-java:$sox"
 
     //Dagger2
     implementation "com.google.dagger:dagger:$daggerVer"

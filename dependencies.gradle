@@ -5,7 +5,7 @@ ext {
     buildscanPluginVer = '3.7.1'
     detektPluginVer = '1.17.0'
     ktlintPluginVer = '8.2.0'
-    shadowPluginVer = '5.2.0'
+    shadowPluginVer = '7.1.2'
 
     // Libraries
     kotlinVer = '1.8.0'
@@ -36,4 +36,5 @@ ext {
     commonsConfig2Ver = '2.9.0'
     commonsBeanUtilsVer = '1.9.4'
     mockkVer = '1.13.5'
+    sox = '1.0.3'
 }

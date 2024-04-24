@@ -1,7 +1,10 @@
 package org.bibletranslationtools.maui.common.fileprocessor
 
+import io.mockk.mockk
+import org.bibletranslationtools.maui.common.audio.ISoxBinaryProvider
 import org.bibletranslationtools.maui.common.data.FileStatus
 import org.bibletranslationtools.maui.common.data.ProcessFile
+import org.bibletranslationtools.maui.common.persistence.IDirectoryProvider
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -13,6 +16,9 @@ import java.util.LinkedList
 import kotlin.io.path.createTempDirectory as createTempDir
 
 class WavProcessorTest {
+    private val directoryProvider = mockk<IDirectoryProvider>()
+    private val soxBinaryProvider = mockk<ISoxBinaryProvider>()
+
     private lateinit var queue: Queue<ProcessFile>
     private lateinit var tempDir: File
     private val wavFileName = "en_ulb_b41_mat_c01.wav"
@@ -32,7 +38,7 @@ class WavProcessorTest {
     @Test
     fun testProcessGoodFile() {
         val file = getTestFile(wavFileName)
-        val result = WavProcessor().process(file, queue)
+        val result = WavProcessor(directoryProvider, soxBinaryProvider).process(file, queue)
 
         assertEquals(FileStatus.PROCESSED, result?.status)
         assertEquals(0, queue.size)
@@ -41,7 +47,7 @@ class WavProcessorTest {
     @Test
     fun testCustomResource() {
         val file = copyAndRename(wavFileName, "en_reg_b41_mat_c01.wav")
-        val result = WavProcessor().process(file, queue)
+        val result = WavProcessor(directoryProvider, soxBinaryProvider).process(file, queue)
 
         assertEquals(FileStatus.PROCESSED, result?.status)
         assertEquals(0, queue.size)
@@ -50,7 +56,7 @@ class WavProcessorTest {
     @Test
     fun testProcessBadFile() {
         val file = getTestFile("fake.wav")
-        val result = WavProcessor().process(file, queue)
+        val result = WavProcessor(directoryProvider, soxBinaryProvider).process(file, queue)
 
         assertEquals(FileStatus.REJECTED, result?.status)
         assertEquals(0, queue.size)

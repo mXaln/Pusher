@@ -41,7 +41,7 @@ class ExportCsv @Inject constructor() {
             val builder = StringBuilder()
             builder.append(if (item.selected) "*" else "")
             builder.append(",")
-            builder.append(item.file)
+            builder.append("\"${item.file}\"")
             builder.append(",")
             builder.append(item.language ?: "--")
             builder.append(",")

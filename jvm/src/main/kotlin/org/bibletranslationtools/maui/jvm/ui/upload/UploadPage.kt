@@ -209,14 +209,20 @@ class UploadPage : View() {
                         graphic = FontIcon(MaterialDesign.MDI_FILE_EXPORT)
 
                         action {
+                            val filename = viewModel.activeBatchProperty.value?.let {
+                                val parsed = LocalDateTime.parse(it.created)
+                                val formatter = DateTimeFormatter.ofPattern("MM-dd-yyyy_hh-mm-ss-a")
+                                "${it.name}_${parsed.format(formatter).lowercase()}"
+                            }
                             chooseFile(
-                                messages["exportCsv"],
-                                arrayOf(
+                                title = messages["exportCsv"],
+                                filters = arrayOf(
                                     FileChooser.ExtensionFilter(
                                         messages["csvFiles"],
                                         "*.csv"
                                     )
                                 ),
+                                initialFileName = filename,
                                 mode = FileChooserMode.Save
                             ).also {
                                 it.singleOrNull()?.let { file ->

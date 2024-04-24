@@ -93,6 +93,11 @@ class UploadMediaViewModel : ViewModel() {
 
     private val listeners = mutableListOf<ListenerDisposer>()
 
+    private val knownServers = mapOf(
+        "audiobieldev-ftp.walink.org" to "audiobieldev-content.walink.org/content",
+        "audiobiel-ftp.walink.org" to "audio-content.bibleineverylanguage.org/content"
+    )
+
     init {
         (app as IDependencyGraphProvider).dependencyGraph.inject(this)
 
@@ -167,7 +172,8 @@ class UploadMediaViewModel : ViewModel() {
 
     fun viewUploadedFiles() {
         val server = batchDataStore.serverProperty.value
-        hostServices.showDocument("https://$server/content")
+        val url = knownServers[server] ?: server
+        hostServices.showDocument("https://$url")
     }
 
     fun exportCsv(output: File) {
@@ -264,9 +270,9 @@ class UploadMediaViewModel : ViewModel() {
 
         val hasSelected = mediaItems.any { it.selected }
 
-        val server = batchDataStore.serverProperty.value.trim()
-        val user = batchDataStore.userProperty.value.trim()
-        val password = batchDataStore.passwordProperty.value.trim()
+        val server = batchDataStore.serverProperty.value
+        val user = batchDataStore.userProperty.value
+        val password = batchDataStore.passwordProperty.value
 
         when {
             hasUnverified -> {
@@ -387,14 +393,17 @@ class UploadMediaViewModel : ViewModel() {
     }
 
     private fun updateLoginCredentials() {
+        val server = batchDataStore.serverProperty.value
+        val user = batchDataStore.userProperty.value
+
         when (uploadTargetProperty.value) {
             UploadTarget.DEV -> {
-                prefRepository.put(DEV_SERVER_NAME_KEY, batchDataStore.serverProperty.value)
-                prefRepository.put(DEV_USER_NAME_KEY, batchDataStore.userProperty.value)
+                prefRepository.put(DEV_SERVER_NAME_KEY, server)
+                prefRepository.put(DEV_USER_NAME_KEY, user)
             }
             UploadTarget.PROD -> {
-                prefRepository.put(PROD_SERVER_NAME_KEY, batchDataStore.serverProperty.value)
-                prefRepository.put(PROD_USER_NAME_KEY, batchDataStore.userProperty.value)
+                prefRepository.put(PROD_SERVER_NAME_KEY, server)
+                prefRepository.put(PROD_USER_NAME_KEY, user)
             }
             else -> {}
         }
