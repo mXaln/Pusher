@@ -1,5 +1,7 @@
 package org.bibletranslationtools.maui.common.audio
 
+import java.io.File
+
 interface ISoxBinaryProvider {
-    fun getPath(): String?
+    fun getFile(): File?
 }

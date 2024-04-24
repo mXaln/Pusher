@@ -7,6 +7,7 @@ interface IDirectoryProvider {
     val tempDirectory: File
     val batchDirectory: File
     val cacheDirectory: File
+    val soxBinaryDirectory: File
     val prefFile: File
 
     /** Directory to store the application's private data */

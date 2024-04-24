@@ -19,20 +19,25 @@
 package org.bibletranslationtools.maui.jvm.audio
 
 import org.bibletranslationtools.maui.common.audio.ISoxBinaryProvider
+import org.bibletranslationtools.maui.common.persistence.IDirectoryProvider
+import java.io.File
+import javax.inject.Inject
 
-class SoxBinaryProvider : ISoxBinaryProvider {
-    override fun getPath(): String? {
+class SoxBinaryProvider @Inject constructor(
+    private val directoryProvider: IDirectoryProvider
+) : ISoxBinaryProvider {
+    override fun getFile(): File? {
         val os = System.getProperty("os.name").lowercase()
 
         return when {
             os.contains("win") -> {
-                SoxBinaryProvider::class.java.getResource("/sox/win/sox.exe")?.path
+                directoryProvider.soxBinaryDirectory.resolve("win/sox.exe")
             }
             os.contains("mac") -> {
-                SoxBinaryProvider::class.java.getResource("/sox/mac/sox")?.path
+                directoryProvider.soxBinaryDirectory.resolve("mac/sox")
             }
             os.contains("linux") -> {
-                SoxBinaryProvider::class.java.getResource("/sox/linux/sox")?.path
+                directoryProvider.soxBinaryDirectory.resolve("linux/sox")
             }
             else -> null
         }

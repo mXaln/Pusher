@@ -23,6 +23,9 @@ class DirectoryProvider(private val appName: String) : IDirectoryProvider {
     override val cacheDirectory: File
         get() = getAppDataDirectory("cache")
 
+    override val soxBinaryDirectory: File
+        get() = getAppDataDirectory("sox")
+
     override val prefFile: File
         get() = getAppDataDirectory().resolve("${MauiInfo.APP_NAME.lowercase()}.properties")
 

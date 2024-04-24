@@ -2,6 +2,7 @@ package org.bibletranslationtools.maui.jvm
 
 import javafx.scene.image.Image
 import javafx.stage.Stage
+import org.bibletranslationtools.maui.common.InitializeApp
 import org.bibletranslationtools.maui.common.persistence.IDirectoryProvider
 import org.bibletranslationtools.maui.jvm.di.AppDependencyGraph
 import org.bibletranslationtools.maui.jvm.di.DaggerAppDependencyGraph
@@ -16,11 +17,13 @@ class MainApp : App(AppWorkspace::class), IDependencyGraphProvider {
         DaggerAppDependencyGraph.builder().build()
 
     @Inject lateinit var directoryProvider: IDirectoryProvider
+    @Inject lateinit var initializeApp: InitializeApp
 
     init {
         dependencyGraph.inject(this)
         directoryProvider.cleanTempDirectory()
         initializeLogger(directoryProvider)
+        initializeApp.initialize().subscribe()
     }
 
     override fun start(stage: Stage) {

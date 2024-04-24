@@ -21,10 +21,13 @@ package org.bibletranslationtools.maui.jvm.di.modules
 import dagger.Module
 import dagger.Provides
 import org.bibletranslationtools.maui.common.audio.ISoxBinaryProvider
+import org.bibletranslationtools.maui.common.persistence.IDirectoryProvider
 import org.bibletranslationtools.maui.jvm.audio.SoxBinaryProvider
 
 @Module
 class SoxBinaryProviderModule {
     @Provides
-    fun providesSoxBinaryProvider(): ISoxBinaryProvider = SoxBinaryProvider()
+    fun providesSoxBinaryProvider(
+        directoryProvider: IDirectoryProvider
+    ): ISoxBinaryProvider = SoxBinaryProvider(directoryProvider)
 }

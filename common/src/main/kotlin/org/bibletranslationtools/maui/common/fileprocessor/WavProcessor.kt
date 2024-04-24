@@ -85,7 +85,7 @@ class WavProcessor(
             val uuid = UUID.randomUUID()
             val cacheDir = directoryProvider.createCacheDirectory(uuid.toString())
             val newFile = cacheDir.resolve(file.name)
-            val sox = Sox(soxBinaryProvider.getPath())
+            val sox = Sox(soxBinaryProvider.getFile()?.path)
             sox
                 .inputFile(file.absolutePath)
                 .sampleRate(DEFAULT_SAMPLE_RATE)
