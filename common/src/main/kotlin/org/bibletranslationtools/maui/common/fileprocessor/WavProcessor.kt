@@ -78,6 +78,7 @@ class WavProcessor(
      */
     private fun normalizedFile(file: File): File? {
         val wavFile = WavFile(file)
+
         return if (wavFile.sampleRate != DEFAULT_SAMPLE_RATE ||
             wavFile.channels != DEFAULT_CHANNELS ||
             wavFile.bitsPerSample != DEFAULT_BITS_PER_SAMPLE
@@ -93,6 +94,14 @@ class WavProcessor(
                 .argument("--channels", DEFAULT_CHANNELS.toString())
                 .outputFile(newFile.absolutePath)
                 .execute()
+
+            // Reinsert verse markers, because sox removes them during conversion
+            val cues = wavFile.getCues()
+            val newWavFile = WavFile(newFile)
+            cues.forEach {
+                newWavFile.addCue(it.location, it.label)
+            }
+            newWavFile.update()
 
             newFile
         } else null
