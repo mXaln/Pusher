@@ -99,7 +99,8 @@ class WavProcessor(
             val cues = wavFile.getCues()
             val newWavFile = WavFile(newFile)
             cues.forEach {
-                newWavFile.addCue(it.location, it.label)
+                val normalizedLocation = (it.location.toLong() * DEFAULT_SAMPLE_RATE) / wavFile.sampleRate
+                newWavFile.addCue(normalizedLocation.toInt(), it.label)
             }
             newWavFile.update()
 
