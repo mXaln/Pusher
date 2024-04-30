@@ -49,7 +49,7 @@ class MediaComboBoxCell<T>(
             titleProperty.set(this@MediaComboBoxCell.titleProperty.value)
 
             var selected = item
-            if (!items.contains(item)) {
+            if (items.isNotEmpty() && !items.contains(item)) {
                 selected = null
             }
 
