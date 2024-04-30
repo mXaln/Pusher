@@ -8,7 +8,7 @@ import com.fasterxml.jackson.dataformat.csv.CsvSchema
 import org.bibletranslationtools.maui.common.io.ILanguagesReader
 import javax.inject.Inject
 
-class LanguagesReader @Inject constructor() : ILanguagesReader {
+class GatewayLanguagesReader @Inject constructor() : ILanguagesReader {
 
     companion object {
         const val PORT_LANGUAGE_CODE_ID = "IETF Tag"

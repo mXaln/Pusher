@@ -12,7 +12,7 @@ javafx {
     modules = ['javafx.controls', 'javafx.fxml']
 }
 
-version = '2.1.2'
+version = '2.2.0'
 
 repositories {
     maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }

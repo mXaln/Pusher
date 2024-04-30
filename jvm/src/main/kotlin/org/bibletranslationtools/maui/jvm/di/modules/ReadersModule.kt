@@ -18,7 +18,7 @@ abstract class ReadersModule {
 
     @Binds
     @Singleton
-    abstract fun providesLanguagesReader(reader: LanguagesReader) : ILanguagesReader
+    abstract fun providesLanguagesReader(reader: AllLanguagesReader) : ILanguagesReader
 
     @Binds
     @Singleton
