@@ -8,9 +8,9 @@ ext {
     shadowPluginVer = '7.1.2'
 
     // Libraries
-    kotlinVer = '1.8.0'
-    javafxVer = '19'
-    javaVer = '11'
+    kotlinVer = '1.9.23'
+    javafxVer = '21'
+    javaVer = '21'
     tornadofxVer = '2.1.1-WA-fork'
     rxkotlinVer = '2.4.0'
     rxkotlinfxVer = '2.2.2'
@@ -24,7 +24,7 @@ ext {
     log4j2Ver = '2.12.1'
     ikonliVer = '11.3.4'
     aohVer = '1.3'
-    otterAudioVer = '0.4.1'
+    otterAudioVer = '0.4.3'
     tikaVer = '2.9.1'
     commonsnetVer = '3.9.0'
     launch4j = '2.4.6'

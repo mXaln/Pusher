@@ -1,16 +1,16 @@
 package org.bibletranslationtools.maui.jvm.controls.mediatableview
 
-import com.jfoenix.controls.JFXTextField
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.event.ActionEvent
 import javafx.event.EventHandler
+import javafx.scene.control.TextField
 import javafx.scene.control.Tooltip
 import tornadofx.*
 
 private const val MAX_CHAPTER_LENGTH = 3
 
-class MediaTextField : JFXTextField() {
+class MediaTextField : TextField() {
 
     val titleProperty = SimpleStringProperty()
     private val onTextChangedProperty = SimpleObjectProperty<EventHandler<ActionEvent>>()

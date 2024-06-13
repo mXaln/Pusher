@@ -12,11 +12,7 @@ javafx {
     modules = ['javafx.controls', 'javafx.fxml']
 }
 
-version = '2.2.0'
-
-repositories {
-    maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
-}
+version = '2.2.1'
 
 application {
     mainClassName = "org.bibletranslationtools.maui.jvm.MainAppKt"

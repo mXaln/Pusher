@@ -181,13 +181,13 @@
 
 .media-table-view .media-text-field {
     -fx-max-width: 85px;
-    -jfx-unfocus-color: transparent;
-    -jfx-focus-color: -wa-primary;
     -fx-font-size: 1.25em;
     -fx-padding: 5 0 5 5;
     -fx-prompt-text-fill: -wa-gray-darker;
+    -fx-background-color: transparent, transparent, transparent;
 }
 
 .media-table-view .media-text-field:focused {
     -fx-prompt-text-fill: transparent;
+    -fx-background-color: transparent, transparent, transparent;
 }
